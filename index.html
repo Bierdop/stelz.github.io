@@ -3197,28 +3197,83 @@
       }
     }
 
-    async function adminRemovePlayer(targetPlayerId) {
-      if (!adminUnlocked) return;
-      const p = allPlayersMap.get(targetPlayerId);
-      const name = p ? p.name : targetPlayerId;
-      if (!confirm(`Weet je zeker dat je "${name}" van het live scorebord wilt verwijderen?`)) return;
-
-      deletedPlayersSet.add(targetPlayerId);
+function purgePlayerCompletely(targetId) {
+    deletedPlayersSet.add(targetId);
+    try {
       localStorage.setItem('dvov_deleted_players', JSON.stringify(Array.from(deletedPlayersSet)));
-      allPlayersMap.delete(targetPlayerId);
-      renderLeaderboard();
+    } catch (e) {}
+
+    allPlayersMap.delete(targetId);
+    awardedBadgesByPlayer.delete(targetId);
+
+    if (targetId === myPlayer.id) {
+      completedCans = {};
+      myManualBadges = [];
+      myShotgunCount = 0;
+      shotgunCooldownUntil = 0;
+      TOTAL_CANS = DEFAULT_CANS;
+      for (let i = 1; i <= TOTAL_CANS; i++) drinkTypes[i] = 'stelz';
+
+      myPlayer = {
+        id: 'p_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now().toString(36),
+        name: '',
+        team: 'DVOV 1',
+        gender: 'M',
+        weightKg: 80
+      };
 
       try {
-        await fetch(NTFY_BASE_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-          body: JSON.stringify({
-            type: 'player_sync',
-            player: { id: targetPlayerId, deleted: true, updatedAt: Date.now() + 99999999 }
-          })
-        });
+        localStorage.removeItem(STORAGE_KEY_V3);
+        localStorage.removeItem('dvov_stelz_state_v3');
+        localStorage.removeItem('dvov_shotgun_cd');
+        localStorage.removeItem('dvov_shotgun_count');
+        localStorage.setItem(STORAGE_PLAYER_KEY, JSON.stringify(myPlayer));
       } catch (e) {}
+
+      const nameInput = document.getElementById('playerNameInput');
+      if (nameInput) nameInput.value = '';
+
+      buildCansGrid();
+      tick();
     }
+
+    renderLeaderboard();
+    const statsModal = document.getElementById('kantineStatsModal');
+    if (statsModal && !statsModal.classList.contains('hidden')) {
+      renderStatsModalContent();
+    }
+    const chModal = document.getElementById('challengesModal');
+    if (chModal && !chModal.classList.contains('hidden')) {
+      renderChallengesModalContent();
+    }
+    closePlayerInspectModal();
+  }
+
+  async function adminRemovePlayer(targetPlayerId) {
+    if (!adminUnlocked) return;
+    const p = allPlayersMap.get(targetPlayerId);
+    const name = p ? p.name : targetPlayerId;
+    if (!confirm(`Weet je zeker dat je "${name}" + al zijn/haar drankjes, badges en statistieken volledig wilt wissen?`)) return;
+
+    purgePlayerCompletely(targetPlayerId);
+
+    const deletePayload = {
+      type: 'player_sync',
+      player: { id: targetPlayerId, deleted: true, updatedAt: Date.now() + 99999999 }
+    };
+
+    if (bcChannel) {
+      try { bcChannel.postMessage(deletePayload.player); } catch (e) {}
+    }
+
+    try {
+      await fetch(NTFY_BASE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify(deletePayload)
+      });
+    } catch (e) {}
+  }
 
     const NTFY_TOPIC = 'dvov_stelz_kantine_2026_live_v3';
     const NTFY_BASE_URL = `https://ntfy.sh/${NTFY_TOPIC}`;
@@ -3236,15 +3291,27 @@
       }
     }
 
-    function mergeIncomingPlayerRecord(rec) {
-      if (!rec || !rec.id) return;
-      if (rec.deleted) {
-        deletedPlayersSet.add(rec.id);
-        localStorage.setItem('dvov_deleted_players', JSON.stringify(Array.from(deletedPlayersSet)));
-        allPlayersMap.delete(rec.id);
-        renderLeaderboard();
-        return;
+function mergeIncomingPlayerRecord(rec) {
+    if (!rec || !rec.id) return;
+    if (rec.deleted) {
+      purgePlayerCompletely(rec.id);
+      return;
+    }
+    if (deletedPlayersSet.has(rec.id)) return;
+
+    if (Array.isArray(rec.manualBadges)) {
+      awardedBadgesByPlayer.set(rec.id, rec.manualBadges);
+      if (rec.id === myPlayer.id) {
+        myManualBadges = Array.from(new Set([...myManualBadges, ...rec.manualBadges]));
+        saveLocalState();
       }
+    }
+    const existing = allPlayersMap.get(rec.id);
+    if (!existing || (rec.updatedAt || 0) >= (existing.updatedAt || 0)) {
+      allPlayersMap.set(rec.id, rec);
+      renderLeaderboard();
+    }
+  }
       if (deletedPlayersSet.has(rec.id)) return;
 
       if (Array.isArray(rec.manualBadges)) {
