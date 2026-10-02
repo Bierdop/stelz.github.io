@@ -7,6 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>DVOV Stëlz Party Countdown — Live Kantine Scorebord, Stats & Mini-Games</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Montserrat:wght@600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
@@ -134,6 +135,24 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* Xbox 360 achievement pop-up */
+    #xboxAchievementPopup {
+      transform: translate(-50%, -160%);
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #xboxAchievementPopup.xbox-show {
+      transform: translate(-50%, 0);
+    }
+
+    /* Kantine Rad */
+    .wheel-pointer {
+      width: 0; height: 0;
+      border-left: 16px solid transparent;
+      border-right: 16px solid transparent;
+      border-top: 28px solid #F4639A;
+      filter: drop-shadow(0 3px 2px rgba(0,0,0,0.35));
+    }
+
     @media (max-width: 640px) {
       input[type="text"], input[type="number"], select {
         font-size: 16px !important;
@@ -149,8 +168,23 @@
   <!-- Confetti Canvas Overlay -->
   <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
 
+  <!-- 🎮 XBOX 360 ACHIEVEMENT POP-UP (SCHUIFT BOVENIN NAAR BENEDEN) -->
+  <div id="xboxAchievementPopup" class="fixed top-3 left-1/2 z-[1000] pointer-events-none w-[94%] max-w-sm">
+    <div class="bg-gradient-to-r from-zinc-950 via-zinc-800 to-zinc-950 border-2 border-lime-400/80 rounded-full pl-2 pr-5 py-2 shadow-[0_15px_40px_rgba(0,0,0,0.75)] flex items-center gap-3 text-white">
+      <div id="xboxAchIcon" class="w-12 h-12 rounded-full bg-gradient-to-br from-lime-400 to-green-600 border-2 border-white/80 flex items-center justify-center text-2xl shrink-0 shadow-lg">🏆</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-[9px] font-black uppercase tracking-widest text-lime-400">🎮 Achievement Unlocked</span>
+          <span id="xboxAchScore" class="text-[9px] font-mono-timer text-zinc-400 shrink-0">50G</span>
+        </div>
+        <div id="xboxAchTitle" class="font-poster text-base font-extrabold text-white truncate">Achievement</div>
+        <div id="xboxAchDesc" class="text-[11px] text-zinc-300 font-medium truncate">Badge ontgrendeld in de kantine!</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast / Motivational & Achievement Pop-up Banner -->
-  <div id="motivationToast" class="fixed top-14 sm:top-auto sm:bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 -translate-y-4 sm:translate-y-8 transition-all duration-300 max-w-md w-[94%]">
+  <div id="motivationToast" class="fixed top-[6.5rem] sm:top-auto sm:bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 -translate-y-4 sm:translate-y-8 transition-all duration-300 max-w-md w-[94%]">
     <div class="bg-gradient-to-r from-[#5A3E1B] via-[#7A5626] to-[#5A3E1B] text-[#FDFBF3] px-5 py-4 rounded-2xl shadow-2xl border-2 border-[#F2CB6B] flex items-center gap-3.5">
       <div class="text-3xl shrink-0 animate-bounce" id="toastEmoji">🎺</div>
       <div class="flex-1 min-w-0">
@@ -181,31 +215,33 @@
         <span class="font-extrabold tracking-wide text-amber-200 truncate">DVOV STËLZ PARTY • VRIJDAG 2 OKT (19:30)</span>
       </div>
 
-      <button
-        onclick="document.getElementById('mobileTopMenu').classList.toggle('hidden')"
-        class="sm:hidden px-2.5 py-1 rounded-lg font-extrabold bg-amber-500/20 text-amber-200 border border-amber-400/40 shrink-0"
-      >
-        ⚙️ Opties & Geluid
-      </button>
+      <div class="flex items-center gap-1.5 shrink-0 sm:hidden">
+        <button
+          onclick="startOnboardingTour(true)"
+          class="px-2.5 py-1 rounded-lg font-extrabold bg-pink-600 text-white shadow-sm"
+        >
+          ❓ Uitleg
+        </button>
+        <button
+          onclick="document.getElementById('mobileTopMenu').classList.toggle('hidden')"
+          class="px-2.5 py-1 rounded-lg font-extrabold bg-amber-500/20 text-amber-200 border border-amber-400/40"
+        >
+          ⚙️ Opties
+        </button>
+      </div>
 
       <div id="mobileTopMenu" class="hidden sm:flex flex-wrap items-center gap-1.5 w-full sm:w-auto pt-2 sm:pt-0 border-t border-amber-500/20 sm:border-0 mt-2 sm:mt-0">
-        <button id="btnRealMode" onclick="setRealPartyMode()" class="px-2.5 py-1.5 rounded-lg font-bold bg-amber-500 text-amber-950 transition">
-          📅 19:30
-        </button>
-        <button id="btnDemoSoon" onclick="setDemoMode(10)" class="px-2.5 py-1.5 rounded-lg font-semibold bg-amber-900/80 text-amber-100 border border-amber-600/50">
-          ⚡ Demo 10s
-        </button>
-        <button id="btnDemoMid" onclick="setDemoMode(-2500)" class="px-2.5 py-1.5 rounded-lg font-semibold bg-amber-900/80 text-amber-100 border border-amber-600/50">
-          🦩 Demo Feest
+        <button onclick="startOnboardingTour(true)" class="hidden sm:inline-block px-2.5 py-1.5 rounded-lg font-extrabold bg-pink-600 hover:bg-pink-500 text-white shadow-sm transition">
+          ❓ Uitleg
         </button>
         <button id="btnSoundToggle" onclick="toggleSound()" class="px-2.5 py-1.5 rounded-lg font-semibold bg-amber-900/80 text-amber-100 border border-amber-600/50">
           🔊 Geluid: AAN
         </button>
-        <button onclick="testHornAndCan()" class="px-2.5 py-1.5 rounded-lg font-semibold bg-pink-600 text-white">
-          🎺 Test
-        </button>
         <button id="btnAdminToggle" onclick="toggleAdminAuth()" class="px-2.5 py-1.5 rounded-lg font-semibold bg-stone-800 text-amber-200/80 border border-amber-600/40" title="Alleen voor de beheerder">
           🔒 Beheer
+        </button>
+        <button id="btnGlobalReset" onclick="adminGlobalKantineReset()" class="admin-only hidden px-2.5 py-1.5 rounded-lg font-black bg-rose-600 hover:bg-rose-500 text-white border-2 border-rose-300 shadow" title="Beheerder: wist ALLES op alle telefoons">
+          💣 TOTALE RESET VAN ALLES
         </button>
       </div>
     </div>
@@ -217,21 +253,32 @@
     <!-- Flyer Hero Header met DVOV Logo & Made by Job Janssen -->
     <section class="text-center relative mb-6">
       <div class="flex flex-col items-center justify-center mb-3">
-        <!-- DVOV Logo Schild (gebruikt dvov.png als die geüpload is, anders het ingebouwde DVOV-schild) -->
-        <div class="relative w-20 h-20 sm:w-24 sm:h-24 mb-2 drop-shadow-xl transition-transform hover:scale-105">
+        <!-- DVOV Logo Schild: laadt images.jpg, dan dvov.png, anders het ingebouwde DVOV-schild -->
+        <div id="dvovLogoWrap" class="relative w-24 h-24 sm:w-28 sm:h-28 mb-2 drop-shadow-xl transition-transform hover:scale-105">
           <img
-            src="dvov.png"
+            src="images.jpg"
             alt="DVOV Logo"
-            class="w-full h-full object-contain"
-            onerror="this.style.display='none'; document.getElementById('dvovFallbackLogo').classList.remove('hidden');"
+            class="w-full h-full object-contain mix-blend-multiply"
+            onerror="if (!this.dataset.retry) { this.dataset.retry = '1'; this.src = 'dvov.png'; } else { this.style.display = 'none'; document.getElementById('dvovFallbackLogo').classList.remove('hidden'); }"
           />
-          <svg id="dvovFallbackLogo" class="hidden w-full h-full" viewBox="0 0 120 140" fill="none">
-            <path d="M12 12 H108 V68 C108 102 60 128 60 128 C60 128 12 102 12 68 V12 Z" fill="#F2CB6B" stroke="#4A3718" stroke-width="7" stroke-linejoin="round"/>
-            <path d="M22 22 H98 V66 C98 93 60 115 60 115 C60 115 22 93 22 66 V22 Z" fill="#4A3718"/>
-            <path d="M22 48 L72 22 H98 V42 L26 82 C23 76 22 70 22 66 V48 Z" fill="#BC9348" opacity="0.35"/>
-            <text x="60" y="62" text-anchor="middle" fill="#F2CB6B" font-family="Fredoka, sans-serif" font-weight="800" font-size="25" letter-spacing="1.5">DVOV</text>
-            <text x="60" y="82" text-anchor="middle" fill="#FDFBF3" font-family="Montserrat, sans-serif" font-weight="800" font-size="11" letter-spacing="1">1932</text>
-            <circle cx="60" cy="98" r="7" fill="#F2CB6B"/>
+          <svg id="dvovFallbackLogo" class="hidden w-full h-full" viewBox="0 0 120 132" fill="none">
+            <defs>
+              <clipPath id="dvovBallClip"><circle cx="60" cy="94" r="15"/></clipPath>
+            </defs>
+            <path d="M8 14 Q60 2 112 14 L108 70 Q102 106 60 128 Q18 106 12 70 Z" fill="#1D4F9C"/>
+            <path d="M13 18 Q60 7 107 18 L103 69 Q97 102 60 122 Q23 102 17 69 Z" fill="#FFFFFF"/>
+            <path d="M18 22 Q60 12 102 22 L98 68 Q92 98 60 116 Q28 98 22 68 Z" fill="#E8742A"/>
+            <text x="60" y="34" text-anchor="middle" fill="#1D4F9C" font-family="Montserrat, sans-serif" font-weight="800" font-size="11" letter-spacing="0.5">Sinds 1932</text>
+            <text x="60" y="68" text-anchor="middle" fill="#FFFFFF" font-family="Montserrat, sans-serif" font-weight="800" font-size="30" letter-spacing="1">DVOV</text>
+            <circle cx="60" cy="94" r="15" fill="#FFFFFF" stroke="#1D4F9C" stroke-width="1.5"/>
+            <g clip-path="url(#dvovBallClip)" fill="#1D4F9C">
+              <polygon points="60,88 65.7,92.1 63.5,98.9 56.5,98.9 54.3,92.1"/>
+              <polygon points="60,76 66,79.5 63,84 57,84 54,79.5"/>
+              <polygon points="76,88 79,94 74,97 71,92 73,87"/>
+              <polygon points="44,88 47,87 49,92 46,97 41,94"/>
+              <polygon points="70,104 73,110 67,112 64,106 67,102"/>
+              <polygon points="50,104 53,102 56,106 53,112 47,110"/>
+            </g>
           </svg>
         </div>
 
@@ -469,18 +516,21 @@
                 💾 Opslaan
               </button>
               <button
+                id="btnOpenStats"
                 onclick="openStatsModal()"
                 class="py-2.5 px-2 rounded-xl font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-sky-600 hover:bg-sky-500 active:scale-95 text-white shadow-md transition text-center border border-sky-300/40"
               >
                 📊 Stats
               </button>
               <button
+                id="btnOpenBadges"
                 onclick="openChallengesModal()"
                 class="py-2.5 px-2 rounded-xl font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-purple-600 hover:bg-purple-500 active:scale-95 text-white shadow-md transition text-center border border-purple-300/40"
               >
                 🎖️ Badges
               </button>
               <button
+                id="btnOpenShare"
                 onclick="openShareModal()"
                 class="py-2.5 px-2 rounded-xl font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white shadow-md transition text-center"
               >
@@ -541,7 +591,7 @@
         </div>
 
         <!-- My Unlocked Badges Bar -->
-        <div class="mt-3 bg-black/30 rounded-2xl px-3.5 py-2.5 border border-amber-500/25 flex flex-wrap items-center justify-between gap-2">
+        <div id="myBadgesBar" class="mt-3 bg-black/30 rounded-2xl px-3.5 py-2.5 border border-amber-500/25 flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center gap-2 flex-wrap">
             <span class="text-[11px] font-black uppercase tracking-wider text-amber-300">🎖️️ Jouw Badges:</span>
             <div id="myBadgesPreviewRow" class="flex flex-wrap items-center gap-1.5"></div>
@@ -553,7 +603,7 @@
 
         <!-- Live Activity Ticker + Kantine Totals -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 my-3.5">
-          <div class="lg:col-span-8 bg-black/25 rounded-2xl px-4 py-2.5 border border-amber-500/20 flex items-center gap-2.5 overflow-hidden">
+          <div id="liveTickerBar" class="lg:col-span-8 bg-black/25 rounded-2xl px-4 py-2.5 border border-amber-500/20 flex items-center gap-2.5 overflow-hidden">
             <span class="text-base shrink-0">🎺</span>
             <span class="text-[11px] font-black uppercase tracking-wider text-pink-400 shrink-0">LIVE BAR FEED</span>
             <div id="liveTickerText" class="text-xs sm:text-sm font-bold text-amber-100 truncate">
@@ -595,10 +645,83 @@
     </section>
 
     <!-- =================================================================== -->
+    <!-- 📸 LIVE KANTINE PAPARAZZI FOTOMUUR + 🎡 KANTINE RAD VAN AVONTUUR    -->
+    <!-- =================================================================== -->
+    <section class="max-w-6xl mx-auto mb-8 grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+      <!-- 📸 FOTOMUUR -->
+      <div id="photoWallSection" class="lg:col-span-7 rounded-3xl border-4 border-[#856324] bg-gradient-to-b from-[#FDFBF3] to-[#F4E8C8] p-4 sm:p-5 shadow-2xl">
+        <div class="flex flex-wrap items-start justify-between gap-2 mb-3">
+          <div>
+            <div class="text-[10px] font-black uppercase tracking-widest text-pink-600">Live gedeeld met de hele kantine</div>
+            <h3 class="font-poster text-2xl sm:text-3xl font-extrabold text-[#4A3718]">📸 Kantine Paparazzi Fotomuur</h3>
+            <p id="photoWallStatsLine" class="text-xs font-bold text-[#7A5B2B] mt-0.5">0 foto's • 0x bekeken</p>
+          </div>
+          <button id="btnDownloadAllPhotos" onclick="downloadAllPhotos()" class="admin-only hidden px-3 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-[#4A3718] hover:bg-[#63481F] text-[#F2CB6B] border-2 border-[#C49A47] shadow transition">
+            📥 Download Alle Foto's
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 mb-3">
+          <button onclick="document.getElementById('photoCameraInput').click()" class="py-3 px-3 rounded-2xl font-poster font-extrabold text-sm uppercase tracking-wider bg-gradient-to-r from-pink-500 to-rose-500 active:scale-95 text-white shadow-lg border-2 border-[#4A3718] transition">
+            📷 Maak Foto
+          </button>
+          <button onclick="document.getElementById('photoGalleryInput').click()" class="py-3 px-3 rounded-2xl font-poster font-extrabold text-sm uppercase tracking-wider bg-gradient-to-r from-sky-500 to-cyan-500 active:scale-95 text-white shadow-lg border-2 border-[#4A3718] transition">
+            🖼️ Kies uit Galerij
+          </button>
+          <input id="photoCameraInput" type="file" accept="image/*" capture="environment" class="hidden" onchange="handlePhotoFileSelected(this)" />
+          <input id="photoGalleryInput" type="file" accept="image/*" class="hidden" onchange="handlePhotoFileSelected(this)" />
+        </div>
+
+        <div id="photoUploadStatus" class="hidden mb-3 text-xs font-extrabold px-3 py-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300"></div>
+
+        <div id="photoWallGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[34rem] overflow-y-auto pr-1"></div>
+
+        <p class="mt-3 text-[11px] font-semibold text-[#7A5B2B]">
+          💡 Foto's worden automatisch verkleind en binnen een paar seconden live op alle telefoons gezet. Tik op een foto om 'm groot te bekijken of te downloaden.
+        </p>
+      </div>
+
+      <!-- 🎡 KANTINE RAD VAN AVONTUUR -->
+      <div id="wheelSection" class="lg:col-span-5 rounded-3xl border-4 border-[#856324] bg-gradient-to-b from-[#4A3718] to-[#34250F] text-[#FDFBF3] p-4 sm:p-5 shadow-2xl">
+        <div class="mb-3">
+          <div class="text-[10px] font-black uppercase tracking-widest text-pink-300">Durf jij eraan te draaien?</div>
+          <h3 class="font-poster text-2xl sm:text-3xl font-extrabold text-[#F2CB6B]">🎡 Kantine Rad van Avontuur</h3>
+          <p id="wheelStatsLine" class="text-xs font-bold text-amber-200/80 mt-0.5">0x gedraaid • 0 eigen opdrachten</p>
+        </div>
+
+        <div class="relative mx-auto w-full max-w-[19rem] aspect-square">
+          <div class="absolute left-1/2 -translate-x-1/2 -top-1 z-10 wheel-pointer"></div>
+          <canvas id="wheelCanvas" width="600" height="600" class="w-full h-full rounded-full border-4 border-[#F2CB6B] shadow-2xl bg-[#2B1E0B]"></canvas>
+          <button id="btnSpinWheel" onclick="spinKantineWheel()" class="absolute inset-0 m-auto w-20 h-20 rounded-full bg-gradient-to-br from-pink-500 to-amber-500 border-4 border-white text-white font-poster font-extrabold text-sm uppercase shadow-2xl active:scale-90 transition">
+            DRAAI!
+          </button>
+        </div>
+
+        <div id="wheelResultBox" class="mt-4 bg-black/35 border-2 border-amber-400/40 rounded-2xl p-3 text-center">
+          <div class="text-[10px] font-black uppercase tracking-widest text-amber-300">Jouw opdracht</div>
+          <div id="wheelResultText" class="font-poster text-lg font-extrabold text-white leading-snug">Tik op DRAAI! en laat het rad beslissen...</div>
+        </div>
+
+        <div class="mt-3 flex gap-2">
+          <input id="wheelCustomTaskInput" type="text" maxlength="40" placeholder="+ Voeg eigen kantine-opdracht toe aan het rad" class="flex-1 min-w-0 bg-amber-950/80 text-white placeholder-amber-300/50 font-extrabold text-xs sm:text-sm px-3 py-2.5 rounded-xl border border-amber-500/40 focus:outline-none" onkeydown="if(event.key==='Enter') addCustomWheelTask()" />
+          <button onclick="addCustomWheelTask()" class="px-3.5 py-2.5 rounded-xl font-extrabold text-xs uppercase bg-emerald-500 hover:bg-emerald-400 text-emerald-950 shadow shrink-0">
+            ➕ Voeg toe
+          </button>
+        </div>
+
+        <details class="mt-3 bg-black/25 rounded-2xl border border-amber-500/20">
+          <summary class="cursor-pointer px-3 py-2 text-xs font-extrabold text-amber-200">📜 Alle opdrachten op het rad (<span id="wheelTaskCount">0</span>)</summary>
+          <div id="wheelTaskList" class="px-3 pb-3 space-y-1.5 max-h-56 overflow-y-auto"></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
     <!-- ALL 20 DRINKS GRID (+ EXTRA RONDES KNOP ONDERAAN)                   -->
     <!-- =================================================================== -->
-    <section>
-      <div class="flex flex-col md:flex-row md:items-end justify-between mb-5 gap-3 bg-[#F4E8C8]/85 p-4 rounded-2xl border-2 border-[#C49A47]">
+    <section id="drinksSection">
+      <div id="drinksHeader" class="flex flex-col md:flex-row md:items-end justify-between mb-5 gap-3 bg-[#F4E8C8]/85 p-4 rounded-2xl border-2 border-[#C49A47]">
         <div>
           <h3 class="font-poster text-2xl sm:text-3xl font-extrabold text-[#4A3718]">
             🥫🍺🍷 Jouw Rondes Schema (+12 min per ronde)
@@ -629,6 +752,7 @@
       <!-- Knop om extra rondes (+12 min) toe te voegen bovenop de standaard 20 -->
       <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
         <button
+          id="btnAddExtraCan"
           onclick="addExtraCanBlock()"
           class="px-6 py-3.5 rounded-2xl font-poster font-extrabold text-base sm:text-lg uppercase tracking-wider bg-gradient-to-r from-pink-500 via-amber-500 to-emerald-500 hover:scale-105 active:scale-95 text-white shadow-xl border-2 border-[#4A3718] transition flex items-center gap-2"
         >
@@ -792,6 +916,7 @@
   <!-- ===================================================================== -->
   <div class="fixed bottom-4 right-3 sm:bottom-5 sm:right-5 z-40 flex flex-col items-end gap-1.5">
     <button
+      id="btnOpenAdDuel"
       onclick="openAdtBattleModal()"
       class="px-3.5 py-2 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-amber-950 font-poster font-extrabold text-xs uppercase tracking-wider shadow-2xl border-2 border-[#4A3718] flex items-center gap-1.5 active:scale-90 transition"
       title="Leg je telefoon op tafel voor een 1v1 Split-Screen Ad-Wedstrijd!"
@@ -983,6 +1108,54 @@
           ✋ SLA HIER ZODRA JE GLAS OP TAFEL STAAT!
         </div>
       </button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 📸 FOTO GROOT BEKIJKEN (FULLSCREEN VIEWER)                            -->
+  <!-- ===================================================================== -->
+  <div id="photoViewerModal" class="fixed inset-0 z-50 hidden flex-col items-center justify-center bg-black/90 backdrop-blur-sm p-3" onclick="closePhotoViewer()">
+    <div class="w-full max-w-lg flex flex-col gap-3" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between gap-2 text-white">
+        <div class="min-w-0">
+          <div id="photoViewerBy" class="font-poster text-lg font-extrabold text-[#F2CB6B] truncate">Foto</div>
+          <div id="photoViewerMeta" class="text-[11px] font-bold text-amber-200/80">--</div>
+        </div>
+        <button onclick="closePhotoViewer()" class="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 font-extrabold text-xs text-white shrink-0">✕ Sluiten</button>
+      </div>
+      <div class="relative">
+        <img id="photoViewerImg" alt="Kantine foto" class="w-full max-h-[68vh] object-contain rounded-2xl border-4 border-[#F2CB6B] bg-black" />
+        <button onclick="stepPhotoViewer(-1)" class="absolute left-1 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 text-white font-black text-lg">‹</button>
+        <button onclick="stepPhotoViewer(1)" class="absolute right-1 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 text-white font-black text-lg">›</button>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="downloadCurrentViewerPhoto()" class="py-2.5 rounded-xl font-extrabold text-xs uppercase bg-emerald-600 hover:bg-emerald-500 text-white shadow">📥 Download</button>
+        <button id="photoViewerDeleteBtn" onclick="adminDeleteCurrentViewerPhoto()" class="admin-only hidden py-2.5 rounded-xl font-extrabold text-xs uppercase bg-rose-600 hover:bg-rose-500 text-white shadow">🗑️ Verwijder</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 🧭 UITLEG / RONDLEIDING LANGS ALLE FEATURES                            -->
+  <!-- ===================================================================== -->
+  <div id="tourPopupCard" class="fixed inset-x-3 bottom-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:bottom-6 z-[9999] hidden max-w-md w-auto sm:w-full bg-gradient-to-b from-[#4A3718] to-[#2B1E0B] text-[#FDFBF3] border-4 border-[#F2CB6B] rounded-3xl p-4 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.75)]">
+    <div class="flex items-center justify-between gap-2 mb-2">
+      <span id="tourStepBadge" class="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-pink-500 text-white">STAP 1</span>
+      <button onclick="endOnboardingTour()" class="text-xs font-extrabold text-amber-300/80 hover:text-white px-2 py-0.5 rounded-lg bg-white/10">✕ Sluiten</button>
+    </div>
+    <div class="flex items-start gap-3 my-2">
+      <div id="tourStepEmoji" class="w-12 h-12 rounded-2xl bg-amber-400/20 border-2 border-[#F2CB6B] flex items-center justify-center text-2xl shrink-0">🙋‍♂️</div>
+      <div class="min-w-0">
+        <h4 id="tourStepTitle" class="font-poster text-lg sm:text-xl font-extrabold text-[#F2CB6B] leading-snug">Welkom!</h4>
+        <p id="tourStepText" class="text-xs sm:text-sm text-amber-100/90 font-semibold mt-1 leading-relaxed"></p>
+      </div>
+    </div>
+    <div class="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-amber-500/30">
+      <div id="tourDotsWrap" class="flex flex-wrap items-center gap-1 min-w-0"></div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="tourPrevBtn" onclick="prevTourStep()" class="px-3 py-2 rounded-xl font-extrabold text-xs uppercase bg-white/10 hover:bg-white/20 text-amber-200 transition">← Vorige</button>
+        <button id="tourNextBtn" onclick="nextTourStep()" class="px-4 py-2 rounded-xl font-poster font-extrabold text-xs sm:text-sm uppercase bg-gradient-to-r from-emerald-500 to-lime-500 text-emerald-950 shadow-lg transition">Volgende →</button>
+      </div>
     </div>
   </div>
 
@@ -1190,8 +1363,73 @@
         short: 'Ad-Verliezer',
         style: 'bg-stone-600 text-amber-200 border-stone-400',
         desc: 'Heeft een 1v1 Tafel Ad-Wedstrijd verloren en hapte naar adem...'
+      },
+      {
+        id: 'photo_paparazzo',
+        emoji: '📸',
+        title: 'Kantine Paparazzo',
+        short: 'Paparazzo',
+        style: 'bg-gradient-to-r from-indigo-500 to-sky-500 text-white border-indigo-200',
+        desc: 'Eerste foto live op de fotomuur gezet!'
+      },
+      {
+        id: 'photo_spielberg',
+        emoji: '🎥',
+        title: 'Spielberg van DVOV (3+ Foto\'s)',
+        short: 'Spielberg',
+        style: 'bg-gradient-to-r from-violet-600 via-fuchsia-500 to-pink-500 text-white border-white badge-legendary',
+        desc: 'Minstens 3 legendarische foto\'s geüpload!'
+      },
+      {
+        id: 'photo_gluren',
+        emoji: '👀',
+        title: 'Gluren bij de Buren (5+ Bekeken)',
+        short: 'Gluurder',
+        style: 'bg-teal-500 text-white border-teal-200',
+        desc: 'Heeft minstens 5 foto\'s op de fotomuur vergroot bekeken!'
+      },
+      {
+        id: 'wheel_waaghals',
+        emoji: '🎡',
+        title: 'Waaghals aan het Rad',
+        short: 'Waaghals',
+        style: 'bg-gradient-to-r from-pink-500 to-amber-500 text-white border-pink-200',
+        desc: 'Heeft een slinger gegeven aan het Kantine Rad van Avontuur!'
+      },
+      {
+        id: 'wheel_casino',
+        emoji: '🎰',
+        title: 'Casino Royal (5x Gedraaid)',
+        short: 'Casino Royal',
+        style: 'bg-gradient-to-r from-emerald-600 via-lime-500 to-yellow-400 text-emerald-950 border-white badge-legendary',
+        desc: 'Heeft 5 keer aan het Kantine Rad gedraaid!'
+      },
+      {
+        id: 'wheel_spelmaker',
+        emoji: '✍️',
+        title: 'Spelmaker',
+        short: 'Spelmaker',
+        style: 'bg-amber-600 text-white border-amber-200',
+        desc: 'Heeft zelf een nieuwe opdracht toegevoegd aan het Kantine Rad!'
       }
     ];
+
+    // Achievements die volgen uit Fotomuur- en Rad-activiteit (werkt ook voor andere spelers via de cloud)
+    function evaluateActivityAchievements(p) {
+      const out = [];
+      if (!p) return out;
+      const uploaded = Number(p.photosUploaded || 0);
+      const viewed = Number(p.photosViewed || 0);
+      const spins = Number(p.wheelSpins || 0);
+      const tasks = Number(p.wheelTasksAdded || 0);
+      if (uploaded >= 1) out.push('photo_paparazzo');
+      if (uploaded >= 3) out.push('photo_spielberg');
+      if (viewed >= 5) out.push('photo_gluren');
+      if (spins >= 1) out.push('wheel_waaghals');
+      if (spins >= 5) out.push('wheel_casino');
+      if (tasks >= 1) out.push('wheel_spelmaker');
+      return out;
+    }
 
     const AWARDABLE_CHALLENGES = [
       {
@@ -1384,6 +1622,7 @@
     let completedCans = {};
     let drinkTypes = {};
     let myManualBadges = [];
+    let myActivity = { photosUploaded: 0, photosViewed: 0, photoViewMap: {}, wheelSpins: 0, wheelTasksAdded: 0 };
     const awardedBadgesByPlayer = new Map();
 
     for (let i = 1; i <= TOTAL_CANS; i++) {
@@ -1437,6 +1676,10 @@
             if (Array.isArray(parsed.myManualBadges)) {
               myManualBadges = parsed.myManualBadges;
             }
+            if (parsed.myActivity && typeof parsed.myActivity === 'object') {
+              myActivity = Object.assign(myActivity, parsed.myActivity);
+              if (!myActivity.photoViewMap || typeof myActivity.photoViewMap !== 'object') myActivity.photoViewMap = {};
+            }
           }
         }
       } catch (e) {}
@@ -1448,7 +1691,8 @@
           totalCans: TOTAL_CANS,
           completedCans,
           drinkTypes,
-          myManualBadges
+          myManualBadges,
+          myActivity
         }));
       } catch (e) {}
     }
@@ -1625,23 +1869,24 @@
       return Array.from(unlocked);
     }
 
-    function renderBadgePillHTML(badgeIdOrObj, extraClasses = '') {
-      let b = null;
-      if (typeof badgeIdOrObj === 'string') {
-        if (badgeIdOrObj.startsWith('custom:')) {
-          const parts = badgeIdOrObj.split(':');
-          b = {
-            emoji: parts[1] || '🏅',
-            short: parts.slice(2).join(':') || 'Badge',
-            title: parts.slice(2).join(':') || 'Custom Badge',
-            style: 'bg-gradient-to-r from-pink-500 to-amber-500 text-white border-amber-200'
-          };
-        } else {
-          b = ALL_BADGE_MAP[badgeIdOrObj];
-        }
-      } else if (badgeIdOrObj && typeof badgeIdOrObj === 'object') {
-        b = badgeIdOrObj;
+    function getBadgeObj(badgeIdOrObj) {
+      if (badgeIdOrObj && typeof badgeIdOrObj === 'object') return badgeIdOrObj;
+      if (typeof badgeIdOrObj !== 'string') return null;
+      if (badgeIdOrObj.startsWith('custom:')) {
+        const parts = badgeIdOrObj.split(':');
+        return {
+          emoji: parts[1] || '🏅',
+          short: parts.slice(2).join(':') || 'Badge',
+          title: parts.slice(2).join(':') || 'Custom Badge',
+          desc: 'Eigen kantine-badge opgeplakt!',
+          style: 'bg-gradient-to-r from-pink-500 to-amber-500 text-white border-amber-200'
+        };
       }
+      return ALL_BADGE_MAP[badgeIdOrObj] || null;
+    }
+
+    function renderBadgePillHTML(badgeIdOrObj, extraClasses = '') {
+      const b = getBadgeObj(badgeIdOrObj);
       if (!b) return '';
 
       return `
@@ -1808,12 +2053,128 @@
       playPartyHorn(0.22);
     }
 
-    function testHornAndCan() {
-      const wasEnabled = soundEnabled;
-      soundEnabled = true;
-      playCheckoffComboSound('stelz');
-      fireConfetti();
-      soundEnabled = wasEnabled;
+    // =========================================================================
+    // 🎮 XBOX 360 ACHIEVEMENT POP-UP + ECHTE XBOX MP3 (MET SYNTH BACKUP)
+    // =========================================================================
+    const xboxAchievementAudio = new Audio('xbox-360-achievement-sound.mp3');
+    xboxAchievementAudio.preload = 'auto';
+
+    function playXboxSynthFallback() {
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        [
+          { freq: 523.25, time: 0.0, dur: 0.12 },
+          { freq: 659.25, time: 0.1, dur: 0.14 },
+          { freq: 783.99, time: 0.2, dur: 0.18 },
+          { freq: 1046.5, time: 0.32, dur: 0.45 }
+        ].forEach(n => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(n.freq, now + n.time);
+          gain.gain.setValueAtTime(0.001, now + n.time);
+          gain.gain.linearRampToValueAtTime(0.25, now + n.time + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + n.time + n.dur);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + n.time);
+          osc.stop(now + n.time + n.dur + 0.05);
+        });
+      } catch (e) {}
+    }
+
+    function playXboxAchievementSound() {
+      if (!soundEnabled) return;
+      try {
+        const clone = xboxAchievementAudio.cloneNode();
+        clone.volume = 1.0;
+        clone.play().catch(() => playXboxSynthFallback());
+      } catch (e) {
+        playXboxSynthFallback();
+      }
+    }
+
+    const xboxQueue = [];
+    let isShowingXboxPopup = false;
+
+    function triggerXboxAchievementPopup(badgeIdOrObj) {
+      const b = getBadgeObj(badgeIdOrObj);
+      if (!b) return;
+      xboxQueue.push(b);
+      if (!isShowingXboxPopup) setTimeout(processXboxQueue, 650);
+    }
+
+    function processXboxQueue() {
+      if (isShowingXboxPopup || xboxQueue.length === 0) return;
+      const popup = document.getElementById('xboxAchievementPopup');
+      if (!popup) return;
+      isShowingXboxPopup = true;
+      const b = xboxQueue.shift();
+
+      document.getElementById('xboxAchIcon').textContent = b.emoji || '🏆';
+      document.getElementById('xboxAchTitle').textContent = b.title || b.short || 'Achievement';
+      document.getElementById('xboxAchDesc').textContent = b.desc || 'Badge ontgrendeld in de kantine!';
+      document.getElementById('xboxAchScore').textContent = String(b.style || '').includes('badge-legendary') ? '100G' : '50G';
+
+      playXboxAchievementSound();
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate([100, 50, 200]); } catch (e) {}
+      }
+
+      popup.classList.add('xbox-show');
+      setTimeout(() => {
+        popup.classList.remove('xbox-show');
+        setTimeout(() => {
+          isShowingXboxPopup = false;
+          processXboxQueue();
+        }, 550);
+      }, 3800);
+    }
+
+    // Houdt bij welke badges deze telefoon al gevierd heeft, zodat elke nieuwe badge precies één Xbox pop-up krijgt
+    const SEEN_BADGES_KEY = 'dvov_seen_badges_v1';
+    let seenBadgesSet = null;
+
+    function checkForNewBadgesAndCelebrate(currentBadgeIds) {
+      if (seenBadgesSet === null) {
+        let stored = null;
+        try { stored = JSON.parse(localStorage.getItem(SEEN_BADGES_KEY) || 'null'); } catch (e) {}
+        if (Array.isArray(stored)) {
+          seenBadgesSet = new Set(stored);
+        } else {
+          // Eerste keer met deze versie: bestaande badges niet opnieuw vieren
+          seenBadgesSet = new Set(currentBadgeIds);
+          try { localStorage.setItem(SEEN_BADGES_KEY, JSON.stringify(Array.from(seenBadgesSet))); } catch (e) {}
+          return;
+        }
+      }
+      const fresh = currentBadgeIds.filter(id => !seenBadgesSet.has(id));
+      if (fresh.length === 0) return;
+      fresh.forEach(id => {
+        seenBadgesSet.add(id);
+        triggerXboxAchievementPopup(id);
+      });
+      try { localStorage.setItem(SEEN_BADGES_KEY, JSON.stringify(Array.from(seenBadgesSet))); } catch (e) {}
+    }
+
+    // Algemene toast voor Fotomuur, Rad en Beheer-meldingen
+    function showInfoToast(emojiChar, titleText, bodyText) {
+      const toast = document.getElementById('motivationToast');
+      document.getElementById('toastEmoji').textContent = emojiChar;
+      document.getElementById('toastTitle').textContent = titleText;
+      document.getElementById('toastQuote').textContent = bodyText;
+      const badgesRow = document.getElementById('toastBadgesRow');
+      badgesRow.classList.add('hidden');
+      badgesRow.innerHTML = '';
+      toast.classList.remove('opacity-0', '-translate-y-4', 'sm:translate-y-8');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', '-translate-y-4', 'sm:translate-y-8');
+      }, 4600);
     }
 
     function toggleSound() {
@@ -2211,7 +2572,8 @@
       const manualFromPlayer = Array.isArray(playerObj.manualBadges) ? playerObj.manualBadges : [];
       const awardedRoomWide = awardedBadgesByPlayer.get(playerObj.id) || [];
 
-      const combined = [...autoIds, ...manualFromPlayer, ...awardedRoomWide];
+      const activityIds = evaluateActivityAchievements(playerObj);
+      const combined = [...autoIds, ...activityIds, ...manualFromPlayer, ...awardedRoomWide];
       return Array.from(new Set(combined));
     }
 
@@ -2491,6 +2853,11 @@
         totalDeltaMs: Math.round(totalDeltaMs),
         cansJson: JSON.stringify(compactCans),
         manualBadges: mergedManualBadges,
+        photosUploaded: Number(myActivity.photosUploaded || 0),
+        photosViewed: Number(myActivity.photosViewed || 0),
+        photoViewMap: myActivity.photoViewMap || {},
+        wheelSpins: Number(myActivity.wheelSpins || 0),
+        wheelTasksAdded: Number(myActivity.wheelTasksAdded || 0),
         lastActionText,
         updatedAt: Date.now()
       };
@@ -2499,6 +2866,7 @@
     function renderMyBadgesPreviewBar() {
       const mySummary = computeMyPlayerSummary();
       const badges = getEffectivePlayerBadges(mySummary);
+      checkForNewBadgesAndCelebrate(badges);
       const container = document.getElementById('myBadgesPreviewRow');
       if (!container) return;
 
@@ -2714,6 +3082,12 @@
         <div class="flex flex-wrap items-center justify-between gap-2">
           <span>Mix: <strong>🥫 ${p.stelzCount || 0}x Stëlz</strong> • <strong>🍺 ${p.bierCount || 0}x Bier</strong> • <strong>🍷 ${p.wijnCount || 0}x Wijn</strong></span>
           <span class="font-mono-timer font-extrabold">Totale tijdscore: ${formatSignedClock(p.totalDeltaMs || 0)}</span>
+        </div>
+        <div class="mt-2 pt-2 border-t border-amber-200 flex flex-wrap gap-x-3 gap-y-1 text-[11px] sm:text-xs">
+          <span>📸 ${p.photosUploaded || 0} foto's geüpload</span>
+          <span>👀 ${p.photosViewed || 0}x foto bekeken</span>
+          <span>🎡 ${p.wheelSpins || 0}x aan het rad</span>
+          <span>✍️ ${p.wheelTasksAdded || 0} rad-opdrachten</span>
         </div>
       `;
 
@@ -3076,45 +3450,6 @@
       renderLeaderboard();
     }
 
-    // =========================================================================
-    // MODE SWITCHERS
-    // =========================================================================
-    function refreshTargetTimesOnCards() {
-      for (let i = 1; i <= TOTAL_CANS; i++) {
-        const targetTimestamp = baseStartTimestamp + (i - 1) * INTERVAL_MS;
-        const el = document.getElementById(`canTargetTime-${i}`);
-        if (el) el.textContent = formatTimeOfDay(targetTimestamp);
-      }
-      updateExtraCanButtonsUI();
-    }
-
-    function setRealPartyMode() {
-      currentMode = 'real';
-      baseStartTimestamp = getRealPartyTimestamp();
-      refreshTargetTimesOnCards();
-      highlightModeButtons('btnRealMode');
-      tick();
-    }
-
-    function setDemoMode(offsetSecondsFromNow) {
-      currentMode = 'demo';
-      baseStartTimestamp = Date.now() + offsetSecondsFromNow * 1000;
-      refreshTargetTimesOnCards();
-      highlightModeButtons(offsetSecondsFromNow > 0 ? 'btnDemoSoon' : 'btnDemoMid');
-      tick();
-    }
-
-    function highlightModeButtons(activeId) {
-      ['btnRealMode', 'btnDemoSoon', 'btnDemoMid'].forEach(id => {
-        const btn = document.getElementById(id);
-        if (!btn) return;
-        if (id === activeId) {
-          btn.className = 'px-2.5 py-1.5 rounded-lg font-bold bg-amber-500 text-amber-950 transition shadow-sm';
-        } else {
-          btn.className = 'px-2.5 py-1.5 rounded-lg font-semibold bg-amber-900/80 text-amber-100 border border-amber-600/50 transition';
-        }
-      });
-    }
 
     // =========================================================================
     // BEHEERDER ROL (PINCODE: 1932) + LIVE CLOUD SYNC
@@ -3133,7 +3468,7 @@
         adminUnlocked = false;
         sessionStorage.removeItem('dvov_admin_ok');
         if (btn) btn.textContent = '🔒 Beheer';
-        renderLeaderboard();
+        applyAdminUI();
         return;
       }
       const code = prompt('Voer de geheime DVOV Beheerder-code in:');
@@ -3141,9 +3476,95 @@
         adminUnlocked = true;
         sessionStorage.setItem('dvov_admin_ok', '1');
         if (btn) btn.textContent = '👑 Beheerder: AAN';
-        renderLeaderboard();
+        applyAdminUI();
       } else if (code !== null) {
         alert('❌ Onjuiste beheerder-code!');
+      }
+    }
+
+    // Toont/verbergt alle beheerder-knoppen (reset, foto's downloaden/verwijderen, rad-opdrachten verwijderen)
+    function applyAdminUI() {
+      document.querySelectorAll('.admin-only').forEach(el => {
+        el.classList.toggle('hidden', !adminUnlocked);
+      });
+      renderLeaderboard();
+      renderPhotoWall();
+      renderWheelTaskList();
+    }
+
+    // =========================================================================
+    // 💣 TOTALE KANTINE RESET (BEHEERDER) — WIST ALLES OP ALLE TELEFOONS
+    // =========================================================================
+    // Alles in de ntfy-cache van vóór dit tijdstip (in seconden, servertijd) wordt genegeerd
+    const RESET_EPOCH_KEY = 'dvov_reset_epoch_v1';
+    let kantineResetEpochSec = Number(localStorage.getItem(RESET_EPOCH_KEY) || 0);
+
+    function wipeAllLocalKantineData() {
+      completedCans = {};
+      TOTAL_CANS = DEFAULT_CANS;
+      drinkTypes = {};
+      for (let i = 1; i <= TOTAL_CANS; i++) drinkTypes[i] = 'stelz';
+      myManualBadges = [];
+      myActivity = { photosUploaded: 0, photosViewed: 0, photoViewMap: {}, wheelSpins: 0, wheelTasksAdded: 0 };
+      saveLocalState();
+
+      myPlayer.name = '';
+      try { localStorage.setItem(STORAGE_PLAYER_KEY, JSON.stringify(myPlayer)); } catch (e) {}
+      const nameInput = document.getElementById('playerNameInput');
+      if (nameInput) nameInput.value = '';
+
+      allPlayersMap.clear();
+      awardedBadgesByPlayer.clear();
+      deletedPlayersSet.clear();
+      try { localStorage.removeItem('dvov_deleted_players'); } catch (e) {}
+
+      shotgunCooldownUntil = 0;
+      myShotgunCount = 0;
+      try {
+        localStorage.setItem('dvov_shotgun_cd', '0');
+        localStorage.setItem('dvov_shotgun_count', '0');
+      } catch (e) {}
+
+      kantinePhotos = [];
+      deletedPhotoIds.clear();
+      saveKantinePhotos();
+      customWheelTasks = [];
+      deletedWheelTaskIds.clear();
+      saveWheelState();
+
+      seenBadgesSet = new Set();
+      try { localStorage.setItem(SEEN_BADGES_KEY, '[]'); } catch (e) {}
+
+      document.getElementById('liveTickerText').textContent = '💣 Kantine is gereset! Vul je naam in en de Stëlz Party begint met een schone lei!';
+      buildCansGrid();
+      tick();
+      renderPhotoWall();
+      buildWheel();
+      renderWheelTaskList();
+    }
+
+    function applyGlobalResetFromCloud(resetTimeSec) {
+      if (!resetTimeSec || resetTimeSec <= kantineResetEpochSec) return;
+      kantineResetEpochSec = resetTimeSec;
+      try { localStorage.setItem(RESET_EPOCH_KEY, String(resetTimeSec)); } catch (e) {}
+      wipeAllLocalKantineData();
+      showInfoToast('💣', 'TOTALE KANTINE RESET!', 'De beheerder heeft alles gewist. Iedereen begint met een schone lei!');
+    }
+
+    async function adminGlobalKantineReset() {
+      if (!adminUnlocked) return;
+      if (!confirm('💣 TOTALE RESET VAN ALLES\n\nDit wist op ALLE telefoons: alle spelers, vinkjes, badges, foto\'s, rad-draaien, eigen rad-opdrachten en statistieken.\n\nWeet je het zeker?')) return;
+
+      try {
+        const res = await fetch(NTFY_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body: JSON.stringify({ type: 'global_kantine_reset', timestamp: Date.now() })
+        });
+        const data = await res.json();
+        applyGlobalResetFromCloud(Number(data.time || Math.floor(Date.now() / 1000)));
+      } catch (e) {
+        alert('⚠️ Het reset-signaal kon niet naar de cloud worden gestuurd. Check de internetverbinding en probeer het opnieuw.');
       }
     }
 
@@ -3217,21 +3638,78 @@
         bcChannel = new BroadcastChannel('dvov_stelz_kantine_live');
         bcChannel.onmessage = (ev) => {
           if (!ev.data) return;
-          if (ev.data.type === 'shotgun_event') handleIncomingShotgunEvent(ev.data);
+          if (ev.data.type) handleCloudPayload(ev.data, null);
           else if (ev.data.id) mergeIncomingPlayerRecord(ev.data);
         };
       }
     } catch (e) {}
 
+    // Eén centrale verwerker voor alles wat via de cloud (ntfy) of een ander tabblad binnenkomt
+    function handleCloudPayload(payload, evt) {
+      if (!payload || !payload.type) return;
+      const evtTimeSec = evt ? Number(evt.time || 0) : 0;
+
+      if (payload.type === 'global_kantine_reset') {
+        applyGlobalResetFromCloud(evtTimeSec || Math.floor(Number(payload.timestamp || Date.now()) / 1000));
+        return;
+      }
+      // Alles van vóór de laatste totale reset negeren
+      if (evtTimeSec && evtTimeSec < kantineResetEpochSec) return;
+
+      if (payload.type === 'player_sync' && payload.player) {
+        mergeIncomingPlayerRecord(payload.player);
+      } else if (payload.type === 'shotgun_event') {
+        // Oude uitdagingen uit de cache niet opnieuw laten afgaan
+        if (Date.now() - Number(payload.timestamp || 0) < 720000) handleIncomingShotgunEvent(payload);
+      } else if (payload.type === 'photo_add' && payload.photo) {
+        mergeIncomingPhoto(payload.photo);
+      } else if (payload.type === 'photo_delete' && payload.photoId) {
+        removePhotoLocally(payload.photoId);
+      } else if (payload.type === 'wheel_add' && payload.task) {
+        mergeIncomingWheelTask(payload.task);
+      } else if (payload.type === 'wheel_delete' && payload.taskId) {
+        removeWheelTaskLocally(payload.taskId);
+      }
+    }
+
+    function handleNtfyEvent(evt) {
+      if (!evt || evt.event !== 'message' || !evt.message) return;
+      let payload = null;
+      try { payload = JSON.parse(evt.message); } catch (e) { return; }
+      handleCloudPayload(payload, evt);
+    }
+
+    async function postToNtfy(payloadObj) {
+      const res = await fetch(NTFY_BASE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify(payloadObj)
+      });
+      if (!res.ok) throw new Error('ntfy ' + res.status);
+      return res;
+    }
+
     async function pushToNtfyRelay(summary) {
+      // ntfy-berichten moeten onder 4 KB blijven, anders worden ze een bijlage en komt de sync niet aan
+      let player = summary;
+      let body = JSON.stringify({ type: 'player_sync', player });
+      const byteLen = (str) => new TextEncoder().encode(str).length;
+      if (byteLen(body) > 3800 && player.photoViewMap) {
+        const keys = Object.keys(player.photoViewMap).slice(-12);
+        const trimmed = {};
+        keys.forEach(k => { trimmed[k] = player.photoViewMap[k]; });
+        player = { ...player, photoViewMap: trimmed };
+        body = JSON.stringify({ type: 'player_sync', player });
+        if (byteLen(body) > 3800) {
+          player = { ...player, photoViewMap: {} };
+          body = JSON.stringify({ type: 'player_sync', player });
+        }
+      }
       try {
         await fetch(NTFY_BASE_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-          body: JSON.stringify({
-            type: 'player_sync',
-            player: summary
-          })
+          body
         });
       } catch (e) {}
     }
@@ -3247,16 +3725,7 @@
           const lines = text.split('\n').filter(Boolean);
           for (const line of lines) {
             try {
-              const evt = JSON.parse(line);
-              if (evt && evt.event === 'message' && evt.message) {
-                const payload = JSON.parse(evt.message);
-                if (payload && payload.type === 'player_sync' && payload.player) {
-                  mergeIncomingPlayerRecord(payload.player);
-                }
-                if (payload && payload.type === 'shotgun_event' && (Date.now() - (payload.timestamp || 0) < 720000)) {
-                  handleIncomingShotgunEvent(payload);
-                }
-              }
+              handleNtfyEvent(JSON.parse(line));
             } catch (innerErr) {}
           }
           updateSyncBadge('Live Verbonden', true);
@@ -3276,16 +3745,7 @@
 
         ntfyEventSource.onmessage = (e) => {
           try {
-            const evt = JSON.parse(e.data);
-            if (evt && evt.event === 'message' && evt.message) {
-              const payload = JSON.parse(evt.message);
-              if (payload && payload.type === 'player_sync' && payload.player) {
-                mergeIncomingPlayerRecord(payload.player);
-              }
-              if (payload && payload.type === 'shotgun_event') {
-                handleIncomingShotgunEvent(payload);
-              }
-            }
+            handleNtfyEvent(JSON.parse(e.data));
           } catch (err) {}
         };
 
@@ -4073,6 +4533,20 @@
       const singlePersonCleanseHours = Math.round(totDrinks * 1.4);
       const peeBreaks = Math.max(0, Math.floor(Number(totalLiters) / 0.42));
 
+      // 📸 Fotomuur & 🎡 Rad statistieken
+      const pickTop = (field) => players.reduce((best, p) => (Number(p[field] || 0) > Number(best ? best[field] || 0 : 0) ? p : best), null);
+      const sumField = (field) => players.reduce((s, p) => s + Number(p[field] || 0), 0);
+      const totalUploaded = sumField('photosUploaded');
+      const totalPhotoViews = sumField('photosViewed');
+      const totalWheelSpins = sumField('wheelSpins');
+      const hoofdPaparazzo = pickTop('photosUploaded');
+      const topGluurder = pickTop('photosViewed');
+      const topSpinner = pickTop('wheelSpins');
+      const mostViewedPhoto = kantinePhotos.reduce((best, ph) => {
+        const v = getPhotoTotalViews(ph.id);
+        return !best || v > best.views ? { photo: ph, views: v } : best;
+      }, null);
+
       container.innerHTML = `
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div class="rounded-2xl p-3.5 bg-gradient-to-br from-rose-600 to-pink-700 text-white shadow-lg border-2 border-rose-300">
@@ -4185,6 +4659,43 @@
           </div>
         </div>
 
+        <div class="bg-white border-2 border-[#C49A47] rounded-2xl p-4 shadow-sm">
+          <h5 class="font-poster text-lg font-extrabold text-[#4A3718] mb-1">📸 Fotomuur & 🎡 Rad van Avontuur</h5>
+          <p class="text-xs text-[#7A5B2B] font-semibold mb-3">Wie legt alles vast, wie gluurt het meest en wie durft het vaakst aan het rad?</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
+            <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-200">
+              <div class="text-indigo-700 font-black uppercase text-[10px]">📸 Foto's in de kantine</div>
+              <div class="font-mono-timer text-xl font-black text-indigo-950 my-0.5">${kantinePhotos.length} op de muur</div>
+              <div class="text-[11px] font-bold text-indigo-900/80">${totalUploaded} keer geüpload door alle spelers</div>
+            </div>
+            <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-200">
+              <div class="text-indigo-700 font-black uppercase text-[10px]">🎥 Hoofd-Paparazzo</div>
+              <div class="font-poster text-lg font-extrabold text-indigo-950 my-0.5 truncate">${hoofdPaparazzo ? escapeHtml(hoofdPaparazzo.name) : 'Nog niemand'}</div>
+              <div class="text-[11px] font-bold text-indigo-900/80">${hoofdPaparazzo ? `${hoofdPaparazzo.photosUploaded} foto's geschoten` : 'Maak de eerste foto!'}</div>
+            </div>
+            <div class="bg-teal-50 p-3 rounded-xl border border-teal-200">
+              <div class="text-teal-700 font-black uppercase text-[10px]">👀 Gluur-Index</div>
+              <div class="font-mono-timer text-xl font-black text-teal-950 my-0.5">${totalPhotoViews}x bekeken</div>
+              <div class="text-[11px] font-bold text-teal-900/80">${topGluurder ? `Grootste gluurder: ${escapeHtml(topGluurder.name)} (${topGluurder.photosViewed}x)` : 'Nog niemand heeft gegluurd'}</div>
+            </div>
+            <div class="bg-teal-50 p-3 rounded-xl border border-teal-200">
+              <div class="text-teal-700 font-black uppercase text-[10px]">🌟 Meest Bekeken Foto</div>
+              <div class="font-poster text-lg font-extrabold text-teal-950 my-0.5 truncate">${mostViewedPhoto && mostViewedPhoto.views > 0 ? `${mostViewedPhoto.views}x 👀` : '-'}</div>
+              <div class="text-[11px] font-bold text-teal-900/80 truncate">${mostViewedPhoto && mostViewedPhoto.views > 0 ? `Gemaakt door ${escapeHtml(mostViewedPhoto.photo.byName)} om ${formatShortTime(mostViewedPhoto.photo.at)}` : 'Bekijk een foto op de muur!'}</div>
+            </div>
+            <div class="bg-pink-50 p-3 rounded-xl border border-pink-200">
+              <div class="text-pink-700 font-black uppercase text-[10px]">🎡 Rad Gedraaid</div>
+              <div class="font-mono-timer text-xl font-black text-pink-950 my-0.5">${totalWheelSpins}x</div>
+              <div class="text-[11px] font-bold text-pink-900/80">${topSpinner ? `Grootste waaghals: ${escapeHtml(topSpinner.name)} (${topSpinner.wheelSpins}x)` : 'Nog niemand durfde'}</div>
+            </div>
+            <div class="bg-pink-50 p-3 rounded-xl border border-pink-200">
+              <div class="text-pink-700 font-black uppercase text-[10px]">✍️ Zelfbedachte Rad-Opdrachten</div>
+              <div class="font-mono-timer text-xl font-black text-pink-950 my-0.5">${customWheelTasks.length} stuks</div>
+              <div class="text-[11px] font-bold text-pink-900/80">${getActiveWheelTasks().length} opdrachten staan in totaal op het rad</div>
+            </div>
+          </div>
+        </div>
+
         <div class="bg-gradient-to-br from-[#4A3718] to-[#2D200C] text-[#FDFBF3] rounded-2xl p-4 border-2 border-[#C49A47]">
           <h5 class="font-poster text-lg font-extrabold text-[#F2CB6B] mb-1">🤪 Volstrekt Nutteloze Kantine-Wetenschap</h5>
           <p class="text-xs text-amber-200/80 font-semibold mb-3">Live berekend over alle ${totDrinks} geklapte drankjes in de DVOV kantine:</p>
@@ -4231,6 +4742,919 @@
     }
 
     // =========================================================================
+    // GEDEELDE HELPERS VOOR FOTOMUUR & RAD
+    // =========================================================================
+    function loadJsonFromStorage(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function ensurePlayerNameForAction(reasonText) {
+      if (myPlayer.name) return true;
+      const entered = prompt(`Vul eerst even je naam in om ${reasonText}:`);
+      if (!entered || !entered.trim()) return false;
+      myPlayer.name = entered.trim().slice(0, 22);
+      const nameInput = document.getElementById('playerNameInput');
+      if (nameInput) nameInput.value = myPlayer.name;
+      savePlayerName();
+      return true;
+    }
+
+    function getAllPlayersIncludingMe() {
+      const map = new Map(allPlayersMap);
+      map.set(myPlayer.id, computeMyPlayerSummary());
+      return Array.from(map.values());
+    }
+
+    let activitySyncTimer = null;
+    function scheduleActivitySync() {
+      if (activitySyncTimer) clearTimeout(activitySyncTimer);
+      activitySyncTimer = setTimeout(() => window.syncMyStateToCloud(), 2500);
+    }
+
+    // =========================================================================
+    // 📸 LIVE KANTINE PAPARAZZI FOTOMUUR (CLOUD-SYNC, EXPORT & BEHEERDER-DELETE)
+    // =========================================================================
+    const PHOTOS_KEY = 'dvov_photos_v1';
+    const DELETED_PHOTOS_KEY = 'dvov_deleted_photos_v1';
+    const MAX_PHOTOS = 80;
+    let kantinePhotos = loadJsonFromStorage(PHOTOS_KEY, []);
+    if (!Array.isArray(kantinePhotos)) kantinePhotos = [];
+    const deletedPhotoIds = new Set(loadJsonFromStorage(DELETED_PHOTOS_KEY, []));
+    let photoViewerIdx = -1;
+
+    function saveKantinePhotos() {
+      try {
+        localStorage.setItem(DELETED_PHOTOS_KEY, JSON.stringify(Array.from(deletedPhotoIds)));
+      } catch (e) {}
+      // Bij een volle opslag eerst de lokale kopieën van de oudste foto's laten vallen
+      for (let attempt = 0; attempt < kantinePhotos.length + 1; attempt++) {
+        try {
+          localStorage.setItem(PHOTOS_KEY, JSON.stringify(kantinePhotos));
+          return;
+        } catch (e) {
+          const oldestWithData = [...kantinePhotos].reverse().find(p => p.dataUrl);
+          if (!oldestWithData) return;
+          delete oldestWithData.dataUrl;
+        }
+      }
+    }
+
+    function setPhotoUploadStatus(text, kind = 'busy') {
+      const el = document.getElementById('photoUploadStatus');
+      if (!el) return;
+      if (!text) {
+        el.classList.add('hidden');
+        return;
+      }
+      el.textContent = text;
+      el.className = 'mb-3 text-xs font-extrabold px-3 py-2 rounded-xl border ' + (
+        kind === 'error' ? 'bg-rose-100 text-rose-900 border-rose-300' :
+        kind === 'ok' ? 'bg-emerald-100 text-emerald-900 border-emerald-300' :
+        'bg-amber-100 text-amber-900 border-amber-300'
+      );
+    }
+
+    // Verkleint elke foto naar max 420px breed (JPEG), zodat hij razendsnel via ntfy.sh naar iedereen gaat
+    function compressImageFile(file) {
+      return new Promise((resolve, reject) => {
+        const objectUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+          const maxW = 420;
+          const maxH = 620;
+          const scale = Math.min(1, maxW / img.naturalWidth, maxH / img.naturalHeight);
+          const w = Math.max(1, Math.round(img.naturalWidth * scale));
+          const h = Math.max(1, Math.round(img.naturalHeight * scale));
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+          URL.revokeObjectURL(objectUrl);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.74);
+          canvas.toBlob(blob => {
+            if (blob) resolve({ blob, dataUrl });
+            else reject(new Error('Kon foto niet omzetten'));
+          }, 'image/jpeg', 0.74);
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(objectUrl);
+          reject(new Error('Kon foto niet lezen'));
+        };
+        img.src = objectUrl;
+      });
+    }
+
+    async function handlePhotoFileSelected(input) {
+      const file = input.files && input.files[0];
+      input.value = '';
+      if (!file) return;
+      if (!ensurePlayerNameForAction('een foto op de fotomuur te zetten')) return;
+
+      try {
+        setPhotoUploadStatus('⏳ Foto verkleinen...');
+        const { blob, dataUrl } = await compressImageFile(file);
+        const photoId = 'ph' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+
+        setPhotoUploadStatus('☁️ Foto live zetten voor de hele kantine...');
+        const uploadRes = await fetch(NTFY_BASE_URL, {
+          method: 'PUT',
+          headers: { 'Filename': `${photoId}.jpg` },
+          body: blob
+        });
+        if (!uploadRes.ok) throw new Error('Upload mislukt (' + uploadRes.status + ')');
+        const uploadData = await uploadRes.json();
+        const url = uploadData && uploadData.attachment && uploadData.attachment.url;
+        if (!url) throw new Error('Geen foto-link terug van de server');
+
+        const photo = { id: photoId, url, byId: myPlayer.id, byName: myPlayer.name, at: Date.now() };
+        addPhotoLocally({ ...photo, dataUrl });
+        await postToNtfy({ type: 'photo_add', photo });
+
+        myActivity.photosUploaded = Number(myActivity.photosUploaded || 0) + 1;
+        saveLocalState();
+        window.syncMyStateToCloud(null, 'zette een nieuwe foto op de 📸 Fotomuur!');
+
+        setPhotoUploadStatus('✅ Foto staat live op de fotomuur!', 'ok');
+        setTimeout(() => setPhotoUploadStatus(''), 3500);
+        playCanOpenSound('stelz');
+        fireConfetti();
+      } catch (e) {
+        setPhotoUploadStatus('❌ Foto uploaden mislukt. Check je internet en probeer het opnieuw.', 'error');
+      }
+    }
+
+    function addPhotoLocally(photo) {
+      if (!photo || !photo.id || deletedPhotoIds.has(photo.id)) return false;
+      if (kantinePhotos.some(p => p.id === photo.id)) return false;
+      kantinePhotos.push(photo);
+      kantinePhotos.sort((a, b) => (b.at || 0) - (a.at || 0));
+      if (kantinePhotos.length > MAX_PHOTOS) kantinePhotos = kantinePhotos.slice(0, MAX_PHOTOS);
+      saveKantinePhotos();
+      renderPhotoWall();
+      return true;
+    }
+
+    function mergeIncomingPhoto(photo) {
+      if (!photo || typeof photo.id !== 'string' || typeof photo.url !== 'string') return;
+      // Alleen foto's accepteren die echt op ntfy.sh staan
+      if (!/^https:\/\/ntfy\.sh\//.test(photo.url)) return;
+      const clean = {
+        id: photo.id.slice(0, 24),
+        url: photo.url,
+        byId: String(photo.byId || ''),
+        byName: String(photo.byName || 'Kantinegast').slice(0, 22),
+        at: Number(photo.at || Date.now())
+      };
+      if (addPhotoLocally(clean)) cachePhotoData(clean.id);
+    }
+
+    // Bewaart een lokale kopie, want ntfy.sh bewaart bijlagen maar een paar uur
+    async function cachePhotoData(photoId) {
+      const photo = kantinePhotos.find(p => p.id === photoId);
+      if (!photo || photo.dataUrl) return;
+      try {
+        const res = await fetch(photo.url);
+        if (!res.ok) return;
+        const blob = await res.blob();
+        const dataUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+        photo.dataUrl = dataUrl;
+        saveKantinePhotos();
+      } catch (e) {}
+    }
+
+    function removePhotoLocally(photoId) {
+      deletedPhotoIds.add(photoId);
+      kantinePhotos = kantinePhotos.filter(p => p.id !== photoId);
+      saveKantinePhotos();
+      const viewer = document.getElementById('photoViewerModal');
+      if (viewer && !viewer.classList.contains('hidden')) closePhotoViewer();
+      renderPhotoWall();
+    }
+
+    async function adminDeletePhoto(photoId) {
+      if (!adminUnlocked) return;
+      if (!confirm('🗑️ Deze foto per direct van ieders scherm verwijderen?')) return;
+      removePhotoLocally(photoId);
+      try {
+        await postToNtfy({ type: 'photo_delete', photoId });
+      } catch (e) {
+        alert('⚠️ Verwijderen is lokaal gelukt, maar het signaal kon niet naar de andere telefoons. Probeer het zo nog eens.');
+      }
+    }
+
+    function getPhotoTotalViews(photoId) {
+      let total = Number((myActivity.photoViewMap || {})[photoId] || 0);
+      allPlayersMap.forEach(p => {
+        if (p.id === myPlayer.id) return;
+        total += Number((p.photoViewMap || {})[photoId] || 0);
+      });
+      return total;
+    }
+
+    function getKantineTotalPhotoViews() {
+      let total = Number(myActivity.photosViewed || 0);
+      allPlayersMap.forEach(p => {
+        if (p.id !== myPlayer.id) total += Number(p.photosViewed || 0);
+      });
+      return total;
+    }
+
+    function renderPhotoWall() {
+      const grid = document.getElementById('photoWallGrid');
+      if (!grid) return;
+
+      if (kantinePhotos.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-8 px-4 bg-white/70 rounded-2xl border-2 border-dashed border-[#C49A47] text-xs sm:text-sm font-bold text-[#7A5B2B]">
+            Nog geen foto's op de muur. Wie wordt de eerste 📸 Kantine Paparazzo?
+          </div>
+        `;
+      } else {
+        grid.innerHTML = kantinePhotos.map(p => `
+          <div class="group relative rounded-2xl overflow-hidden border-2 border-[#C49A47] bg-[#2B1E0B] shadow-md cursor-pointer aspect-[3/4]" onclick="openPhotoViewer('${p.id}')">
+            <img src="${escapeHtml(p.dataUrl || p.url)}" alt="Foto van ${escapeHtml(p.byName)}" loading="lazy" class="w-full h-full object-cover" onerror="this.replaceWith(Object.assign(document.createElement('div'), { className: 'w-full h-full flex items-center justify-center text-center text-[11px] font-bold text-amber-200/80 p-2', textContent: '⌛ Foto niet meer beschikbaar' }))" />
+            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent px-2 pt-6 pb-1.5 text-white">
+              <div class="text-[11px] font-extrabold truncate">📸 ${escapeHtml(p.byName)}</div>
+              <div class="flex items-center justify-between text-[10px] font-bold text-amber-200">
+                <span>${formatShortTime(p.at)}</span>
+                <span>👀 <span data-photo-views="${p.id}">${getPhotoTotalViews(p.id)}</span></span>
+              </div>
+            </div>
+            <div class="absolute top-1.5 right-1.5 flex gap-1">
+              <button onclick="event.stopPropagation(); downloadPhoto('${p.id}')" class="w-8 h-8 rounded-full bg-black/60 text-white text-sm" title="Download foto">📥</button>
+              ${adminUnlocked ? `<button onclick="event.stopPropagation(); adminDeletePhoto('${p.id}')" class="w-8 h-8 rounded-full bg-rose-600 text-white text-sm" title="Beheerder: verwijder foto">🗑️</button>` : ''}
+            </div>
+          </div>
+        `).join('');
+      }
+      updateActivityStatsLines();
+    }
+
+    function openPhotoViewer(photoId) {
+      const idx = kantinePhotos.findIndex(p => p.id === photoId);
+      if (idx < 0) return;
+      photoViewerIdx = idx;
+      const modal = document.getElementById('photoViewerModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      showPhotoInViewer();
+    }
+
+    function showPhotoInViewer() {
+      const photo = kantinePhotos[photoViewerIdx];
+      if (!photo) {
+        closePhotoViewer();
+        return;
+      }
+      registerPhotoView(photo.id);
+      document.getElementById('photoViewerImg').src = photo.dataUrl || photo.url;
+      document.getElementById('photoViewerBy').textContent = `📸 ${photo.byName}`;
+      document.getElementById('photoViewerMeta').textContent =
+        `${formatShortTime(photo.at)} • 👀 ${getPhotoTotalViews(photo.id)}x bekeken door de kantine • foto ${photoViewerIdx + 1} van ${kantinePhotos.length}`;
+    }
+
+    function stepPhotoViewer(direction) {
+      if (kantinePhotos.length === 0) return;
+      photoViewerIdx = (photoViewerIdx + direction + kantinePhotos.length) % kantinePhotos.length;
+      showPhotoInViewer();
+    }
+
+    function closePhotoViewer() {
+      const modal = document.getElementById('photoViewerModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      photoViewerIdx = -1;
+    }
+
+    function registerPhotoView(photoId) {
+      const map = myActivity.photoViewMap || (myActivity.photoViewMap = {});
+      const prev = Number(map[photoId] || 0);
+      delete map[photoId];
+      map[photoId] = prev + 1;
+      myActivity.photosViewed = Number(myActivity.photosViewed || 0) + 1;
+      saveLocalState();
+      updateActivityStatsLines();
+      scheduleActivitySync();
+    }
+
+    function photoFileName(photo) {
+      const d = new Date(photo.at || Date.now());
+      const hhmm = String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0');
+      const safeName = String(photo.byName || 'kantine').replace(/[^a-z0-9]+/gi, '_').slice(0, 20);
+      return `DVOV_Stelz_${hhmm}_${safeName}_${photo.id}.jpg`;
+    }
+
+    async function getPhotoBlob(photo) {
+      const res = await fetch(photo.dataUrl || photo.url);
+      if (!res.ok) throw new Error('Foto niet beschikbaar');
+      return res.blob();
+    }
+
+    function triggerBlobDownload(blob, fileName) {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+      }, 2000);
+    }
+
+    async function downloadPhoto(photoId) {
+      const photo = kantinePhotos.find(p => p.id === photoId);
+      if (!photo) return;
+      try {
+        triggerBlobDownload(await getPhotoBlob(photo), photoFileName(photo));
+      } catch (e) {
+        alert('⌛ Deze foto is niet meer te downloaden (de cloud bewaart foto\'s maar een paar uur).');
+      }
+    }
+
+    function downloadCurrentViewerPhoto() {
+      const photo = kantinePhotos[photoViewerIdx];
+      if (photo) downloadPhoto(photo.id);
+    }
+
+    function adminDeleteCurrentViewerPhoto() {
+      const photo = kantinePhotos[photoViewerIdx];
+      if (photo) adminDeletePhoto(photo.id);
+    }
+
+    async function downloadAllPhotos() {
+      if (!adminUnlocked) return;
+      if (kantinePhotos.length === 0) {
+        alert('Er staan nog geen foto\'s op de fotomuur.');
+        return;
+      }
+      const btn = document.getElementById('btnDownloadAllPhotos');
+      const originalLabel = btn ? btn.textContent : '';
+      if (btn) btn.textContent = '⏳ Foto\'s verzamelen...';
+      let failed = 0;
+
+      try {
+        if (window.JSZip) {
+          const zip = new JSZip();
+          for (const photo of kantinePhotos) {
+            try {
+              zip.file(photoFileName(photo), await getPhotoBlob(photo));
+            } catch (e) {
+              failed++;
+            }
+          }
+          const zipBlob = await zip.generateAsync({ type: 'blob' });
+          triggerBlobDownload(zipBlob, `DVOV_Stelz_Party_Fotos_${kantinePhotos.length - failed}.zip`);
+        } else {
+          // Zonder zip-bibliotheek: één voor één downloaden
+          for (const photo of kantinePhotos) {
+            try {
+              triggerBlobDownload(await getPhotoBlob(photo), photoFileName(photo));
+              await new Promise(r => setTimeout(r, 450));
+            } catch (e) {
+              failed++;
+            }
+          }
+        }
+        if (failed > 0) alert(`📥 Klaar! ${failed} foto('s) waren niet meer beschikbaar in de cloud.`);
+      } finally {
+        if (btn) btn.textContent = originalLabel;
+      }
+    }
+
+    // =========================================================================
+    // 🎡 KANTINE RAD VAN AVONTUUR (CANVAS + LIVE EIGEN OPDRACHTEN)
+    // =========================================================================
+    const DEFAULT_WHEEL_TASKS = [
+      { id: 'd1', text: 'Geef de DJ een high five 🎧' },
+      { id: 'd2', text: '10 sec flamingo-pose op 1 been 🦩' },
+      { id: 'd3', text: 'Proost met iemand van een ander team ⚽' },
+      { id: 'd4', text: 'Haal een schaal bitterballen 🍟' },
+      { id: 'd5', text: 'Zing het volgende refrein luid mee 🎤' },
+      { id: 'd6', text: 'Tactisch watertje drinken 💧' },
+      { id: 'd7', text: 'Maak een groepsfoto voor de Fotomuur 📸' },
+      { id: 'd8', text: 'Por iemand voor een Shotgun 🔫' },
+      { id: 'd9', text: 'Daag iemand uit voor een Ad-Duel ⚡' },
+      { id: 'd10', text: 'Vertel je mooiste DVOV-goal ooit 🥅' },
+      { id: 'd11', text: 'Joker: geef iemand een opdracht 🃏' },
+      { id: 'd12', text: 'Start een polonaise 🚂' },
+      { id: 'd13', text: 'Geef de barman een compliment 👑' },
+      { id: 'd14', text: 'Doe je beste juichdans 🕺' }
+    ];
+    const WHEEL_STATE_KEY = 'dvov_wheel_v1';
+    const WHEEL_COLORS = ['#F4639A', '#F2CB6B', '#4EC3E0', '#10B981', '#F97316', '#A855F7', '#E8742A', '#1D4F9C'];
+
+    const savedWheelState = loadJsonFromStorage(WHEEL_STATE_KEY, {});
+    let customWheelTasks = Array.isArray(savedWheelState.custom) ? savedWheelState.custom : [];
+    const deletedWheelTaskIds = new Set(Array.isArray(savedWheelState.deleted) ? savedWheelState.deleted : []);
+    let wheelSegments = [];
+    let wheelRotation = 0;
+    let wheelSpinning = false;
+    let wheelNeedsRebuild = false;
+
+    function saveWheelState() {
+      try {
+        localStorage.setItem(WHEEL_STATE_KEY, JSON.stringify({
+          custom: customWheelTasks,
+          deleted: Array.from(deletedWheelTaskIds)
+        }));
+      } catch (e) {}
+    }
+
+    function getActiveWheelTasks() {
+      return [...DEFAULT_WHEEL_TASKS, ...customWheelTasks].filter(t => !deletedWheelTaskIds.has(t.id));
+    }
+
+    function buildWheel() {
+      if (wheelSpinning) {
+        wheelNeedsRebuild = true;
+        return;
+      }
+      wheelSegments = getActiveWheelTasks();
+      drawWheel();
+      renderWheelTaskList();
+    }
+
+    function drawWheel() {
+      const canvas = document.getElementById('wheelCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const size = canvas.width;
+      const c = size / 2;
+      const radius = c - 6;
+      ctx.clearRect(0, 0, size, size);
+
+      const n = wheelSegments.length;
+      if (n === 0) {
+        ctx.fillStyle = '#4A3718';
+        ctx.beginPath();
+        ctx.arc(c, c, radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#F2CB6B';
+        ctx.font = '800 26px Montserrat, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Voeg een opdracht toe!', c, c - 110);
+        return;
+      }
+
+      const seg = (Math.PI * 2) / n;
+      const fontSize = n <= 12 ? 22 : Math.max(13, 22 - (n - 12));
+      const textStart = radius - 18;
+      const maxTextWidth = radius - 18 - 92;
+
+      for (let i = 0; i < n; i++) {
+        const start = wheelRotation + i * seg;
+        ctx.beginPath();
+        ctx.moveTo(c, c);
+        ctx.arc(c, c, radius, start, start + seg);
+        ctx.closePath();
+        ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length];
+        // Bij een oneven aantal niet twee dezelfde kleuren naast elkaar
+        if (i === n - 1 && n % WHEEL_COLORS.length === 1) ctx.fillStyle = '#FDFBF3';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(43,30,11,0.55)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(c, c);
+        ctx.rotate(start + seg / 2);
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.font = `800 ${fontSize}px Montserrat, sans-serif`;
+        let label = wheelSegments[i].text;
+        while (label.length > 4 && ctx.measureText(label).width > maxTextWidth) {
+          label = label.slice(0, -2).trimEnd() + '…';
+          label = label.replace(/……$/, '…');
+        }
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = 'rgba(43,30,11,0.85)';
+        ctx.strokeText(label, textStart, 0);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(label, textStart, 0);
+        ctx.restore();
+      }
+
+      ctx.beginPath();
+      ctx.arc(c, c, radius, 0, Math.PI * 2);
+      ctx.lineWidth = 8;
+      ctx.strokeStyle = '#4A3718';
+      ctx.stroke();
+    }
+
+    function wheelSegmentUnderPointer(rotation) {
+      const n = wheelSegments.length;
+      if (n === 0) return -1;
+      const seg = (Math.PI * 2) / n;
+      const twoPi = Math.PI * 2;
+      const pointerAngle = ((-Math.PI / 2 - rotation) % twoPi + twoPi) % twoPi;
+      return Math.floor(pointerAngle / seg) % n;
+    }
+
+    function playWheelTick() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(1900, now);
+        osc.frequency.exponentialRampToValueAtTime(900, now + 0.025);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.035);
+      } catch (e) {}
+    }
+
+    function spinKantineWheel() {
+      if (wheelSpinning) return;
+      const n = wheelSegments.length;
+      if (n === 0) return;
+      if (!ensurePlayerNameForAction('aan het rad te draaien')) return;
+      getAudioContext();
+
+      const twoPi = Math.PI * 2;
+      const seg = twoPi / n;
+      const winnerIdx = Math.floor(Math.random() * n);
+      const jitter = (Math.random() - 0.5) * seg * 0.7;
+      const desired = ((-Math.PI / 2 - (winnerIdx + 0.5) * seg + jitter) % twoPi + twoPi) % twoPi;
+      const current = ((wheelRotation % twoPi) + twoPi) % twoPi;
+      let delta = desired - current;
+      if (delta < 0) delta += twoPi;
+      const startRotation = wheelRotation;
+      const targetRotation = wheelRotation + delta + twoPi * (5 + Math.floor(Math.random() * 3));
+      const durationMs = 4800;
+      const startTime = performance.now();
+      let lastSegment = wheelSegmentUnderPointer(startRotation);
+
+      wheelSpinning = true;
+      const btn = document.getElementById('btnSpinWheel');
+      if (btn) btn.disabled = true;
+      document.getElementById('wheelResultText').textContent = '🎡 Het rad draait...';
+
+      function frame(now) {
+        const t = Math.min(1, (now - startTime) / durationMs);
+        const eased = 1 - Math.pow(1 - t, 4);
+        wheelRotation = startRotation + (targetRotation - startRotation) * eased;
+        drawWheel();
+        const segNow = wheelSegmentUnderPointer(wheelRotation);
+        if (segNow !== lastSegment) {
+          lastSegment = segNow;
+          playWheelTick();
+        }
+        if (t < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          wheelRotation = ((targetRotation % twoPi) + twoPi) % twoPi;
+          wheelSpinning = false;
+          if (btn) btn.disabled = false;
+          onWheelLanded(wheelSegments[winnerIdx]);
+          if (wheelNeedsRebuild) {
+            wheelNeedsRebuild = false;
+            buildWheel();
+          }
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+
+    function onWheelLanded(task) {
+      if (!task) return;
+      document.getElementById('wheelResultText').textContent = task.text;
+      showInfoToast('🎡', 'HET RAD HEEFT GESPROKEN!', task.text);
+      playPartyHorn(0);
+      fireConfetti();
+      myActivity.wheelSpins = Number(myActivity.wheelSpins || 0) + 1;
+      saveLocalState();
+      updateActivityStatsLines();
+      window.syncMyStateToCloud(null, `draaide aan het 🎡 Rad: "${task.text}"`);
+    }
+
+    async function addCustomWheelTask() {
+      const input = document.getElementById('wheelCustomTaskInput');
+      const text = (input.value || '').trim().replace(/\s+/g, ' ').slice(0, 40);
+      if (!text) {
+        input.focus();
+        return;
+      }
+      if (getActiveWheelTasks().some(t => t.text.toLowerCase() === text.toLowerCase())) {
+        alert('Die opdracht staat al op het rad!');
+        return;
+      }
+      if (!ensurePlayerNameForAction('een opdracht aan het rad toe te voegen')) return;
+
+      const task = {
+        id: 'w' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+        text,
+        byId: myPlayer.id,
+        byName: myPlayer.name,
+        at: Date.now()
+      };
+      input.value = '';
+      mergeIncomingWheelTask(task);
+      myActivity.wheelTasksAdded = Number(myActivity.wheelTasksAdded || 0) + 1;
+      saveLocalState();
+      showInfoToast('✍️', 'NIEUWE RAD-OPDRACHT!', `"${text}" staat nu op het rad van iedereen.`);
+      playCanOpenSound('stelz');
+      window.syncMyStateToCloud(null, `voegde een opdracht toe aan het 🎡 Rad: "${text}"`);
+      try {
+        await postToNtfy({ type: 'wheel_add', task });
+      } catch (e) {
+        alert('⚠️ De opdracht staat op jouw rad, maar kon niet naar de andere telefoons. Check je internet.');
+      }
+    }
+
+    function mergeIncomingWheelTask(task) {
+      if (!task || typeof task.id !== 'string' || typeof task.text !== 'string') return;
+      if (deletedWheelTaskIds.has(task.id) || customWheelTasks.some(t => t.id === task.id)) return;
+      customWheelTasks.push({
+        id: task.id.slice(0, 24),
+        text: task.text.slice(0, 40),
+        byId: String(task.byId || ''),
+        byName: String(task.byName || 'Kantinegast').slice(0, 22),
+        at: Number(task.at || Date.now())
+      });
+      saveWheelState();
+      buildWheel();
+    }
+
+    function removeWheelTaskLocally(taskId) {
+      deletedWheelTaskIds.add(taskId);
+      customWheelTasks = customWheelTasks.filter(t => t.id !== taskId);
+      saveWheelState();
+      buildWheel();
+    }
+
+    async function adminDeleteWheelTask(taskId) {
+      if (!adminUnlocked) return;
+      const task = getActiveWheelTasks().find(t => t.id === taskId);
+      if (!task || !confirm(`🗑️ "${task.text}" van het rad van iedereen verwijderen?`)) return;
+      removeWheelTaskLocally(taskId);
+      try {
+        await postToNtfy({ type: 'wheel_delete', taskId });
+      } catch (e) {}
+    }
+
+    function renderWheelTaskList() {
+      const list = document.getElementById('wheelTaskList');
+      if (!list) return;
+      const tasks = getActiveWheelTasks();
+      document.getElementById('wheelTaskCount').textContent = tasks.length;
+      list.innerHTML = tasks.map(t => `
+        <div class="flex items-center justify-between gap-2 bg-black/25 rounded-xl px-2.5 py-1.5 text-xs">
+          <div class="min-w-0">
+            <div class="font-extrabold text-white truncate">${escapeHtml(t.text)}</div>
+            <div class="text-[10px] font-bold text-amber-300/70">${t.byName ? `✍️ door ${escapeHtml(t.byName)}` : '🎡 standaard opdracht'}</div>
+          </div>
+          ${adminUnlocked ? `<button onclick="adminDeleteWheelTask('${t.id}')" class="px-2 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-extrabold shrink-0">🗑️</button>` : ''}
+        </div>
+      `).join('');
+      updateActivityStatsLines();
+    }
+
+    function updateActivityStatsLines() {
+      const photoLine = document.getElementById('photoWallStatsLine');
+      if (photoLine) {
+        photoLine.textContent = `${kantinePhotos.length} foto's op de muur • 👀 ${getKantineTotalPhotoViews()}x bekeken • jij: ${myActivity.photosUploaded || 0} geüpload`;
+      }
+      document.querySelectorAll('[data-photo-views]').forEach(el => {
+        el.textContent = getPhotoTotalViews(el.getAttribute('data-photo-views'));
+      });
+
+      const wheelLine = document.getElementById('wheelStatsLine');
+      if (wheelLine) {
+        let spins = Number(myActivity.wheelSpins || 0);
+        allPlayersMap.forEach(p => {
+          if (p.id !== myPlayer.id) spins += Number(p.wheelSpins || 0);
+        });
+        wheelLine.textContent = `${spins}x gedraaid in de kantine • ${customWheelTasks.length} eigen opdrachten • jij: ${myActivity.wheelSpins || 0}x`;
+      }
+    }
+
+    // =========================================================================
+    // 🧭 UITLEG: RONDLEIDING LANGS ALLE FEATURES VAN DE APP
+    // =========================================================================
+    const TOUR_STEPS = [
+      {
+        targetId: 'dvovLogoWrap',
+        emoji: '👋',
+        title: 'Welkom bij de DVOV Stëlz Party!',
+        text: 'Dit is het live kantine-scorebord voor vanavond. In deze uitleg lopen we langs álle functies van de app. Je kunt de uitleg altijd opnieuw openen via ❓ Uitleg in de bovenbalk.'
+      },
+      {
+        targetId: 'heroCard',
+        emoji: '⏳',
+        title: 'Countdown & Ronde #1',
+        text: 'Bovenaan tikt de klok af naar de aftrap om 19:30. Dan start ronde #1: die vink je hier direct af. De balk eronder toont hoeveel rondes er al bereikt zijn, hoeveel jij geklapt hebt, jouw mix (🥫/🍺/🍷) en wanneer de volgende ronde begint.'
+      },
+      {
+        targetId: 'playerNameInput',
+        emoji: '🙋‍♂️',
+        title: 'Jouw profiel',
+        text: 'Vul je naam, DVOV-team, geslacht en gewicht in en tik op 💾 Opslaan. Dan sta je live op het scorebord. Gewicht en geslacht worden alleen gebruikt voor de promillage-schatting.'
+      },
+      {
+        targetId: 'bacStateTitle',
+        emoji: '🧪',
+        title: 'Promillage & 10 kantine-fases',
+        text: 'Op basis van je drankjes, gewicht en geslacht schat de app je promillage en in welke van de 10 fases je zit, van Kantine-Nuchter tot Buitenaards Kantine-Wezen. Het daalt live met 0,15‰ per uur en je ziet wanneer je weer nuchter bent. Het blijft een grove schatting, geen blaastest!'
+      },
+      {
+        targetId: 'leaderboardList',
+        emoji: '🏆',
+        title: 'Live scorebord',
+        text: 'Iedereen ziet dezelfde ranglijst: meeste drankjes bovenaan, bij gelijkspel wie het strakst op schema zit. Per speler zie je team, promillage, badges en tijdscore. Tik op een speler voor de stempelkaart met alle rondes. 🔄 Sync Nu haalt de laatste stand op, 🔼 Inklappen maakt de lijst kleiner.'
+      },
+      {
+        targetId: 'liveTickerBar',
+        emoji: '🎺',
+        title: 'Live bar feed & kantinetotaal',
+        text: 'Hier lees je wat er net gebeurde: wie wat klapte, wie een badge kreeg, wie een foto plaatste of aan het rad draaide. Rechts staat hoeveel Stëlz, bier en wijn de hele kantine al op heeft.'
+      },
+      {
+        targetId: 'myBadgesBar',
+        emoji: '🎮',
+        title: 'Badges & Xbox achievements',
+        text: 'Badges verdien je automatisch (Hattrick, Sniper, Diesel, Alchemist, Eindbaas, Fotomuur- en Rad-badges en meer) of je krijgt ze uitgedeeld. Bij elke nieuwe badge schuift er bovenin een Xbox 360-achievement in beeld, mét het echte Xbox-geluid.'
+      },
+      {
+        targetId: 'btnOpenBadges',
+        emoji: '🎪',
+        title: 'Challenges uitdelen',
+        text: 'Via 🎖️ Badges (of +Badge naast een speler) deel je kantine-challenges uit: DJ-verzoekje, bitterballen gehaald, polonaise gestart, glas omgestoten... Je kunt ook zelf een badge verzinnen met eigen emoji en titel. In hetzelfde scherm zie je alle automatische achievements en hoe je ze haalt.'
+      },
+      {
+        targetId: 'btnOpenStats',
+        emoji: '📊',
+        title: 'Statistieken',
+        text: '📊 Stats toont de dronkenste speler, de grootverbruiker, de strakste en de traagste drinker, mannen vs. vrouwen, de DVOV elftal-ranglijst, Fotomuur- en Rad-cijfers (Hoofd-Paparazzo, gluur-index, aantal keer gedraaid) en nutteloze kantine-wetenschap zoals de blikjestoren en de bitterballen-index.'
+      },
+      {
+        targetId: 'photoWallSection',
+        emoji: '📸',
+        title: 'Kantine Paparazzi Fotomuur',
+        text: 'Maak een foto of kies er een uit je galerij. De app verkleint hem automatisch en zet hem binnen een paar seconden op ieders telefoon. Tik op een foto om hem groot te bekijken, door te bladeren of te downloaden. Elke foto telt hoe vaak de kantine hem bekeken heeft.'
+      },
+      {
+        targetId: 'wheelSection',
+        emoji: '🎡',
+        title: 'Kantine Rad van Avontuur',
+        text: 'Tik op DRAAI! en het rad kiest een opdracht voor je. Onder het rad voeg je zelf opdrachten toe; die verschijnen direct op het rad van iedereen. Onder 📜 Alle opdrachten staat de complete lijst, met wie welke opdracht bedacht.'
+      },
+      {
+        targetId: 'drinksHeader',
+        emoji: '🥫',
+        title: '20 rondes, elke 12 minuten',
+        text: 'Elke 12 minuten start een nieuwe ronde. Kies per kaart 🥫 Stëlz, 🍺 Bier of 🍷 Wijn, of zet alles tegelijk via "Alles op". Vink af zodra je glas leeg is: je tijd wordt vastgelegd met voorsprong of achterstand. Ben je te laat, dan loopt de klok in de min. 🔄 Reset Vinkjes zet jouw kaart terug op nul.'
+      },
+      {
+        targetId: 'canCard-1',
+        emoji: '😏',
+        title: 'Geheime tijd-badges',
+        text: 'Let op de klok bij het afvinken: staat er 69 of 67 naast elkaar in de tijd of timer, dan krijg je de 😏 69- of 🤪 6-7-badge. Binnen 5 seconden van de streeftijd is 🎯 Sniper, meer dan een minuut te vroeg is ⚡ Valse Start, meer dan 10 minuten te laat is 🐢 De Diesel.'
+      },
+      {
+        targetId: 'btnAddExtraCan',
+        emoji: '➕',
+        title: 'Verlenging',
+        text: 'Na ronde 20 nog niet klaar? Voeg extra rondes toe (+12 min per stuk) en verdien de Verlenging-, 21+- en Nachtbraker-badges. De laatste extra ronde kun je ook weer weghalen.'
+      },
+      {
+        targetId: 'floatingShotgunBtn',
+        cardOnTop: true,
+        emoji: '🔫',
+        title: 'Shotgun porren',
+        text: 'Rechtsonder daag je elke 12 minuten iemand uit voor een shotgun. Diegene krijgt direct een pop-up (en een melding als meldingen aan staan). Zegt hij/zij ja, dan krijgen jullie allebei Shotgun-badges. Weigert diegene, dan volgt de 🐣 Kleine Speler-badge en mag jij meteen iemand anders porren.'
+      },
+      {
+        targetId: 'btnOpenAdDuel',
+        cardOnTop: true,
+        emoji: '⚡',
+        title: '1v1 Ad-Duel',
+        text: 'Leg de telefoon plat tussen twee spelers, kies wie boven en wie onder zit, en na 3-2-1 drinken jullie zo snel mogelijk. Wie als eerste op zijn eigen helft slaat, wint. Badges: Ad-Koning, Menselijke Trechter (onder 3,5 s), Fotofinish (minder dan 0,3 s verschil) en Slokdarm Kramp voor de verliezer.'
+      },
+      {
+        targetId: 'btnOpenShare',
+        emoji: '📲',
+        title: 'Deel de app',
+        text: 'Via 📲 Deel laat je een QR-code zien of stuur je de link in de groepsapp, zodat iedereen op hetzelfde scorebord meedoet.'
+      },
+      {
+        targetId: 'btnAdminToggle',
+        cardOnTop: false,
+        openTopMenu: true,
+        emoji: '🔊',
+        title: 'Geluid & Beheer',
+        text: 'In de bovenbalk (op je telefoon onder ⚙️ Opties) zet je het geluid aan of uit. 🔒 Beheer is alleen voor de organisatie: met de code kun je spelers, foto\'s en rad-opdrachten verwijderen, alle foto\'s in één zip downloaden en met 💣 Totale Reset alles op alle telefoons wissen. Proost, en drink met mate! 🍻'
+      }
+    ];
+
+    const TOUR_DONE_KEY = 'dvov_tour_done_v2';
+    let currentTourIdx = 0;
+    let previousHighlightedEl = null;
+
+    function clearTourHighlight() {
+      if (previousHighlightedEl) {
+        previousHighlightedEl.classList.remove('ring-4', 'ring-pink-500', 'ring-offset-4');
+        previousHighlightedEl = null;
+      }
+    }
+
+    function startOnboardingTour(manualClick = false) {
+      try {
+        if (!manualClick && localStorage.getItem(TOUR_DONE_KEY) === '1') return;
+      } catch (e) {}
+      currentTourIdx = 0;
+      document.getElementById('tourPopupCard').classList.remove('hidden');
+      renderTourStep();
+    }
+
+    function renderTourStep() {
+      const step = TOUR_STEPS[currentTourIdx];
+      if (!step) return;
+      clearTourHighlight();
+
+      document.getElementById('tourStepBadge').textContent = `UITLEG • STAP ${currentTourIdx + 1} VAN ${TOUR_STEPS.length}`;
+      document.getElementById('tourStepEmoji').textContent = step.emoji;
+      document.getElementById('tourStepTitle').textContent = step.title;
+      document.getElementById('tourStepText').textContent = step.text;
+
+      const prevBtn = document.getElementById('tourPrevBtn');
+      const nextBtn = document.getElementById('tourNextBtn');
+      prevBtn.style.visibility = currentTourIdx === 0 ? 'hidden' : 'visible';
+      nextBtn.textContent = currentTourIdx === TOUR_STEPS.length - 1 ? '🍻 Begrepen!' : 'Volgende →';
+
+      document.getElementById('tourDotsWrap').innerHTML = TOUR_STEPS.map((_, idx) =>
+        `<span class="h-2 rounded-full transition-all ${idx === currentTourIdx ? 'bg-[#F2CB6B] w-4' : 'bg-white/25 w-2'}"></span>`
+      ).join('');
+
+      // Kaart bovenin zetten als het uitgelichte element rechtsonder zit
+      const card = document.getElementById('tourPopupCard');
+      if (step.cardOnTop) {
+        card.style.top = '4.5rem';
+        card.style.bottom = 'auto';
+      } else {
+        card.style.top = '';
+        card.style.bottom = '';
+      }
+
+      if (step.openTopMenu && window.innerWidth < 640) {
+        document.getElementById('mobileTopMenu').classList.remove('hidden');
+      }
+
+      const targetEl = document.getElementById(step.targetId);
+      if (targetEl) {
+        try {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: step.openTopMenu ? 'start' : 'center' });
+          targetEl.classList.add('ring-4', 'ring-pink-500', 'ring-offset-4');
+          previousHighlightedEl = targetEl;
+        } catch (e) {}
+      }
+    }
+
+    function nextTourStep() {
+      playCanOpenSound('stelz');
+      if (currentTourIdx < TOUR_STEPS.length - 1) {
+        currentTourIdx++;
+        renderTourStep();
+      } else {
+        endOnboardingTour();
+        fireConfetti();
+      }
+    }
+
+    function prevTourStep() {
+      if (currentTourIdx > 0) {
+        currentTourIdx--;
+        renderTourStep();
+      }
+    }
+
+    function endOnboardingTour() {
+      clearTourHighlight();
+      try { localStorage.setItem(TOUR_DONE_KEY, '1'); } catch (e) {}
+      document.getElementById('tourPopupCard').classList.add('hidden');
+    }
+
+    // =========================================================================
     // INITIALIZE APP & START CLOUD STREAM
     // =========================================================================
     if (myPlayer.name) {
@@ -4252,6 +5676,14 @@
     buildCansGrid();
     tick();
     setInterval(tick, 200);
+
+    renderPhotoWall();
+    buildWheel();
+    applyAdminUI();
+    setInterval(updateActivityStatsLines, 3000);
+    kantinePhotos.filter(p => !p.dataUrl).forEach(p => cachePhotoData(p.id));
+    // Uitleg start automatisch de eerste keer dat iemand de pagina opent
+    setTimeout(() => startOnboardingTour(false), 900);
 
     connectNtfyRealtimeStream();
     forceCloudPull(false);
