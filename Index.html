@@ -1,296 +1,71 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DVOV Stëlz Party - 20 Blikjes Countdown</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --dvov-gold: #B68D40;
-            --dvov-gold-light: #D6AD60;
-            --sand-bg: #FDFBF7;
-            --sea-blue: #4EBBD3;
-            --flamingo-pink: #F564A9;
-            --palm-green: #4C8C2B;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--sand-bg);
-            background-image: 
-                radial-gradient(circle at 10% 10%, rgba(76, 140, 43, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 90% 15%, rgba(245, 100, 169, 0.08) 0%, transparent 40%),
-                linear-gradient(180deg, #FDFBF7 0%, #F7EFE1 65%, #4EBBD3 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .font-tropical {
-            font-family: 'Fredoka', sans-serif;
-        }
-
-        /* Poster 3D Text Effect */
-        .stelz-title {
-            color: #C29B53;
-            text-shadow: 3px 4px 0px #6E5223;
-            letter-spacing: 0.04em;
-        }
-
-        .party-banner {
-            background-color: #DFBC94;
-            border: 5px solid #B5893D;
-            box-shadow: inset 0 0 0 3px #936B27, 0 10px 20px -5px rgba(0, 0, 0, 0.15);
-            position: relative;
-        }
-
-        /* Bamboo corners decoration */
-        .party-banner::before,
-        .party-banner::after {
-            content: '';
-            position: absolute;
-            width: 14px;
-            height: 115%;
-            background: linear-gradient(90deg, #9C732B, #D3A858, #87601F);
-            top: -7.5%;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        .party-banner::before { left: -10px; }
-        .party-banner::after { right: -10px; }
-
-        /* Wood sign style */
-        .wood-sign {
-            background: linear-gradient(135deg, #DFBE86 0%, #C69C5A 100%);
-            border: 2px solid #8E6529;
-            box-shadow: 0 4px 0 #78521B;
-        }
-
-        /* Animations */
-        @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-6px) rotate(2deg); }
-        }
-        .animate-float {
-            animation: floatSlow 4s ease-in-out infinite;
-        }
-
-        @keyframes popCelebrate {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-        }
-        .can-active-pulse {
-            animation: popCelebrate 1.4s ease-in-out infinite;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #F4EBD9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #C29B53;
-            border-radius: 9999px;
-        }
-    </style>
-</head>
-<body class="text-stone-800 relative pb-20 selection:bg-pink-400 selection:text-white">
-
-    <!-- Top Tropical Leaves SVG Overlay -->
-    <div class="pointer-events-none fixed top-0 left-0 w-full flex justify-between z-0 opacity-90">
-        <!-- Left Palm Frond -->
-        <svg class="w-40 sm:w-64 md:w-80 -mt-4 -ml-4 text-[#4C8C2B]" viewBox="0 0 200 200" fill="currentColor">
-            <path d="M0,0 Q80,20 160,90 Q100,60 40,65 Q110,95 140,150 Q75,110 20,115 Q70,150 85,195 Q35,155 0,150 Z" opacity="0.85"/>
-            <path d="M0,0 Q110,5 190,55 Q120,35 60,40 Q135,65 170,115 Q95,80 30,85 Z" fill="#68A843" opacity="0.7"/>
-        </svg>
-        <!-- Right Palm Frond -->
-        <svg class="w-40 sm:w-64 md:w-80 -mt-4 -mr-4 text-[#4C8C2B] transform -scale-x-100" viewBox="0 0 200 200" fill="currentColor">
-            <path d="M0,0 Q80,20 160,90 Q100,60 40,65 Q110,95 140,150 Q75,110 20,115 Q70,150 85,195 Q35,155 0,150 Z" opacity="0.85"/>
-            <path d="M0,0 Q110,5 190,55 Q120,35 60,40 Q135,65 170,115 Q95,80 30,85 Z" fill="#68A843" opacity="0.7"/>
-        </svg>
-    </div>
-
-    <!-- Main Container -->
-    <main class="relative z-10 max-w-4xl mx-auto px-4 pt-6 sm:pt-10">
-
-        <!-- Header Section matching the flyer -->
-        <header class="text-center relative mb-8">
-            <!-- DVOV Shield Badge -->
-            <div class="inline-flex items-center gap-2 bg-[#B68D40] text-white px-4 py-1.5 rounded-full border-2 border-[#433316] shadow-md mb-3 transform -rotate-1">
-                <span class="text-lg">⚽</span>
-                <span class="font-tropical font-bold tracking-wider text-sm sm:text-base">DVOV PRESENTEERT</span>
-                <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full font-semibold">Sinds 1932</span>
-            </div>
-
-            <!-- STËLZ Title -->
-            <div class="relative flex justify-center items-center">
-                <h1 class="font-tropical font-bold text-6xl sm:text-7xl md:text-8xl stelz-title tracking-wide select-none">
-                    STËLZ
-                </h1>
-            </div>
-
-            <!-- Bamboo PARTY Banner -->
-            <div class="max-w-xs sm:max-w-md mx-auto mt-2 mb-5 party-banner rounded-xl py-2.5 px-6 transform rotate-1">
-                <span class="font-tropical font-bold text-3xl sm:text-5xl text-[#F7EFE1] tracking-widest drop-shadow-[0_3px_2px_rgba(110,82,35,0.8)]">
-                    PARTY
-                </span>
-            </div>
-
-            <!-- Flyer Info Pills (Wood Signs & Flamingo vibe) -->
-            <div class="flex flex-wrap justify-center items-center gap-2 sm:gap-3 text-xs sm:text-sm font-bold text-[#4A3210]">
-                <span class="wood-sign px-3.5 py-1.5 rounded-lg flex items-center gap-1.5">
-                    📅 Vrijdag 2 okt • 19:30 - 23:00
-                </span>
-                <span class="wood-sign px-3.5 py-1.5 rounded-lg flex items-center gap-1.5">
-                    📍 DVOV Kantine
-                </span>
-                <span class="wood-sign px-3.5 py-1.5 rounded-lg flex items-center gap-1.5">
-                    🎧 Met DJ
-                </span>
-                <span class="bg-[#F564A9] text-white border-2 border-[#B93774] shadow-[0_4px_0_#9E285F] px-3.5 py-1.5 rounded-lg flex items-center gap-1.5">
-                    🦩 NIX18
-                </span>
-            </div>
-        </header>
-
-        <!-- Control Bar (Demo / Simulation Switcher + Audio Test) -->
-        <section class="mb-5 bg-white/85 backdrop-blur-md border-2 border-[#DFBC94] rounded-2xl p-3.5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm">
-            <div class="flex items-center gap-2.5">
-                <span id="status-dot" class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
-                <div>
-                    <span class="font-bold text-stone-700" id="mode-label">Live Aftellen naar:</span>
-                    <span class="text-stone-600 ml-1 font-medium" id="target-time-display">Vrijdag 2 okt 19:30:00</span>
-                </div>
-            </div>
-
-            <div class="flex flex-wrap items-center justify-center gap-2">
-                <button id="btn-live" onclick="setSimulationMode('live')" class="text-xs font-bold px-3 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white transition cursor-pointer shadow-sm">
-                    🎯 Echt schema: Vandaag 19:30
-                </button>
-                <button id="btn-demo-start" onclick="setSimulationMode('starting_soon')" class="text-xs font-bold px-3 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 transition cursor-pointer">
-                    ⚡ Demo: Start over 10 sec
-                </button>
-                <button id="btn-demo-mid" onclick="setSimulationMode('mid_party')" class="text-xs font-bold px-3 py-2 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-900 border border-pink-300 transition cursor-pointer">
-                    🦩 Demo: Midden in het feest
-                </button>
-                <button id="btn-test-sound" onclick="playCanOpenAndHornCombo('stelz')" class="text-xs font-bold px-3 py-2 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 transition cursor-pointer">
-                    🔊 Test Blikje + Toeter
-                </button>
-                <button id="btn-reset-checks" onclick="resetAllCheckedCans()" class="text-xs font-bold px-3 py-2 rounded-xl bg-stone-100 hover:bg-rose-100 text-stone-700 hover:text-rose-800 border border-stone-300 transition cursor-pointer">
-                    🔄 Reset mijn kaart
-                </button>
-            </div>
-        </section>
-
-        <!-- SPELERSPROFIEL & LIVE KANTINE LEADERBOARD SECTIE -->
-        <section id="leaderboard-section" class="mb-8 rounded-3xl border-4 border-[#B68D40] bg-white/95 backdrop-blur-md shadow-xl overflow-hidden transition-all duration-300">
-            <!-- Top Player Bar -->
-            <div class="bg-gradient-to-r from-[#6E5223] via-[#8E6529] to-[#B68D40] text-white p-4 sm:px-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 rounded-2xl bg-[#FFE380] text-[#6E5223] flex items-center justify-center text-2xl shadow-md shrink-0 font-bold">
-                        🏆
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <h3 class="font-tropical text-xl sm:text-2xl font-bold tracking-wide text-white">
-                                LIVE DVOV KANTINE SCOREBORD
-                            </h3>
-                            <span id="cloud-sync-badge" class="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-black/30 text-emerald-300 border border-white/15">
-                                <span id="cloud-sync-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                                <span id="cloud-sync-text">Verbinden...</span>
-                            </span>
+<!-- ... existing code ... -->
+                    <!-- Player Name Input Form -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-black/25 p-2 rounded-2xl border border-white/15">
+                        <div class="flex items-center gap-2 bg-white rounded-xl px-3 py-1.5 flex-1">
+                            <span class="text-base">🙋‍♂️</span>
+                            <input
+                                id="player-name-input"
+                                type="text"
+                                maxlength="24"
+                                placeholder="Jouw naam / bijnaam..."
+                                class="w-full sm:w-44 bg-transparent text-stone-800 font-bold text-sm focus:outline-none"
+                                onkeydown="if(event.key==='Enter') savePlayerNameFromInput()"
+                            />
                         </div>
-                        <p class="text-xs sm:text-sm text-amber-100 font-medium">
-                            Vul je naam in en doe live mee! Wie tikt de 20 aan met de scherpste tijd?
-                        </p>
+                        <button
+                            onclick="savePlayerNameFromInput()"
+                            class="bg-[#F564A9] hover:bg-[#e04890] active:scale-95 text-white font-tropical font-bold text-xs sm:text-sm px-4 py-2 rounded-xl shadow cursor-pointer transition shrink-0"
+                        >
+                            💾 Opslaan & Sync
+                        </button>
+                        <button
+                            onclick="openShareModal()"
+                            class="bg-[#FFE380] hover:bg-amber-300 active:scale-95 text-[#6E5223] font-tropical font-bold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow cursor-pointer transition shrink-0 flex items-center justify-center gap-1"
+                            title="Laat vrienden in de kantine jouw QR-code scannen of stuur via WhatsApp"
+                        >
+                            <span>📲</span><span>QR / Deel</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Player Name Input Form -->
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-black/25 p-2 rounded-2xl border border-white/15">
-                    <div class="flex items-center gap-2 bg-white rounded-xl px-3 py-1.5 flex-1">
-                        <span class="text-base">🙋‍♂️</span>
-                        <input
-                            id="player-name-input"
-                            type="text"
-                            maxlength="24"
-                            placeholder="Jouw naam / bijnaam..."
-                            class="w-full sm:w-44 bg-transparent text-stone-800 font-bold text-sm focus:outline-none"
-                            onkeydown="if(event.key==='Enter') savePlayerNameFromInput()"
-                        />
-                    </div>
-                    <button
-                        onclick="savePlayerNameFromInput()"
-                        class="bg-[#F564A9] hover:bg-[#e04890] active:scale-95 text-white font-tropical font-bold text-xs sm:text-sm px-4 py-2 rounded-xl shadow cursor-pointer transition shrink-0"
-                    >
-                        💾 Opslaan & Sync
-                    </button>
-                </div>
-            </div>
-
-            <!-- Live Kantine Ticker / Feed -->
-            <div id="live-ticker-bar" class="bg-amber-50/90 border-b border-[#DFBC94] px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3 text-xs sm:text-sm">
-                <div class="flex items-center gap-2 overflow-hidden">
-                    <span class="bg-[#F564A9] text-white font-extrabold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md shrink-0">
-                        🎺 LIVE BAR FEED
-                    </span>
-                    <span id="live-ticker-text" class="font-bold text-stone-700 truncate">
-                        Welkom in de DVOV Kantine! Vul je naam in om op het live scorebord te verschijnen!
-                    </span>
-                </div>
-                <div class="flex items-center gap-2 shrink-0">
-                    <button
-                        id="btn-tv-mode"
-                        onclick="toggleTvMode()"
-                        class="text-xs font-bold px-2.5 py-1 rounded-lg bg-amber-200/70 hover:bg-amber-300/80 text-[#6E5223] transition cursor-pointer"
-                        title="Vergroot het scorebord voor op een groot scherm in de kantine"
-                    >
-                        📺 TV Modus
-                    </button>
-                    <button
-                        id="btn-toggle-leaderboard"
-                        onclick="toggleLeaderboardCollapse()"
-                        class="text-xs font-bold px-2.5 py-1 rounded-lg bg-stone-200/80 hover:bg-stone-300 text-stone-700 transition cursor-pointer"
-                    >
-                        🔼 Inklappen
-                    </button>
-                </div>
-            </div>
-
-            <!-- Leaderboard Content Body -->
-            <div id="leaderboard-body" class="p-4 sm:p-6">
-                <!-- Summary stats bar -->
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-stone-200 text-xs sm:text-sm">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <span class="font-extrabold text-stone-700">👥 Deelnemers in de kantine:</span>
-                        <span id="leaderboard-player-count" class="bg-amber-100 text-amber-900 font-bold px-2.5 py-0.5 rounded-full border border-amber-300">
-                            1 speler
+                <!-- Live Kantine Ticker / Feed -->
+                <div id="live-ticker-bar" class="bg-amber-50/90 border-b border-[#DFBC94] px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3 text-xs sm:text-sm">
+                    <div class="flex items-center gap-2 overflow-hidden">
+                        <span class="bg-[#F564A9] text-white font-extrabold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md shrink-0">
+                            🎺 LIVE BAR FEED
                         </span>
-                        <span class="text-stone-500 hidden sm:inline">• Klik op een speler om diens 20-drankjes kaart te bekijken!</span>
-                    </div>
-                    <div class="flex items-center gap-3 font-bold text-xs text-stone-600">
-                        <span id="kantine-total-drinks" class="bg-emerald-100 text-emerald-900 px-2.5 py-0.5 rounded-full border border-emerald-300">
-                            🍻 Totaal geklapt: 0
-                        </span>
-                        <span id="kantine-total-mix" class="bg-stone-100 text-stone-800 px-2.5 py-0.5 rounded-full border border-stone-300">
-                            🥫 0 • 🍺 0 • 🍷 0
+                        <span id="live-ticker-text" class="font-bold text-stone-700 truncate">
+                            Welkom in de DVOV Kantine! Vul je naam in om op het live scorebord te verschijnen!
                         </span>
                     </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button
+                            onclick="forceRefreshPublicSync()"
+                            class="text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 transition cursor-pointer"
+                            title="Haal direct de nieuwste tussenstand op van alle telefoons"
+                        >
+                            🔄 Sync
+                        </button>
+                        <button
+                            id="btn-tv-mode"
+                            onclick="toggleTvMode()"
+                            class="text-xs font-bold px-2.5 py-1 rounded-lg bg-amber-200/70 hover:bg-amber-300/80 text-[#6E5223] transition cursor-pointer"
+                            title="Vergroot het scorebord voor op een groot scherm in de kantine"
+                        >
+                            📺 TV Modus
+                        </button>
+                        <button
+                            id="btn-toggle-leaderboard"
+                            onclick="toggleLeaderboardCollapse()"
+                            class="text-xs font-bold px-2.5 py-1 rounded-lg bg-stone-200/80 hover:bg-stone-300 text-stone-700 transition cursor-pointer"
+                        >
+                            🔼 Inklappen
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Leaderboard Rows Container -->
-                <div id="leaderboard-list" class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
-                    <!-- Populated dynamically via JS -->
-                </div>
-            </div>
-        </section>
-
+                <!-- Leaderboard Content Body -->
+<!-- ... existing code ... -->
         <!-- PLAYER DETAIL MODAL (View another player's 20 drinks card & mix) -->
         <div id="player-detail-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div class="bg-[#FDFBF7] border-4 border-[#B68D40] rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
@@ -312,231 +87,97 @@
             </div>
         </div>
 
-        <!-- MOTIVATIONAL POP-UP BANNER (Appears when checking off a can) -->
-        <div id="motivation-toast" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-lg rounded-2xl border-4 border-[#FFE380] bg-gradient-to-r from-[#F564A9] via-[#E0458B] to-[#B93774] text-white p-4 shadow-2xl transition-all duration-300">
-            <div class="flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <div id="toast-emoji" class="text-3xl sm:text-4xl animate-bounce">🥳</div>
+        <!-- SHARE / QR CODE MODAL FOR GITHUB PAGES & WHATSAPP -->
+        <div id="share-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-[#FDFBF7] border-4 border-[#B68D40] rounded-3xl max-w-md w-full flex flex-col shadow-2xl overflow-hidden">
+                <div class="bg-gradient-to-r from-[#6E5223] via-[#8E6529] to-[#B68D40] text-white p-4 sm:px-6 flex items-center justify-between gap-3">
                     <div>
-                        <div id="toast-title" class="font-tropical font-bold text-lg sm:text-xl text-[#FFE380] uppercase tracking-wide">
-                            Drankje #1 Opgedronken! 🎺
-                        </div>
-                        <div id="toast-time-meta" class="text-xs font-extrabold text-pink-100 bg-black/25 inline-block px-2 py-0.5 rounded-md mb-1">
-                            🔒 Vastgelegd
-                        </div>
-                        <p id="toast-quote" class="text-sm sm:text-base font-bold text-white leading-snug">
-                            De kop is eraf! De DVOV kantine is officieel geopend!
-                        </p>
+                        <div class="text-xs font-extrabold uppercase tracking-wider text-[#FFE380]">Samen in de DVOV Kantine</div>
+                        <h4 class="font-tropical text-2xl font-bold text-white">📲 Doe Live Mee!</h4>
+                    </div>
+                    <button onclick="closeShareModal()" class="bg-black/25 hover:bg-black/40 text-white rounded-xl px-3 py-1.5 text-sm font-bold cursor-pointer">
+                        ✕
+                    </button>
+                </div>
+                <div class="p-5 sm:p-6 text-center space-y-4">
+                    <p class="text-xs sm:text-sm text-stone-600 font-medium">
+                        Laat je teamgenoten deze QR-code scannen aan de bar of stuur de link in de groepsapp. Iedereen komt direct in hetzelfde <strong>DVOV Kantine Scorebord</strong>!
+                    </p>
+                    <div class="bg-white border-2 border-[#DFBC94] rounded-2xl p-4 inline-flex flex-col items-center shadow-sm">
+                        <img
+                            id="share-qr-img"
+                            alt="Scan QR-code voor DVOV Stëlz Party"
+                            class="w-44 h-44 rounded-lg"
+                            src="https://placehold.co/220x220/FDFBF7/6E5223?text=QR+Code"
+                        />
+                        <span class="mt-2 text-[11px] font-extrabold uppercase tracking-wider text-[#8E6529]">
+                            🍺 Kantine Kamer: DVOV-2026
+                        </span>
+                    </div>
+
+                    <div class="flex flex-col gap-2.5">
+                        <button
+                            onclick="shareViaWhatsApp()"
+                            class="w-full py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#1ebe5b] text-white font-tropical font-bold text-sm shadow flex items-center justify-center gap-2 cursor-pointer transition"
+                        >
+                            <span>💬</span><span>Deel Link via WhatsApp</span>
+                        </button>
+                        <button
+                            id="btn-copy-share-url"
+                            onclick="copyShareUrl()"
+                            class="w-full py-2.5 px-4 rounded-xl bg-stone-800 hover:bg-stone-900 text-white font-tropical font-bold text-sm shadow flex items-center justify-center gap-2 cursor-pointer transition"
+                        >
+                            <span>📋</span><span id="copy-share-url-text">Kopieer Link</span>
+                        </button>
                     </div>
                 </div>
-                <button onclick="hideMotivationToast()" class="text-white/80 hover:text-white bg-black/20 hover:bg-black/30 rounded-xl px-2.5 py-1.5 text-xs font-bold shrink-0 cursor-pointer">
-                    ✕
-                </button>
             </div>
         </div>
 
-        <!-- MAIN COUNTDOWN: Start of the DVOV Stëlz Party (19:30:00) -->
-        <section id="hero-card" class="relative overflow-hidden rounded-3xl border-4 border-[#B68D40] bg-gradient-to-br from-[#2B6678] via-[#348AA2] to-[#4EBBD3] text-white p-6 sm:p-8 shadow-xl mb-8 transition-all duration-500">
-            
-            <!-- Decorative Flamingo & Can Illustration -->
-            <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
-                <div class="text-center md:text-left">
-                    <div class="inline-flex items-center gap-2 bg-[#F564A9] text-white text-xs sm:text-sm font-extrabold uppercase tracking-wider px-3.5 py-1 rounded-full shadow mb-3">
-                        <span>🦩 Hoofdklok • Start 19:30:00</span>
-                    </div>
-                    <h2 class="font-tropical text-3xl sm:text-4xl font-bold tracking-wide mb-1">
-                        START DVOV STËLZ PARTY
-                    </h2>
-                    <p id="hero-subtitle" class="text-sky-100 text-sm sm:text-base font-medium">
-                        Om 19:30 gaat #1 open en daarna elke 12 minuten een nieuwe (🥫 Stëlz, 🍺 Bier of 🍷 Wijn)! 🦩🎺
-                    </p>
-                </div>
-
-                <!-- Stëlz Can SVG Illustration -->
-                <div class="animate-float shrink-0">
-                    <div onclick="toggleCanFinished(1)" title="Klik om Drankje #1 af te vinken!" class="cursor-pointer w-20 h-28 sm:w-24 sm:h-32 rounded-2xl bg-gradient-to-b from-stone-100 via-white to-orange-400 border-2 border-stone-300 shadow-lg flex flex-col items-center justify-between p-2 text-stone-800 relative overflow-hidden hover:scale-105 transition">
-                        <div class="w-full h-1.5 bg-stone-300 rounded-full"></div>
-                        <div class="text-center">
-                            <div class="font-tropical font-bold text-sm sm:text-base tracking-tighter text-[#8C6523]">STËLZ</div>
-                            <div class="text-[9px] font-bold uppercase tracking-widest text-stone-500">DVOV Party</div>
-                        </div>
-                        <div class="w-full bg-orange-500/90 text-white rounded-lg py-1 text-center">
-                            <div class="font-tropical font-bold text-xs leading-tight">20 STUKS</div>
-                            <div class="text-[9px] opacity-90">Elke 12m</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Big Timer Digits -->
-            <div id="hero-timer-wrapper" class="mt-6 grid grid-cols-3 gap-3 sm:gap-5 max-w-xl mx-auto">
-                <div class="bg-black/25 backdrop-blur-sm border border-white/20 rounded-2xl p-3 sm:p-4 text-center">
-                    <div id="hero-hours" class="font-tropical text-4xl sm:text-6xl font-bold tabular-nums tracking-tight">00</div>
-                    <div class="text-xs sm:text-sm uppercase tracking-wider font-bold text-sky-200 mt-1">Uren</div>
-                </div>
-                <div class="bg-black/25 backdrop-blur-sm border border-white/20 rounded-2xl p-3 sm:p-4 text-center">
-                    <div id="hero-minutes" class="font-tropical text-4xl sm:text-6xl font-bold tabular-nums tracking-tight">00</div>
-                    <div class="text-xs sm:text-sm uppercase tracking-wider font-bold text-sky-200 mt-1">Minuten</div>
-                </div>
-                <div class="bg-black/25 backdrop-blur-sm border border-white/20 rounded-2xl p-3 sm:p-4 text-center">
-                    <div id="hero-seconds" class="font-tropical text-4xl sm:text-6xl font-bold tabular-nums tracking-tight text-[#FFE380]">00</div>
-                    <div class="text-xs sm:text-sm uppercase tracking-wider font-bold text-sky-200 mt-1">Seconden</div>
-                </div>
-            </div>
-
-            <!-- Festive Unlocked State when party has started -->
-            <div id="hero-unlocked" class="hidden mt-6 bg-[#F564A9] border-2 border-white rounded-2xl p-4 sm:p-5 text-center shadow-lg can-active-pulse">
-                <div class="font-tropical text-2xl sm:text-4xl font-bold text-white drop-shadow">
-                    🦩 DE STËLZ PARTY IS LOS! PROOST DVOV! 🎺🍻
-                </div>
-                <p id="hero-active-status" class="text-pink-100 text-sm sm:text-base font-semibold mt-1">
-                    Vink hieronder je drankjes één voor één af zodra je ze op hebt!
-                </p>
-            </div>
-
-            <!-- Progress Overview Bar (How many of the 20 cans are checked off as finished + drink mix) -->
-            <div class="mt-6 pt-4 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm">
-                <div class="flex flex-wrap items-center gap-2">
-                    <span class="font-semibold text-sky-100">Jouw Score & Mix:</span>
-                    <span id="my-mix-badges" class="bg-black/30 text-white px-2.5 py-0.5 rounded-full font-bold text-xs border border-white/15">
-                        🥫 0 • 🍺 0 • 🍷 0
-                    </span>
-                    <span id="next-can-badge" class="bg-black/25 text-[#FFE380] px-2.5 py-0.5 rounded-full font-bold text-xs border border-white/15">
-                        Volgende klok: #1 (19:30)
-                    </span>
-                </div>
-                <div class="flex items-center gap-3 w-full sm:w-auto">
-                    <div class="w-full sm:w-48 h-3.5 bg-black/30 rounded-full overflow-hidden p-0.5">
-                        <div id="progress-bar" class="h-full bg-gradient-to-r from-[#FFE380] via-[#F564A9] to-[#68A843] rounded-full transition-all duration-300" style="width: 0%"></div>
-                    </div>
-                    <span id="progress-count" class="font-tropical font-bold text-base text-[#FFE380] shrink-0">0 / 20 op</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- ALL 20 CANS COUNTDOWN & CHECKLIST (Drankje 1 t/m 20, elke 12 minuten) -->
-        <section>
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 px-1">
-                <div>
-                    <h3 class="font-tropical text-2xl sm:text-3xl font-bold text-[#6E5223] flex items-center gap-2">
-                        <span>🥫🍺🍷</span> Rondes 1 t/m 20 Aftelklokken & Afvinklijst
-                    </h3>
-                    <p class="text-stone-600 text-sm">
-                        Standaard <span class="font-bold text-amber-800">🥫 Stëlz</span>, of kies per ronde <span class="font-bold text-amber-700">🍺 Bier</span> of <span class="font-bold text-rose-700">🍷 Wijn</span>! Niet op tijd afgevinkt? Dan loopt de klok <span class="text-rose-600 font-bold">in de min</span> tot je 'm vastlegt! 🔒🎺
-                    </p>
-                </div>
-                <div class="text-xs font-bold bg-white/90 text-[#6E5223] px-3 py-1.5 rounded-xl border border-[#DFBC94] self-start sm:self-auto shadow-sm">
-                    ⏱️ Schema: 19:30 t/m 23:18 (elke 12 min)
-                </div>
-            </div>
-
-            <!-- Grid of all 20 Can Cards -->
-            <div id="cans-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Javascript populates cans 1 through 20 here -->
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Confetti Burst Container -->
-    <div id="confetti-container" class="pointer-events-none fixed inset-0 z-50 overflow-hidden"></div>
-
+        <!-- MOTIVATIONAL POP-UP BANNER (Appears when checking off a can) -->
+<!-- ... existing code ... -->
     <script>
         const TOTAL_CANS = 20;
         const INTERVAL_MINUTES = 12;
         const STORAGE_KEY = 'dvov_stelz_finished_cans_v3';
         const TYPES_STORAGE_KEY = 'dvov_stelz_drink_types_v3';
         const PLAYER_NAME_KEY = 'dvov_stelz_player_name_v3';
+        const PLAYER_UID_KEY = 'dvov_stelz_player_uid_v3';
+        // Public zero-config live sync topic (works out-of-the-box on GitHub Pages across all phones!)
+        const PUBLIC_SYNC_TOPIC = 'dvov_kantine_stelz_party_2026_live_v3';
+        const PUBLIC_SYNC_URL = `https://ntfy.sh/${PUBLIC_SYNC_TOPIC}`;
 
         const DRINK_TYPES = {
             stelz: { key: 'stelz', label: 'Stëlz', emoji: '🥫', shortTitle: 'blikje Stëlz' },
             bier:  { key: 'bier',  label: 'Bier',  emoji: '🍺', shortTitle: 'glas Bier' },
             wijn:  { key: 'wijn',  label: 'Wijn',  emoji: '🍷', shortTitle: 'glas Wijn' }
         };
-
-        // Fun rotating tropical color styles (no flavor names, just vibrant colors!)
-        const CAN_COLOR_THEMES = [
-            {
-                gradient: 'from-orange-400 to-amber-500',
-                border: 'border-orange-300',
-                softBg: 'bg-orange-50/90',
-                accentText: 'text-orange-700',
-                pillBg: 'bg-orange-100 text-orange-800 border-orange-300'
-            },
-            {
-                gradient: 'from-pink-500 to-rose-500',
-                border: 'border-pink-300',
-                softBg: 'bg-pink-50/90',
-                accentText: 'text-pink-700',
-                pillBg: 'bg-pink-100 text-pink-800 border-pink-300'
-            },
-            {
-                gradient: 'from-yellow-400 to-amber-400',
-                border: 'border-amber-300',
-                softBg: 'bg-amber-50/90',
-                accentText: 'text-amber-800',
-                pillBg: 'bg-amber-100 text-amber-900 border-amber-300'
-            },
-            {
-                gradient: 'from-emerald-400 to-teal-500',
-                border: 'border-teal-300',
-                softBg: 'bg-teal-50/90',
-                accentText: 'text-teal-800',
-                pillBg: 'bg-teal-100 text-teal-900 border-teal-300'
-            },
-            {
-                gradient: 'from-purple-500 to-fuchsia-500',
-                border: 'border-purple-300',
-                softBg: 'bg-purple-50/90',
-                accentText: 'text-purple-800',
-                pillBg: 'bg-purple-100 text-purple-900 border-purple-300'
-            },
-            {
-                gradient: 'from-sky-400 to-cyan-500',
-                border: 'border-sky-300',
-                softBg: 'bg-sky-50/90',
-                accentText: 'text-sky-800',
-                pillBg: 'bg-sky-100 text-sky-900 border-sky-300'
-            }
-        ];
-
-        // 20 unique motivating & funny Dutch party quotes for each checked-off can
-        const MOTIVATIONAL_QUOTES = [
-            "Ronde #1 zit erin! De kop is eraf, de DVOV kantine is officieel opgewarmd! ⚽🔥",
-            "Op één been kun je niet staan! Nummer 2 ging er soepel in, lekker bezig! 🦩✨",
-            "Drie maal is scheepsrecht! Je hebt het perfecte vrijdagavond-ritme te pakken! 🎧🍹",
-            "Ronde #4! Je bent nu officieel sneller dan de rechtsbuiten van DVOV! 🏃‍♂️💨",
-            "High five! ✋ Een kwart van de 20 drankjes is alweer geschiedenis, wat een vorm!",
-            "Nummer 6! Een zuivere hattrick maal twee! De barman kent je bestelling al uit z'n hoofd! 🍻",
-            "Lucky number 7! Je straalt meer tropische energie uit dan die roze flamingo! 🦩🌴",
-            "Nummer #8 achter de kiezen! De DJ draait voor jou en niemand houdt je meer tegen! 🎶🕺",
-            "Nummer 9! Spitsen-instinct! Elke 12 minuten raak schieten in de DVOV kantine! ⚽🎯",
-            "TIEN STUKS OP! 🏆 Halverwege de 20! Je bent een absolute kantine-legende in wording!",
-            "Nummer 11! Het gekke-getal én een compleet voetbalelftal achterover getikt! 🥳🎺",
-            "Een heel dozijn (12)! Zelfs de voorzitter kijkt vol bewondering naar dit tempo! 👏👑",
-            "Ronde #13 ongeluksgetal? Echt niet bij DVOV! Gewoon doorgaan op karakter! 💪⚡",
-            "Nummer 14! Johan Cruijff-status bereikt aan de bar! Elk schot is een doelpunt! 🧡⚽",
-            "Vijftien stuks! Driekwart voltooid! Je staat ijzersterk op het kantine-scorebord! 🌟",
-            "Sweet 16! De derde helft heeft nog nooit zo'n sterke aanvoerder gezien! 🫡🍻",
-            "Ronde #17! De eindsprint is ingezet, de tropische storm raast door de kantine! 🌪️🌴",
-            "Nummer 18! Volwassen score hoor! Nog maar twee te gaan voor de ultieme kroning! 🔥👑",
-            "Ronde #19! Matchpoint! Het hele terras klapt voor jouw doorzettingsvermogen! 👏🦩",
-            "TWINTIG DRANKJES VOLTOOID! 🏆👑🎺 Je hebt de DVOV Stëlz Party officieel uitgespeeld! Wat een eindbaas!"
-        ];
-
-        // State variables
-        let simulationMode = 'live'; // 'live' | 'starting_soon' | 'mid_party'
-        let demoStartTimestamp = null;
-        // Map of canNum -> { checkedAtClock, deltaMs, frozenTimer, statusSummary, isEarly, drinkType, updatedAtMs }
-        let finishedCans = {};
-        // Map of canNum -> 'stelz' | 'bier' | 'wijn' (default 'stelz')
-        let selectedDrinkTypes = {};
-        let playerName = '';
-        let lastActionDescription = '';
+<!-- ... existing code ... -->
         let toastTimeout = null;
         let isLeaderboardCollapsed = false;
         let isTvMode = false;
         let leaderboardPlayers = [];
+        let publicSyncPlayersMap = {};
+        let firebasePlayersMap = {};
+        let localPlayerUid = '';
+        let ntfyEventSource = null;
+        let broadcastChannel = null;
+
+        function getOrCreateLocalPlayerUid() {
+            if (localPlayerUid) return localPlayerUid;
+            try {
+                let stored = localStorage.getItem(PLAYER_UID_KEY);
+                if (!stored) {
+                    stored = 'dvov-' + Math.random().toString(36).substring(2, 10) + '-' + Date.now().toString(36).slice(-4);
+                    localStorage.setItem(PLAYER_UID_KEY, stored);
+                }
+                localPlayerUid = stored;
+            } catch (e) {
+                localPlayerUid = 'dvov-' + Math.random().toString(36).substring(2, 10);
+            }
+            window.currentFirebaseUid = localPlayerUid;
+            return localPlayerUid;
+        }
 
         function getDrinkTypeForCan(canNum) {
             const t = selectedDrinkTypes[canNum] || (finishedCans[canNum] && finishedCans[canNum].drinkType) || 'stelz';
@@ -544,6 +185,7 @@
         }
 
         function loadLocalState() {
+            getOrCreateLocalPlayerUid();
             try {
                 // Migrate or load v3 finished cans
                 const rawV3 = localStorage.getItem(STORAGE_KEY);
@@ -558,1194 +200,292 @@
             } catch (e) {
                 finishedCans = {};
             }
-
-            try {
-                const rawTypes = localStorage.getItem(TYPES_STORAGE_KEY);
-                if (rawTypes) {
-                    const parsedTypes = JSON.parse(rawTypes);
-                    if (parsedTypes && typeof parsedTypes === 'object') {
-                        selectedDrinkTypes = parsedTypes;
-                    }
-                }
-            } catch (e) {
-                selectedDrinkTypes = {};
-            }
-
-            // Ensure every can 1..20 has a default drinkType of 'stelz'
-            for (let i = 1; i <= TOTAL_CANS; i++) {
-                if (!selectedDrinkTypes[i]) {
-                    selectedDrinkTypes[i] = (finishedCans[i] && finishedCans[i].drinkType) ? finishedCans[i].drinkType : 'stelz';
-                }
-                if (finishedCans[i] && !finishedCans[i].drinkType) {
-                    finishedCans[i].drinkType = selectedDrinkTypes[i];
-                }
-            }
-
-            try {
-                const savedName = localStorage.getItem(PLAYER_NAME_KEY);
-                if (savedName) {
-                    playerName = savedName;
-                }
-            } catch (e) {}
-
-            const nameInput = document.getElementById('player-name-input');
-            if (nameInput && playerName) {
-                nameInput.value = playerName;
-            }
-        }
-
-        function saveLocalState() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(finishedCans));
-                localStorage.setItem(TYPES_STORAGE_KEY, JSON.stringify(selectedDrinkTypes));
-                if (playerName) {
-                    localStorage.setItem(PLAYER_NAME_KEY, playerName);
-                }
-            } catch (e) {
-                // Ignore storage errors
-            }
-        }
-
-        // Shared Web Audio Context so rapid clicks never fail
-        let sharedAudioCtx = null;
-        function getAudioContext() {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (!AudioCtx) return null;
-            if (!sharedAudioCtx) {
-                sharedAudioCtx = new AudioCtx();
-            }
-            if (sharedAudioCtx.state === 'suspended') {
-                sharedAudioCtx.resume();
-            }
-            return sharedAudioCtx;
-        }
-
-        /**
-         * Plays a realistic "Can Opening" (or Beer/Wine pour) sound
-         */
-        function playCanOpenSound(existingCtx = null, startOffset = 0, drinkType = 'stelz') {
-            try {
-                const ctx = existingCtx || getAudioContext();
-                if (!ctx) return;
-                const t0 = ctx.currentTime + startOffset;
-
-                if (drinkType === 'wijn') {
-                    // Wine cork "PLOP!" + subtle pour
-                    const corkOsc = ctx.createOscillator();
-                    const corkGain = ctx.createGain();
-                    corkOsc.type = 'sine';
-                    corkOsc.frequency.setValueAtTime(190, t0);
-                    corkOsc.frequency.exponentialRampToValueAtTime(640, t0 + 0.065);
-                    corkGain.gain.setValueAtTime(0.5, t0);
-                    corkGain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.08);
-                    corkOsc.connect(corkGain);
-                    corkGain.connect(ctx.destination);
-                    corkOsc.start(t0);
-                    corkOsc.stop(t0 + 0.085);
-                }
-
-                // 1. Metallic pull-tab / bottle cap click ("Klack!")
-                const clickOsc = ctx.createOscillator();
-                const clickGain = ctx.createGain();
-                clickOsc.type = 'triangle';
-                clickOsc.frequency.setValueAtTime(1950, t0);
-                clickOsc.frequency.exponentialRampToValueAtTime(420, t0 + 0.035);
-
-                clickGain.gain.setValueAtTime(0.45, t0);
-                clickGain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.038);
-
-                clickOsc.connect(clickGain);
-                clickGain.connect(ctx.destination);
-                clickOsc.start(t0);
-                clickOsc.stop(t0 + 0.04);
-
-                // 2. Second metallic seal pop ("Clink-pop!" at +0.045s)
-                const popOsc = ctx.createOscillator();
-                const popGain = ctx.createGain();
-                popOsc.type = 'sine';
-                popOsc.frequency.setValueAtTime(980, t0 + 0.045);
-                popOsc.frequency.exponentialRampToValueAtTime(260, t0 + 0.095);
-
-                popGain.gain.setValueAtTime(0.38, t0 + 0.045);
-                popGain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.098);
-
-                popOsc.connect(popGain);
-                popGain.connect(ctx.destination);
-                popOsc.start(t0 + 0.045);
-                popOsc.stop(t0 + 0.1);
-
-                // 3. Carbonated "Pssshhht!" hiss using filtered white noise (+0.055s to +0.36s)
-                const fizzDuration = 0.32;
-                const bufferSize = Math.floor(ctx.sampleRate * fizzDuration);
-                const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-                const output = noiseBuffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    output[i] = Math.random() * 2 - 1;
-                }
-
-                const whiteNoise = ctx.createBufferSource();
-                whiteNoise.buffer = noiseBuffer;
-
-                const bandpass = ctx.createBiquadFilter();
-                bandpass.type = 'bandpass';
-                bandpass.frequency.setValueAtTime(drinkType === 'bier' ? 3800 : 5200, t0 + 0.055);
-                bandpass.frequency.exponentialRampToValueAtTime(2400, t0 + 0.055 + fizzDuration);
-                bandpass.Q.setValueAtTime(1.1, t0 + 0.055);
-
-                const fizzGain = ctx.createGain();
-                fizzGain.gain.setValueAtTime(0.001, t0 + 0.055);
-                fizzGain.gain.linearRampToValueAtTime(0.42, t0 + 0.075);
-                fizzGain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.055 + fizzDuration);
-
-                whiteNoise.connect(bandpass);
-                bandpass.connect(fizzGain);
-                fizzGain.connect(ctx.destination);
-
-                whiteNoise.start(t0 + 0.055);
-                whiteNoise.stop(t0 + 0.055 + fizzDuration);
-            } catch (e) {
-                // Ignore audio errors if blocked by browser policy
-            }
-        }
-
-        /**
-         * Plays a festive multi-note "Feesttoeter" (Party Horn / Fanfare) using Web Audio API
-         */
-        function playPartyHornSound(existingCtx = null, startOffset = 0) {
-            try {
-                const ctx = existingCtx || getAudioContext();
-                if (!ctx) return;
-                const now = ctx.currentTime + startOffset;
-
-                function playHornNote(startFreq, endFreq, startTime, duration, volume = 0.22) {
-                    const osc1 = ctx.createOscillator();
-                    const osc2 = ctx.createOscillator();
-                    const filter = ctx.createBiquadFilter();
-                    const gain = ctx.createGain();
-
-                    osc1.type = 'sawtooth';
-                    osc2.type = 'square';
-
-                    osc1.frequency.setValueAtTime(startFreq, startTime);
-                    osc1.frequency.exponentialRampToValueAtTime(endFreq, startTime + duration * 0.7);
-
-                    osc2.frequency.setValueAtTime(startFreq * 1.012, startTime);
-                    osc2.frequency.exponentialRampToValueAtTime(endFreq * 1.012, startTime + duration * 0.7);
-
-                    filter.type = 'bandpass';
-                    filter.frequency.setValueAtTime(1400, startTime);
-                    filter.Q.setValueAtTime(1.8, startTime);
-
-                    gain.gain.setValueAtTime(0.001, startTime);
-                    gain.gain.linearRampToValueAtTime(volume, startTime + 0.03);
-                    gain.gain.setValueAtTime(volume, startTime + duration - 0.05);
-                    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-
-                    osc1.connect(filter);
-                    osc2.connect(filter);
-                    filter.connect(gain);
-                    gain.connect(ctx.destination);
-
-                    osc1.start(startTime);
-                    osc2.start(startTime);
-                    osc1.stop(startTime + duration);
-                    osc2.stop(startTime + duration);
-                }
-
-                // "Toet-toet-TOEEEEET!" festive party horn fanfare
-                playHornNote(392, 440, now, 0.14, 0.2);
-                playHornNote(440, 493.88, now + 0.17, 0.14, 0.22);
-                playHornNote(523.25, 698.46, now + 0.34, 0.48, 0.26);
-            } catch (e) {
-                // Ignore audio errors
-            }
-        }
-
-        /**
-         * Plays the complete combo: First the crisp can-opening "Klik-Pssshht!", followed immediately by the Party Horn!
-         */
-        function playCanOpenAndHornCombo(drinkType = 'stelz') {
-            const ctx = getAudioContext();
-            if (!ctx) return;
-            playCanOpenSound(ctx, 0, drinkType);
-            playPartyHornSound(ctx, 0.26);
-        }
-
-        /**
-         * Launches a colorful celebratory confetti explosion across the screen
-         */
-        function triggerConfettiExplosion() {
-            const container = document.getElementById('confetti-container');
-            if (!container) return;
-
-            const colors = ['#F564A9', '#FFE380', '#4EBBD3', '#68A843', '#FF8A00', '#A855F7', '#F43F5E'];
-            const emojis = ['🦩', '🎺', '🎉', '🍻', '🍷', '🥫', '⚽', '✨'];
-
-            for (let i = 0; i < 48; i++) {
-                const el = document.createElement('div');
-                const isEmoji = i % 5 === 0;
-
-                const startX = 50 + (Math.random() * 24 - 12);
-                const startY = 55 + (Math.random() * 12 - 6);
-
-                if (isEmoji) {
-                    el.textContent = emojis[i % emojis.length];
-                    el.className = 'fixed text-xl sm:text-2xl select-none pointer-events-none';
-                } else {
-                    el.className = 'fixed pointer-events-none rounded-sm shadow-sm';
-                    el.style.width = `${Math.floor(Math.random() * 8) + 7}px`;
-                    el.style.height = `${Math.floor(Math.random() * 12) + 8}px`;
-                    el.style.backgroundColor = colors[i % colors.length];
-                }
-
-                el.style.left = `${startX}vw`;
-                el.style.top = `${startY}vh`;
-                el.style.opacity = '1';
-                el.style.transition = `transform ${850 + Math.random() * 550}ms cubic-bezier(0.16, 1, 0.3, 1), opacity 1100ms ease-out`;
-
-                container.appendChild(el);
-
-                requestAnimationFrame(() => {
-                    const spreadX = (Math.random() * 90 - 45);
-                    const spreadY = -(Math.random() * 65 + 15);
-                    const rot = Math.random() * 720 - 360;
-                    el.style.transform = `translate(${spreadX}vw, ${spreadY}vh) rotate(${rot}deg) scale(${0.9 + Math.random() * 0.5})`;
-                    el.style.opacity = '0';
-                });
-
-                setTimeout(() => el.remove(), 1450);
-            }
-        }
-
-        /**
-         * Formats a duration in ms into { hours, minutes, seconds, formatted, humanShort }
-         */
-        function formatDurationParts(absMs) {
-            const totalSeconds = Math.floor(absMs / 1000);
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
-
-            const hStr = String(hours).padStart(2, '0');
-            const mStr = String(minutes).padStart(2, '0');
-            const sStr = String(seconds).padStart(2, '0');
-
-            let humanShort = '';
-            if (hours > 0) {
-                humanShort = `${hours}u ${minutes}m ${seconds}s`;
-            } else if (minutes > 0) {
-                humanShort = `${minutes}m ${seconds}s`;
-            } else {
-                humanShort = `${seconds}s`;
-            }
-
-            return {
-                hours: hStr,
-                minutes: mStr,
-                seconds: sStr,
-                formatted: `${hStr}:${mStr}:${sStr}`,
-                humanShort
-            };
-        }
-
-        /**
-         * Formats remaining milliseconds for positive countdowns
-         */
-        function formatRemainingTime(ms) {
-            if (ms <= 0) {
-                return { hours: '00', minutes: '00', seconds: '00', formatted: '00:00:00', humanShort: '0s' };
-            }
-            const totalSeconds = Math.ceil(ms / 1000);
-            return formatDurationParts(totalSeconds * 1000);
-        }
-
-        /**
-         * Formats current Date into HH:MM:SS string
-         */
-        function formatClockTime(dateObj) {
-            const h = String(dateObj.getHours()).padStart(2, '0');
-            const m = String(dateObj.getMinutes()).padStart(2, '0');
-            const s = String(dateObj.getSeconds()).padStart(2, '0');
-            return `${h}:${m}:${s}`;
-        }
-
-        /**
-         * Renders custom festive SVG icon for Stëlz Can, Foamy Beer Mug, or Wine Glass
-         */
-        function getDrinkIllustrationHTML(canNum, drinkTypeKey, theme) {
-            if (drinkTypeKey === 'bier') {
-                return `
-                    <div onclick="playCanOpenSound(null, 0, 'bier')" title="Klik voor een fris Tapbier-geluidje! (#${canNum})" class="w-12 h-14 py-1 rounded-xl bg-gradient-to-b from-amber-300 via-amber-400 to-amber-600 text-amber-950 font-tropical font-bold flex flex-col items-center justify-between shadow-md border-2 border-white shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition relative overflow-hidden">
-                        <div class="w-full bg-white h-3.5 rounded-b-md flex items-center justify-center text-[8px] font-extrabold text-amber-700 shadow-sm">🍺 BIER</div>
-                        <span class="text-base leading-none font-extrabold text-white drop-shadow">#${canNum}</span>
-                        <div class="w-8 h-1 bg-amber-200/60 rounded-full"></div>
-                    </div>
-                `;
-            }
-            if (drinkTypeKey === 'wijn') {
-                return `
-                    <div onclick="playCanOpenSound(null, 0, 'wijn')" title="Klik voor een Wijn-plop geluidje! (#${canNum})" class="w-12 h-14 py-1 rounded-xl bg-gradient-to-b from-rose-100 via-rose-500 to-rose-800 text-white font-tropical font-bold flex flex-col items-center justify-between shadow-md border-2 border-rose-200 shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition relative overflow-hidden">
-                        <span class="text-[8px] uppercase leading-none text-rose-900 font-extrabold bg-white/90 px-1 py-0.5 rounded">🍷 WIJN</span>
-                        <span class="text-base leading-none font-extrabold text-white drop-shadow">#${canNum}</span>
-                        <div class="w-6 h-1 bg-rose-300/70 rounded-full"></div>
-                    </div>
-                `;
-            }
-            // Default: Stëlz Can
-            return `
-                <div onclick="playCanOpenSound(null, 0, 'stelz')" title="Klik op het Stëlz blikje voor het 'Psssjjt-klik' geluidje! (#${canNum})" class="w-12 h-14 py-1 rounded-xl bg-gradient-to-b ${theme.gradient} text-white font-tropical font-bold flex flex-col items-center justify-center shadow-md border border-white/40 shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition">
-                    <span class="text-[9px] uppercase leading-none opacity-90">🥫 STËLZ</span>
-                    <span class="text-base leading-tight">#${canNum}</span>
-                </div>
-            `;
-        }
-
-        /**
-         * Displays the motivational toast popup at the bottom of the screen including the locked-in time
-         */
-        function showMotivationToast(canNum, record) {
-            const toast = document.getElementById('motivation-toast');
-            const emojiEl = document.getElementById('toast-emoji');
-            const title = document.getElementById('toast-title');
-            const timeMeta = document.getElementById('toast-time-meta');
-            const quote = document.getElementById('toast-quote');
-            const count = Object.keys(finishedCans).length;
-            const dType = DRINK_TYPES[record?.drinkType || getDrinkTypeForCan(canNum)] || DRINK_TYPES.stelz;
-
-            if (emojiEl) emojiEl.textContent = dType.emoji;
-            title.textContent = `🎺 #${canNum} (${dType.label}) Afgevinkt! (${count}/${TOTAL_CANS} op)`;
-            if (record) {
-                timeMeta.textContent = `🔒 Vastgelegd op ${record.frozenTimer} (${record.statusSummary}) • Om ${record.checkedAtClock}`;
-            }
-            quote.textContent = MOTIVATIONAL_QUOTES[canNum - 1] || "Lekker bezig in de DVOV Kantine!";
-
-            toast.classList.remove('hidden');
-
-            if (toastTimeout) clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                hideMotivationToast();
-            }, 6500);
-        }
-
-        function hideMotivationToast() {
-            const toast = document.getElementById('motivation-toast');
-            if (toast) toast.classList.add('hidden');
-        }
-
-        /**
-         * Changes the drink type ('stelz' | 'bier' | 'wijn') for a specific card (1..20)
-         */
-        function selectDrinkType(canNum, newType) {
-            if (!DRINK_TYPES[newType]) return;
-            selectedDrinkTypes[canNum] = newType;
-
-            if (finishedCans[canNum]) {
-                finishedCans[canNum].drinkType = newType;
-                const dInfo = DRINK_TYPES[newType];
-                lastActionDescription = `wisselde #${canNum} naar ${dInfo.emoji} ${dInfo.label}`;
-            }
-
-            saveLocalState();
-            updateCountdowns();
-            if (typeof window.syncPlayerToCloud === 'function') {
-                window.syncPlayerToCloud();
-            }
-        }
-
-        /**
-         * Toggles the finished ("opgedronken") state of a specific can (1 through 20)
-         * and locks in the exact timestamp, drinkType & positive/negative timer delta.
-         */
-        function toggleCanFinished(canNum) {
-            const drinkType = getDrinkTypeForCan(canNum);
-            const dInfo = DRINK_TYPES[drinkType] || DRINK_TYPES.stelz;
-
-            if (finishedCans[canNum]) {
-                delete finishedCans[canNum];
-                lastActionDescription = `haalde vinkje bij #${canNum} weg`;
-            } else {
-                const now = new Date();
-                const baseStartTime = getBasePartyStartTime();
-                const minutesOffset = (canNum - 1) * INTERVAL_MINUTES;
-                const canTargetTime = new Date(baseStartTime.getTime() + minutesOffset * 60 * 1000);
-
-                const diffCan = canTargetTime.getTime() - now.getTime();
-                const checkedAtClock = formatClockTime(now);
-
-                let frozenTimer = '00:00:00';
-                let statusSummary = 'Exact op tijd!';
-                let isEarly = false;
-
-                if (diffCan > 0) {
-                    const parts = formatRemainingTime(diffCan);
-                    frozenTimer = `+${parts.formatted}`;
-                    statusSummary = `${parts.humanShort} voorsprong`;
-                    isEarly = true;
-                } else {
-                    const overdueMs = Math.abs(diffCan);
-                    const parts = formatDurationParts(overdueMs);
-                    frozenTimer = `-${parts.formatted}`;
-                    statusSummary = `${parts.humanShort} achterstand`;
-                    isEarly = false;
-                }
-
-                const record = {
-                    checkedAtClock,
-                    deltaMs: diffCan,
-                    frozenTimer,
-                    statusSummary,
-                    isEarly,
-                    drinkType,
-                    updatedAtMs: Date.now()
-                };
-
-                finishedCans[canNum] = record;
-                lastActionDescription = `klapte #${canNum} (${dInfo.emoji} ${dInfo.label}) om ${checkedAtClock} (${statusSummary})`;
-
-                playCanOpenAndHornCombo(drinkType);
-                triggerConfettiExplosion();
-                showMotivationToast(canNum, record);
-            }
-
-            saveLocalState();
-            updateCountdowns();
-            if (typeof window.syncPlayerToCloud === 'function') {
-                window.syncPlayerToCloud();
-            }
-        }
-
-        /**
-         * Resets all checked cans for the current user
-         */
-        function resetAllCheckedCans() {
-            finishedCans = {};
-            lastActionDescription = 'heeft de stempelkaart gereset';
-            saveLocalState();
-            hideMotivationToast();
-            updateCountdowns();
-            if (typeof window.syncPlayerToCloud === 'function') {
-                window.syncPlayerToCloud();
-            }
-        }
-
-        /**
-         * Saves player name from input field and triggers immediate cloud sync
-         */
-        function savePlayerNameFromInput() {
-            const input = document.getElementById('player-name-input');
-            if (!input) return;
-            const cleaned = input.value.trim().slice(0, 24);
-            playerName = cleaned || 'Anonieme Kantineheld';
-            input.value = playerName;
-            saveLocalState();
-            if (typeof window.syncPlayerToCloud === 'function') {
-                window.syncPlayerToCloud(true);
-            }
-            renderLeaderboardUI();
-        }
-
-        function toggleLeaderboardCollapse() {
-            isLeaderboardCollapsed = !isLeaderboardCollapsed;
-            const body = document.getElementById('leaderboard-body');
-            const btn = document.getElementById('btn-toggle-leaderboard');
-            if (body && btn) {
-                body.classList.toggle('hidden', isLeaderboardCollapsed);
-                btn.textContent = isLeaderboardCollapsed ? '🔽 Uitklappen' : '🔼 Inklappen';
-            }
-        }
-
-        function toggleTvMode() {
-            isTvMode = !isTvMode;
-            const list = document.getElementById('leaderboard-list');
-            const btn = document.getElementById('btn-tv-mode');
-            if (list && btn) {
-                if (isTvMode) {
-                    list.classList.remove('max-h-96');
-                    list.classList.add('max-h-[75vh]');
-                    btn.className = 'text-xs font-bold px-2.5 py-1 rounded-lg bg-[#F564A9] text-white transition cursor-pointer shadow';
-                    btn.textContent = '📺 TV Modus (Aan)';
-                } else {
-                    list.classList.add('max-h-96');
-                    list.classList.remove('max-h-[75vh]');
-                    btn.className = 'text-xs font-bold px-2.5 py-1 rounded-lg bg-amber-200/70 hover:bg-amber-300/80 text-[#6E5223] transition cursor-pointer';
-                    btn.textContent = '📺 TV Modus';
-                }
-            }
-        }
-
-        /**
-         * Determines the target timestamp for 19:30:00 of the party (October 2, 2026).
-         */
-        function getBasePartyStartTime() {
-            const now = new Date();
-
-            if ((simulationMode === 'starting_soon' || simulationMode === 'mid_party') && demoStartTimestamp) {
-                return new Date(demoStartTimestamp);
-            }
-
-            // Target: Friday, October 2, 2026 at 19:30:00 local time
-            const partyDate2026 = new Date(2026, 9, 2, 19, 30, 0, 0);
-            const endOfParty2026 = new Date(2026, 9, 2, 23, 59, 59, 0);
-
-            if (now <= endOfParty2026) {
-                return partyDate2026;
-            }
-
-            const tonight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 19, 30, 0, 0);
-            if (now > new Date(tonight.getTime() + 4.5 * 60 * 60 * 1000)) {
-                tonight.setDate(tonight.getDate() + 1);
-            }
-            return tonight;
-        }
-
-        /**
-         * Calculates the scheduled clock label (e.g., "19:30", "19:42", "23:18") for a given can number (1-20)
-         */
-        function getScheduledTimeLabel(canNum) {
-            const minutesAfterStart = (canNum - 1) * INTERVAL_MINUTES;
-            const baseDate = new Date(2026, 9, 2, 19, 30, 0, 0);
-            const targetDate = new Date(baseDate.getTime() + minutesAfterStart * 60 * 1000);
-            const h = String(targetDate.getHours()).padStart(2, '0');
-            const m = String(targetDate.getMinutes()).padStart(2, '0');
-            return `${h}:${m}`;
-        }
-
-        /**
-         * Generates the HTML cards for ALL 20 cans (#1 at 19:30 through #20 at 23:18)
-         */
-        function buildCanCards() {
-            const grid = document.getElementById('cans-grid');
-            grid.innerHTML = '';
-
-            for (let canNum = 1; canNum <= TOTAL_CANS; canNum++) {
-                const minutesAfterStart = (canNum - 1) * INTERVAL_MINUTES;
-                const theme = CAN_COLOR_THEMES[(canNum - 1) % CAN_COLOR_THEMES.length];
-                const targetClockLabel = getScheduledTimeLabel(canNum);
-                const plusLabel = minutesAfterStart === 0 ? 'Start Party!' : `+${minutesAfterStart} min`;
-                const currentDrinkType = getDrinkTypeForCan(canNum);
-                const dInfo = DRINK_TYPES[currentDrinkType] || DRINK_TYPES.stelz;
-
-                const card = document.createElement('div');
-                card.id = `can-card-${canNum}`;
-                card.className = `rounded-2xl border-2 ${theme.border} ${theme.softBg} p-4 shadow-md transition-all duration-300 flex flex-col justify-between relative overflow-hidden`;
-
-                card.innerHTML = `
-                    <!-- Top Header with Dynamic Drink Icon, Schedule & Status Pill -->
-                    <div class="flex items-start justify-between gap-2 mb-2.5">
-                        <div class="flex items-center gap-3">
-                            <div id="can-icon-slot-${canNum}">
-                                ${getDrinkIllustrationHTML(canNum, currentDrinkType, theme)}
-                            </div>
-                            <div>
-                                <h4 id="can-title-${canNum}" class="font-tropical font-bold text-lg text-stone-800 leading-tight">
-                                    ${canNum}e ${dInfo.shortTitle}
-                                </h4>
-                                <p class="text-xs font-semibold text-stone-600 mt-0.5">
-                                    🕒 Streeftijd: <span class="text-stone-800 font-bold">${targetClockLabel}</span>
-                                    <span class="ml-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold ${theme.pillBg}">${plusLabel}</span>
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Dynamic Status Badge (Wachtrij / Achterstand / Vastgelegd) -->
-                        <span id="can-badge-${canNum}" class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-lg bg-white/80 text-stone-600 border border-stone-200 shrink-0">
-                            ⏳ Aftellen
-                        </span>
-                    </div>
-
-                    <!-- Segmented 3-Button Drink Selector: Stëlz (default), Bier, Wijn -->
-                    <div class="grid grid-cols-3 gap-1 bg-stone-200/75 p-1 rounded-xl mb-3 text-xs font-bold">
-                        <button
-                            id="drink-btn-${canNum}-stelz"
-                            type="button"
-                            onclick="selectDrinkType(${canNum}, 'stelz')"
-                            class="py-1 px-2 rounded-lg transition flex items-center justify-center gap-1 cursor-pointer"
-                        >
-                            <span>🥫</span><span>Stëlz</span>
-                        </button>
-                        <button
-                            id="drink-btn-${canNum}-bier"
-                            type="button"
-                            onclick="selectDrinkType(${canNum}, 'bier')"
-                            class="py-1 px-2 rounded-lg transition flex items-center justify-center gap-1 cursor-pointer"
-                        >
-                            <span>🍺</span><span>Bier</span>
-                        </button>
-                        <button
-                            id="drink-btn-${canNum}-wijn"
-                            type="button"
-                            onclick="selectDrinkType(${canNum}, 'wijn')"
-                            class="py-1 px-2 rounded-lg transition flex items-center justify-center gap-1 cursor-pointer"
-                        >
-                            <span>🍷</span><span>Wijn</span>
-                        </button>
-                    </div>
-
-                    <!-- Live / Locked Timer Display Box -->
-                    <div id="can-timer-box-${canNum}" class="bg-white/90 border border-stone-200/80 rounded-xl py-2.5 px-3 mb-3 flex flex-col justify-center shadow-inner transition-colors duration-300">
-                        <div class="flex items-center justify-between gap-2">
-                            <span id="can-status-label-${canNum}" class="text-xs font-bold uppercase tracking-wider text-stone-500">Aftellen:</span>
-                            <span id="can-time-${canNum}" class="font-tropical text-2xl font-bold tabular-nums ${theme.accentText} tracking-wider">
-                                00:00:00
-                            </span>
-                        </div>
-                        <div id="can-sub-meta-${canNum}" class="hidden text-[11px] font-bold mt-1 pt-1 border-t border-stone-200/70 flex items-center justify-between">
-                            <span id="can-sub-left-${canNum}"></span>
-                            <span id="can-sub-right-${canNum}"></span>
-                        </div>
-                    </div>
-
-                    <!-- Motivational Quote Box (Shown when user checks off the can!) -->
-                    <div id="can-quote-box-${canNum}" class="hidden rounded-xl p-2.5 mb-3 bg-emerald-100/90 border border-emerald-300 text-emerald-950 text-xs font-bold leading-snug">
-                        <span class="text-emerald-700 uppercase tracking-wider block text-[10px] mb-0.5">🎺 Kantine Compliment:</span>
-                        <span id="can-quote-text-${canNum}">${MOTIVATIONAL_QUOTES[canNum - 1]}</span>
-                    </div>
-
-                    <!-- Check-off Button ("Afvinken wanneer je hem op hebt") -->
-                    <button id="can-check-btn-${canNum}" onclick="toggleCanFinished(${canNum})" class="w-full py-2.5 px-3 rounded-xl font-tropical font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer shadow-sm border-2 border-stone-300 bg-white hover:bg-stone-50 text-stone-700">
-                        <span id="can-check-box-${canNum}" class="w-5 h-5 rounded-md border-2 border-stone-400 flex items-center justify-center text-xs bg-white"></span>
-                        <span id="can-check-label-${canNum}">Afvinken & Tijd Vastleggen</span>
-                    </button>
-                `;
-
-                grid.appendChild(card);
-            }
-        }
-
-        /**
-         * Computes summary stats for a given finishedCans object
-         */
-        function computePlayerStats(cansMap) {
-            let checkedCount = 0;
-            let totalDeltaMs = 0;
-            let stelzCount = 0;
-            let bierCount = 0;
-            let wijnCount = 0;
-            let latestUpdateMs = 0;
-
-            Object.keys(cansMap || {}).forEach((k) => {
-                const rec = cansMap[k];
-                if (!rec) return;
-                checkedCount++;
-                totalDeltaMs += Number(rec.deltaMs || 0);
-                const dt = rec.drinkType || 'stelz';
-                if (dt === 'bier') bierCount++;
-                else if (dt === 'wijn') wijnCount++;
-                else stelzCount++;
-                if (rec.updatedAtMs && rec.updatedAtMs > latestUpdateMs) {
-                    latestUpdateMs = rec.updatedAtMs;
-                }
-            });
-
-            return {
-                checkedCount,
-                totalDeltaMs,
-                stelzCount,
-                bierCount,
-                wijnCount,
-                latestUpdateMs
-            };
-        }
-
-        /**
-         * Formats cumulative deltaMs into a clear Dutch string (+04:12 voorsprong / -03:20 achterstand)
-         */
-        function formatTotalDeltaBadge(totalDeltaMs, checkedCount) {
-            if (!checkedCount) {
-                return { text: '00:00 (Startklaar)', isPositive: true };
-            }
-            const isPositive = totalDeltaMs >= 0;
-            const parts = formatDurationParts(Math.abs(totalDeltaMs));
-            const sign = isPositive ? '+' : '-';
-            const word = isPositive ? 'voorsprong' : 'achterstand';
-            return {
-                text: `${sign}${parts.formatted} (${parts.humanShort} ${word})`,
-                shortText: `${sign}${parts.humanShort}`,
-                isPositive
-            };
-        }
-
-        /**
-         * Updates the hero countdown and all 20 can cards
-         */
-        function updateCountdowns() {
-            const now = new Date();
-            const baseStartTime = getBasePartyStartTime();
-            const intervalMs = INTERVAL_MINUTES * 60 * 1000;
-            let nextScheduledCanNumber = null;
-            let overdueUncheckedCount = 0;
-
-            // --- 1. Update Main Hero Countdown (Party Start at 19:30:00) ---
-            const diffPartyStart = baseStartTime.getTime() - now.getTime();
-            const heroTimerWrapper = document.getElementById('hero-timer-wrapper');
-            const heroUnlocked = document.getElementById('hero-unlocked');
-
-            if (diffPartyStart <= 0) {
-                heroTimerWrapper.classList.add('hidden');
-                heroUnlocked.classList.remove('hidden');
-            } else {
-                const tStart = formatRemainingTime(diffPartyStart);
-                heroTimerWrapper.classList.remove('hidden');
-                heroUnlocked.classList.add('hidden');
-                document.getElementById('hero-hours').textContent = tStart.hours;
-                document.getElementById('hero-minutes').textContent = tStart.minutes;
-                document.getElementById('hero-seconds').textContent = tStart.seconds;
-            }
-
-            // --- 2. Update All 20 Cans (#1 at 19:30 through #20 at 23:18) ---
-            for (let canNum = 1; canNum <= TOTAL_CANS; canNum++) {
-                const minutesOffset = (canNum - 1) * INTERVAL_MINUTES;
-                const canTargetTime = new Date(baseStartTime.getTime() + minutesOffset * 60 * 1000);
-                const diffCan = canTargetTime.getTime() - now.getTime();
-                const isTimeReached = diffCan <= 0;
-                const record = finishedCans[canNum] || null;
-                const isFinished = Boolean(record);
-                const theme = CAN_COLOR_THEMES[(canNum - 1) % CAN_COLOR_THEMES.length];
-                const targetClockLabel = getScheduledTimeLabel(canNum);
-                const currentDrinkType = getDrinkTypeForCan(canNum);
-                const dInfo = DRINK_TYPES[currentDrinkType] || DRINK_TYPES.stelz;
-
-                if (!isTimeReached && nextScheduledCanNumber === null) {
-                    nextScheduledCanNumber = canNum;
-                }
-                if (isTimeReached && !isFinished) {
-                    overdueUncheckedCount++;
-                }
-
-                // Update dynamic drink title, illustration & 3-button selector active states
-                const titleEl = document.getElementById(`can-title-${canNum}`);
-                if (titleEl) {
-                    titleEl.textContent = `${canNum}e ${dInfo.shortTitle}`;
-                }
-                const iconSlot = document.getElementById(`can-icon-slot-${canNum}`);
-                if (iconSlot && iconSlot.dataset.renderedType !== currentDrinkType) {
-                    iconSlot.innerHTML = getDrinkIllustrationHTML(canNum, currentDrinkType, theme);
-                    iconSlot.dataset.renderedType = currentDrinkType;
-                }
-
-                ['stelz', 'bier', 'wijn'].forEach((tKey) => {
-                    const btn = document.getElementById(`drink-btn-${canNum}-${tKey}`);
-                    if (!btn) return;
-                    if (tKey === currentDrinkType) {
-                        if (tKey === 'bier') {
-                            btn.className = 'py-1 px-2 rounded-lg transition flex items-center justify-center gap-1 cursor-pointer bg-amber-500 text-white shadow-sm font-extrabold';
-                        } else if (tKey === 'wijn') {
-                            btn.className = 'py-1 px-2 rounded-lg transition flex items-center justify-center gap-1 cursor-pointer bg-rose-600 text-white shadow-sm font-extrabold';
-                        } else {
-                            btn.className = 'py-1 px-2 rounded-lg transition flex items-center justify-center gap-1 cursor-pointer bg-[#B68D40] text-white shadow-sm font-extrabold';
-                        }
-                    } else {
-                        btn.className = 'py-1 px-2 rounded-lg transition flex items-center justify-center gap-1 cursor-pointer text-stone-600 hover:bg-white/60';
-                    }
-                });
-
-                const card = document.getElementById(`can-card-${canNum}`);
-                const badge = document.getElementById(`can-badge-${canNum}`);
-                const timerBox = document.getElementById(`can-timer-box-${canNum}`);
-                const statusLabel = document.getElementById(`can-status-label-${canNum}`);
-                const timeText = document.getElementById(`can-time-${canNum}`);
-                const subMeta = document.getElementById(`can-sub-meta-${canNum}`);
-                const subLeft = document.getElementById(`can-sub-left-${canNum}`);
-                const subRight = document.getElementById(`can-sub-right-${canNum}`);
-                const quoteBox = document.getElementById(`can-quote-box-${canNum}`);
-                const checkBtn = document.getElementById(`can-check-btn-${canNum}`);
-                const checkBoxIcon = document.getElementById(`can-check-box-${canNum}`);
-                const checkLabel = document.getElementById(`can-check-label-${canNum}`);
-
-                if (isFinished) {
-                    quoteBox.classList.remove('hidden');
-                    subMeta.classList.remove('hidden');
-
-                    card.className = 'rounded-2xl border-2 border-emerald-500 bg-emerald-50/95 p-4 shadow-md transition-all duration-300 flex flex-col justify-between relative overflow-hidden';
-
-                    if (record.isEarly) {
-                        badge.className = 'text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-lg bg-emerald-600 text-white shadow-sm shrink-0';
-                        badge.textContent = '⚡ VOORSPRONG';
-                        timerBox.className = 'bg-white border-2 border-emerald-400 rounded-xl py-2.5 px-3 mb-3 flex flex-col justify-center shadow-sm';
-                        timeText.className = 'font-tropical text-2xl font-bold tabular-nums text-emerald-700 tracking-wider';
-                    } else {
-                        badge.className = 'text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-lg bg-amber-600 text-white shadow-sm shrink-0';
-                        badge.textContent = '🔒 VASTGELEGD';
-                        timerBox.className = 'bg-white border-2 border-amber-400 rounded-xl py-2.5 px-3 mb-3 flex flex-col justify-center shadow-sm';
-                        timeText.className = 'font-tropical text-2xl font-bold tabular-nums text-rose-600 tracking-wider';
-                    }
-
-                    statusLabel.className = 'text-xs font-extrabold uppercase tracking-wider text-stone-700 flex items-center gap-1';
-                    statusLabel.textContent = '🔒 Vastgelegd op:';
-                    timeText.textContent = record.frozenTimer;
-
-                    subLeft.className = 'text-stone-600';
-                    subLeft.textContent = `✅ ${dInfo.emoji} Geklapt om ${record.checkedAtClock}`;
-                    subRight.className = record.isEarly ? 'text-emerald-700 font-extrabold' : 'text-rose-600 font-extrabold';
-                    subRight.textContent = record.statusSummary;
-
-                    checkBtn.className = 'w-full py-2.5 px-3 rounded-xl font-tropical font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer shadow bg-gradient-to-r from-[#4C8C2B] to-[#68A843] text-white border-2 border-emerald-700';
-                    checkBoxIcon.className = 'w-5 h-5 rounded-md bg-white text-emerald-700 flex items-center justify-center text-xs font-extrabold';
-                    checkBoxIcon.textContent = '✓';
-                    checkLabel.textContent = `#${canNum} ${dInfo.label} Op (${record.checkedAtClock}) 🎺`;
-                } else {
-                    quoteBox.classList.add('hidden');
-
-                    if (isTimeReached) {
-                        const overdueMs = Math.abs(diffCan);
-                        const overdueParts = formatDurationParts(overdueMs);
-
-                        badge.className = 'text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-lg bg-rose-600 text-white shadow animate-pulse shrink-0';
-                        badge.textContent = '🚨 ACHTERSTAND!';
-
-                        timerBox.className = 'bg-rose-950 text-white border-2 border-rose-500 rounded-xl py-2.5 px-3 mb-3 flex flex-col justify-center shadow-inner';
-                        statusLabel.className = 'text-xs font-extrabold uppercase tracking-wider text-rose-200 flex items-center gap-1';
-                        statusLabel.textContent = '⏰ In de min:';
-
-                        timeText.className = 'font-tropical text-2xl sm:text-3xl font-bold tabular-nums text-[#FFE380] tracking-wider';
-                        timeText.textContent = `-${overdueParts.formatted}`;
-
-                        subMeta.classList.remove('hidden');
-                        subMeta.className = 'text-[11px] font-bold mt-1 pt-1 border-t border-rose-800 flex items-center justify-between';
-                        subLeft.className = 'text-rose-200';
-                        subLeft.textContent = `Had om ${targetClockLabel} open gemoeten!`;
-                        subRight.className = 'text-[#FFE380] font-extrabold';
-                        subRight.textContent = `${overdueParts.humanShort} te laat`;
-
-                        card.className = 'rounded-2xl border-3 border-rose-500 bg-rose-50/95 p-4 shadow-lg transition-all duration-300 flex flex-col justify-between relative overflow-hidden can-active-pulse ring-4 ring-rose-500/25';
-
-                        checkBtn.className = 'w-full py-2.5 px-3 rounded-xl font-tropical font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer shadow-md border-2 border-rose-700 bg-gradient-to-r from-rose-600 to-orange-500 hover:from-rose-700 hover:to-orange-600 text-white';
-                        checkBoxIcon.className = 'w-5 h-5 rounded-md border-2 border-white flex items-center justify-center text-xs bg-white/20';
-                        checkBoxIcon.textContent = '';
-                        checkLabel.textContent = `${dInfo.emoji} Nu Afvinken & Achterstand Vastleggen!`;
-                    } else {
-                        const t = formatRemainingTime(diffCan);
-                        const isNextUp = diffCan <= intervalMs && diffCan > 0;
-
-                        badge.className = isNextUp
-                            ? 'text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-lg bg-sky-600 text-white shadow-sm shrink-0'
-                            : 'text-[10px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-lg bg-white/80 text-stone-600 border border-stone-200 shrink-0';
-                        badge.textContent = isNextUp ? '🔜 VOLGENDE' : '⏳ Wachtrij';
-
-                        timerBox.className = 'bg-white/90 border border-stone-200/80 rounded-xl py-2.5 px-3 mb-3 flex flex-col justify-center shadow-inner';
-                        statusLabel.className = 'text-xs font-bold uppercase tracking-wider text-stone-500';
-                        statusLabel.textContent = 'Aftellen:';
-
-                        timeText.className = `font-tropical text-2xl font-bold tabular-nums ${theme.accentText} tracking-wider`;
-                        timeText.textContent = t.formatted;
-
-                        subMeta.classList.add('hidden');
-
-                        if (isNextUp) {
-                            card.className = `rounded-2xl border-2 border-[#4EBBD3] ${theme.softBg} p-4 shadow-md transition-all duration-300 flex flex-col justify-between relative overflow-hidden ring-2 ring-[#4EBBD3]/40`;
-                        } else {
-                            card.className = `rounded-2xl border-2 ${theme.border} ${theme.softBg} p-4 shadow-md transition-all duration-300 flex flex-col justify-between relative overflow-hidden`;
-                        }
-
-                        checkBtn.className = 'w-full py-2.5 px-3 rounded-xl font-tropical font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer shadow-sm border-2 border-[#B68D40] bg-white hover:bg-amber-50 text-[#6E5223]';
-                        checkBoxIcon.className = 'w-5 h-5 rounded-md border-2 border-[#B68D40] flex items-center justify-center text-xs bg-amber-50/50';
-                        checkBoxIcon.textContent = '';
-                        checkLabel.textContent = `${dInfo.emoji} Afvinken & Tijd Vastleggen`;
-                    }
-                }
-            }
-
-            // --- 3. Update Personal Progress Bar & Mix Badges ---
-            const myStats = computePlayerStats(finishedCans);
-            const percentage = Math.round((myStats.checkedCount / TOTAL_CANS) * 100);
-            document.getElementById('progress-bar').style.width = `${percentage}%`;
-            document.getElementById('progress-count').textContent = `${myStats.checkedCount} / ${TOTAL_CANS} op`;
-
-            const mixEl = document.getElementById('my-mix-badges');
-            if (mixEl) {
-                mixEl.textContent = `🥫 ${myStats.stelzCount} • 🍺 ${myStats.bierCount} • 🍷 ${myStats.wijnCount}`;
-            }
-
-            const activeStatusEl = document.getElementById('hero-active-status');
-            if (activeStatusEl) {
-                if (overdueUncheckedCount > 0) {
-                    activeStatusEl.textContent = `🚨 Let op: Je loopt op ${overdueUncheckedCount} drankje(s) achter! De klok loopt in de min tot je afvinkt!`;
-                } else {
-                    activeStatusEl.textContent = '🔥 Je ligt helemaal op schema! Vink je drankjes af zodra ze leeg zijn!';
-                }
-            }
-
-            const nextBadge = document.getElementById('next-can-badge');
-            if (myStats.checkedCount === TOTAL_CANS) {
-                nextBadge.textContent = '🏆 Alle 20 drankjes opgedronken & vastgelegd!';
-            } else if (overdueUncheckedCount > 0) {
-                nextBadge.textContent = `🚨 ${overdueUncheckedCount} drankje(s) in de min! Drinken & afvinken!`;
-            } else if (nextScheduledCanNumber === null) {
-                nextBadge.textContent = '🍻 Alle 20 klokken zijn vrijgespeeld!';
-            } else {
-                nextBadge.textContent = `Volgende klok: #${nextScheduledCanNumber} (${getScheduledTimeLabel(nextScheduledCanNumber)} uur)`;
-            }
-        }
-
-        /**
-         * Renders the Live Kantine Leaderboard list & kantine totals
-         */
-        function renderLeaderboardUI() {
-            const listEl = document.getElementById('leaderboard-list');
-            const countEl = document.getElementById('leaderboard-player-count');
-            const totalDrinksEl = document.getElementById('kantine-total-drinks');
-            const totalMixEl = document.getElementById('kantine-total-mix');
-            const tickerEl = document.getElementById('live-ticker-text');
-            if (!listEl) return;
-
-            const myUid = window.currentFirebaseUid || 'local-me';
-            const myStats = computePlayerStats(finishedCans);
-
-            // Build combined list ensuring the current local user is always visible immediately
-            const mapById = {};
-            leaderboardPlayers.forEach((p) => {
-                if (p && p.uid) {
-                    mapById[p.uid] = p;
-                }
-            });
-
-            mapById[myUid] = {
-                uid: myUid,
-                name: playerName || 'Jij (Vul je naam in!)',
-                checkedCount: myStats.checkedCount,
-                totalDeltaMs: myStats.totalDeltaMs,
-                stelzCount: myStats.stelzCount,
-                bierCount: myStats.bierCount,
-                wijnCount: myStats.wijnCount,
-                lastAction: lastActionDescription || '',
-                updatedAtMs: myStats.latestUpdateMs || Date.now(),
-                cansMap: finishedCans,
-                typesMap: selectedDrinkTypes
-            };
-
-            const allPlayers = Object.values(mapById);
-
-            // Sort: 1) Highest checkedCount, 2) Highest totalDeltaMs (most ahead / least behind)
-            allPlayers.sort((a, b) => {
-                if ((b.checkedCount || 0) !== (a.checkedCount || 0)) {
-                    return (b.checkedCount || 0) - (a.checkedCount || 0);
-                }
-                return (b.totalDeltaMs || 0) - (a.totalDeltaMs || 0);
-            });
-
-            // Compute Kantine totals
-            let sumDrinks = 0;
-            let sumStelz = 0;
-            let sumBier = 0;
-            let sumWijn = 0;
-            let newestActionPlayer = null;
-
-            allPlayers.forEach((p) => {
-                sumDrinks += Number(p.checkedCount || 0);
-                sumStelz += Number(p.stelzCount || 0);
-                sumBier += Number(p.bierCount || 0);
-                sumWijn += Number(p.wijnCount || 0);
-                if (p.lastAction && (!newestActionPlayer || (p.updatedAtMs || 0) > (newestActionPlayer.updatedAtMs || 0))) {
-                    newestActionPlayer = p;
-                }
-            });
-
-            if (countEl) {
-                countEl.textContent = `${allPlayers.length} ${allPlayers.length === 1 ? 'speler' : 'spelers'}`;
-            }
-            if (totalDrinksEl) {
-                totalDrinksEl.textContent = `🍻 Totaal geklapt: ${sumDrinks}`;
-            }
-            if (totalMixEl) {
-                totalMixEl.textContent = `🥫 ${sumStelz} • 🍺 ${sumBier} • 🍷 ${sumWijn}`;
-            }
-            if (tickerEl && newestActionPlayer && newestActionPlayer.lastAction) {
-                tickerEl.textContent = `🔥 ${newestActionPlayer.name} ${newestActionPlayer.lastAction}!`;
-            }
-
-            listEl.innerHTML = '';
-
-            allPlayers.forEach((player, idx) => {
-                const rank = idx + 1;
-                const isMe = player.uid === myUid;
-                const medal = rank === 1 ? '🥇 1' : rank === 2 ? '🥈 2' : rank === 3 ? '🥉 3' : `#${rank}`;
-                const pct = Math.round(((player.checkedCount || 0) / TOTAL_CANS) * 100);
-                const deltaInfo = formatTotalDeltaBadge(player.totalDeltaMs || 0, player.checkedCount || 0);
-
-                const row = document.createElement('div');
-                row.onclick = () => openPlayerDetailModal(player.uid);
-                row.className = `rounded-2xl border-2 p-3 sm:px-4 transition cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 ${
-                    isMe
-                        ? 'border-[#F564A9] bg-pink-50/90 shadow-sm'
-                        : rank === 1
-                        ? 'border-[#B68D40] bg-amber-50/90 shadow-sm'
-                        : 'border-stone-200 bg-white hover:bg-stone-50'
-                }`;
-
-                row.innerHTML = `
-                    <div class="flex items-center gap-3 min-w-0">
-                        <div class="font-tropical font-bold text-sm sm:text-base px-2.5 py-1 rounded-xl shrink-0 ${
-                            rank === 1
-                                ? 'bg-[#FFE380] text-[#6E5223] border border-[#B68D40]'
-                                : rank === 2
-                                ? 'bg-stone-200 text-stone-800'
-                                : rank === 3
-                                ? 'bg-amber-200/80 text-amber-950'
-                                : 'bg-stone-100 text-stone-600'
-                        }">
-                            ${medal}
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <span class="font-tropical font-bold text-base sm:text-lg text-stone-800 truncate">
-                                    ${escapeHtml(player.name || 'Kantineheld')}
-                                </span>
-                                ${isMe ? '<span class="text-[10px] font-extrabold uppercase bg-[#F564A9] text-white px-2 py-0.5 rounded-full">Jij</span>' : ''}
-                                <span class="text-xs font-bold bg-stone-100 text-stone-700 px-2 py-0.5 rounded-lg border border-stone-200">
-                                    🥫 ${player.stelzCount || 0} • 🍺 ${player.bierCount || 0} • 🍷 ${player.wijnCount || 0}
-                                </span>
-                            </div>
-                            <div class="text-xs text-stone-500 truncate mt-0.5">
-                                ${player.lastAction ? escapeHtml(player.lastAction) : 'Nog geen drankje afgevinkt'}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-stone-200/60">
-                        <div class="text-left sm:text-right">
-                            <div class="text-[11px] font-extrabold ${deltaInfo.isPositive ? 'text-emerald-700' : 'text-rose-600'}">
-                                ${deltaInfo.isPositive ? '⚡' : '🚨'} ${deltaInfo.text}
-                            </div>
-                            <div class="w-28 sm:w-32 h-2 bg-stone-200 rounded-full overflow-hidden mt-1">
-                                <div class="h-full bg-gradient-to-r from-[#B68D40] via-[#F564A9] to-[#4C8C2B] rounded-full" style="width: ${pct}%"></div>
-                            </div>
-                        </div>
-                        <div class="bg-[#6E5223] text-[#FFE380] font-tropical font-bold text-sm sm:text-base px-3 py-1.5 rounded-xl min-w-[4.5rem] text-center shadow-sm">
-                            ${player.checkedCount || 0} / ${TOTAL_CANS}
-                        </div>
-                    </div>
-                `;
-
-                listEl.appendChild(row);
-            });
-        }
-
-        function escapeHtml(str) {
-            return String(str || '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;');
-        }
-
-        /**
-         * Opens a modal showing any player's 20-drinks stamp card & drink choices
-         */
-        function openPlayerDetailModal(targetUid) {
-            const myUid = window.currentFirebaseUid || 'local-me';
-            let playerObj = leaderboardPlayers.find((p) => p.uid === targetUid);
-
-            if (targetUid === myUid || !playerObj) {
-                const myStats = computePlayerStats(finishedCans);
-                playerObj = {
-                    uid: myUid,
-                    name: playerName || 'Jij',
-                    checkedCount: myStats.checkedCount,
-                    totalDeltaMs: myStats.totalDeltaMs,
-                    stelzCount: myStats.stelzCount,
-                    bierCount: myStats.bierCount,
-                    wijnCount: myStats.wijnCount,
-                    cansMap: finishedCans,
-                    typesMap: selectedDrinkTypes
-                };
-            }
-
-            const modal = document.getElementById('player-detail-modal');
-            const nameEl = document.getElementById('modal-player-name');
-            const summaryEl = document.getElementById('modal-player-summary');
-            const gridEl = document.getElementById('modal-player-grid');
-            if (!modal || !nameEl || !summaryEl || !gridEl) return;
-
-            const deltaInfo = formatTotalDeltaBadge(playerObj.totalDeltaMs || 0, playerObj.checkedCount || 0);
-            nameEl.textContent = `🍻 Stempelkaart van ${playerObj.name || 'Speler'}`;
-            summaryEl.innerHTML = `
-                <span>Totaal op: <strong>${playerObj.checkedCount || 0} / ${TOTAL_CANS}</strong></span>
-                <span>Mix: 🥫 <strong>${playerObj.stelzCount || 0}</strong> • 🍺 <strong>${playerObj.bierCount || 0}</strong> • 🍷 <strong>${playerObj.wijnCount || 0}</strong></span>
-                <span class="${deltaInfo.isPositive ? 'text-emerald-700' : 'text-rose-600'}">${deltaInfo.text}</span>
-            `;
-
-            gridEl.innerHTML = '';
-            const cansMap = playerObj.cansMap || {};
-            const typesMap = playerObj.typesMap || {};
-
-            for (let i = 1; i <= TOTAL_CANS; i++) {
-                const rec = cansMap[i];
-                const dKey = (rec && rec.drinkType) || typesMap[i] || 'stelz';
-                const dInfo = DRINK_TYPES[dKey] || DRINK_TYPES.stelz;
-                const sched = getScheduledTimeLabel(i);
-
-                const item = document.createElement('div');
-                if (rec) {
-                    item.className = 'rounded-xl border-2 border-emerald-500 bg-emerald-50 p-2.5 text-xs flex flex-col justify-between';
-                    item.innerHTML = `
-                        <div class="flex items-center justify-between font-bold text-emerald-950">
-                            <span>#${i} ${dInfo.emoji} ${dInfo.label}</span>
-                            <span class="text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded">✓ ${rec.checkedAtClock || sched}</span>
-                        </div>
-                        <div class="mt-1.5 font-tropical font-bold text-sm ${rec.isEarly ? 'text-emerald-700' : 'text-rose-600'}">
-                            ${rec.frozenTimer || '00:00:00'}
-                        </div>
-                        <div class="text-[10px] text-stone-600 font-semibold">${rec.statusSummary || ''}</div>
-                    `;
-                } else {
-                    item.className = 'rounded-xl border border-stone-200 bg-white/80 p-2.5 text-xs text-stone-500 flex flex-col justify-between';
-                    item.innerHTML = `
-                        <div class="flex items-center justify-between font-bold text-stone-700">
-                            <span>#${i} ${dInfo.emoji} ${dInfo.label}</span>
-                            <span class="text-[10px]">${sched}</span>
-                        </div>
-                        <div class="mt-1.5 text-[11px] italic">Nog niet afgevinkt</div>
-                    `;
-                }
-                gridEl.appendChild(item);
-            }
-
-            modal.classList.remove('hidden');
-        }
-
+<!-- ... existing code ... -->
         function closePlayerDetailModal() {
             const modal = document.getElementById('player-detail-modal');
             if (modal) modal.classList.add('hidden');
         }
 
         /**
+         * Opens the QR & WhatsApp Share modal so friends in the kantine can join immediately
+         */
+        function openShareModal() {
+            const modal = document.getElementById('share-modal');
+            const qrImg = document.getElementById('share-qr-img');
+            if (!modal) return;
+            const shareUrl = window.location.href;
+            if (qrImg) {
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&data=${encodeURIComponent(shareUrl)}`;
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function closeShareModal() {
+            const modal = document.getElementById('share-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function shareViaWhatsApp() {
+            const shareUrl = window.location.href;
+            const myStats = computePlayerStats(finishedCans);
+            const msg = `🦩🎺 Doe live mee met het DVOV Stëlz Party Scorebord (20 drankjes countdown)!\nIk sta nu op ${myStats.checkedCount}/20 (🥫${myStats.stelzCount} 🍺${myStats.bierCount} 🍷${myStats.wijnCount}).\n👉 Open en vul je naam in: ${shareUrl}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function copyShareUrl() {
+            const shareUrl = window.location.href;
+            const labelEl = document.getElementById('copy-share-url-text');
+            const tempInput = document.createElement('textarea');
+            tempInput.value = shareUrl;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                if (labelEl) {
+                    labelEl.textContent = 'Link Gekopieerd! ✓';
+                    setTimeout(() => {
+                        labelEl.textContent = 'Kopieer Link';
+                    }, 2200);
+                }
+            } catch (e) {}
+            document.body.removeChild(tempInput);
+        }
+
+        /**
+         * Zero-Config Public Cloud Sync Engine (Works on GitHub Pages across all phones without API keys!)
+         * Uses ntfy.sh JSON stream + history cache + BroadcastChannel
+         */
+        function buildCompactPlayerPacket() {
+            const uid = getOrCreateLocalPlayerUid();
+            const stats = computePlayerStats(finishedCans);
+            const cleanName = (playerName && playerName.trim()) ? playerName.trim() : `Speler-${uid.slice(-4)}`;
+
+            // Compact representation of finished cans so packet size stays tiny & fast
+            const compactCans = {};
+            Object.keys(finishedCans).forEach((k) => {
+                const r = finishedCans[k];
+                if (!r) return;
+                compactCans[k] = {
+                    c: r.checkedAtClock,
+                    d: r.deltaMs,
+                    f: r.frozenTimer,
+                    s: r.statusSummary,
+                    e: r.isEarly ? 1 : 0,
+                    t: r.drinkType || 'stelz',
+                    u: r.updatedAtMs || Date.now()
+                };
+            });
+
+            return {
+                v: 3,
+                uid,
+                name: cleanName,
+                checkedCount: stats.checkedCount,
+                totalDeltaMs: stats.totalDeltaMs,
+                stelzCount: stats.stelzCount,
+                bierCount: stats.bierCount,
+                wijnCount: stats.wijnCount,
+                lastAction: lastActionDescription || '',
+                updatedAtMs: Date.now(),
+                cCans: compactCans,
+                typesMap: selectedDrinkTypes
+            };
+        }
+
+        function ingestIncomingPlayerPacket(pkt) {
+            if (!pkt || !pkt.uid) return;
+            const existing = publicSyncPlayersMap[pkt.uid];
+            if (existing && existing.updatedAtMs && pkt.updatedAtMs && pkt.updatedAtMs < existing.updatedAtMs) {
+                return; // Keep newer state
+            }
+
+            const expandedCans = {};
+            if (pkt.cCans && typeof pkt.cCans === 'object') {
+                Object.keys(pkt.cCans).forEach((k) => {
+                    const c = pkt.cCans[k];
+                    if (!c) return;
+                    expandedCans[k] = {
+                        checkedAtClock: c.c || '',
+                        deltaMs: Number(c.d || 0),
+                        frozenTimer: c.f || '00:00:00',
+                        statusSummary: c.s || '',
+                        isEarly: Boolean(c.e),
+                        drinkType: c.t || 'stelz',
+                        updatedAtMs: Number(c.u || pkt.updatedAtMs || 0)
+                    };
+                });
+            } else if (pkt.cansMap) {
+                Object.assign(expandedCans, pkt.cansMap);
+            }
+
+            publicSyncPlayersMap[pkt.uid] = {
+                uid: pkt.uid,
+                name: pkt.name || 'Kantineheld',
+                checkedCount: Number(pkt.checkedCount || 0),
+                totalDeltaMs: Number(pkt.totalDeltaMs || 0),
+                stelzCount: Number(pkt.stelzCount || 0),
+                bierCount: Number(pkt.bierCount || 0),
+                wijnCount: Number(pkt.wijnCount || 0),
+                lastAction: pkt.lastAction || '',
+                updatedAtMs: Number(pkt.updatedAtMs || Date.now()),
+                cansMap: expandedCans,
+                typesMap: pkt.typesMap || {}
+            };
+
+            rebuildCombinedLeaderboardPlayers();
+        }
+
+        function rebuildCombinedLeaderboardPlayers() {
+            const combined = {};
+            Object.keys(publicSyncPlayersMap).forEach((uid) => {
+                combined[uid] = publicSyncPlayersMap[uid];
+            });
+            Object.keys(firebasePlayersMap).forEach((uid) => {
+                const fbP = firebasePlayersMap[uid];
+                const pubP = combined[uid];
+                if (!pubP || (fbP.updatedAtMs || 0) >= (pubP.updatedAtMs || 0)) {
+                    combined[uid] = fbP;
+                }
+            });
+            leaderboardPlayers = Object.values(combined);
+            renderLeaderboardUI();
+        }
+
+        function setTopSyncBadge(status, label) {
+            const syncBadge = document.getElementById('cloud-sync-badge');
+            const syncDot = document.getElementById('cloud-sync-dot');
+            const syncText = document.getElementById('cloud-sync-text');
+            if (!syncBadge || !syncDot || !syncText) return;
+            syncText.textContent = label;
+            if (status === 'live') {
+                syncBadge.className = 'inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-black/30 text-emerald-300 border border-white/15';
+                syncDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
+            } else {
+                syncBadge.className = 'inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-black/30 text-amber-200 border border-white/15';
+                syncDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+            }
+        }
+
+        async function pushStateToPublicCloud(forceBadgeFeedback = false) {
+            const packet = buildCompactPlayerPacket();
+            ingestIncomingPlayerPacket(packet);
+
+            if (broadcastChannel) {
+                try {
+                    broadcastChannel.postMessage(packet);
+                } catch (e) {}
+            }
+
+            try {
+                await fetch(PUBLIC_SYNC_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(packet)
+                });
+                if (forceBadgeFeedback) {
+                    setTopSyncBadge('live', 'Opgeslagen & Live ✓');
+                    setTimeout(() => setTopSyncBadge('live', 'Live Kantine Sync'), 2000);
+                }
+            } catch (e) {
+                // Ignore transient network errors
+            }
+
+            if (typeof window.syncPlayerToFirestore === 'function') {
+                window.syncPlayerToFirestore(forceBadgeFeedback);
+            }
+        }
+
+        // Global sync hook called whenever user checks a can, switches drink type, or saves name
+        window.syncPlayerToCloud = function (forceNamePrompt = false) {
+            pushStateToPublicCloud(forceNamePrompt);
+        };
+
+        async function fetchPublicCloudHistory() {
+            try {
+                const res = await fetch(`${PUBLIC_SYNC_URL}/json?poll=1&since=18h`);
+                if (!res.ok) return;
+                const text = await res.text();
+                const lines = text.split('\n');
+                lines.forEach((line) => {
+                    if (!line.trim()) return;
+                    try {
+                        const envelope = JSON.parse(line);
+                        if (envelope && envelope.event === 'message' && envelope.message) {
+                            const pkt = JSON.parse(envelope.message);
+                            ingestIncomingPlayerPacket(pkt);
+                        }
+                    } catch (err) {}
+                });
+                setTopSyncBadge('live', 'Live Kantine Sync');
+            } catch (e) {}
+        }
+
+        function connectPublicLiveStream() {
+            // 1. Instant same-device multi-tab sync
+            try {
+                if ('BroadcastChannel' in window) {
+                    broadcastChannel = new BroadcastChannel(PUBLIC_SYNC_TOPIC);
+                    broadcastChannel.onmessage = (ev) => {
+                        if (ev && ev.data) ingestIncomingPlayerPacket(ev.data);
+                    };
+                }
+            } catch (e) {}
+
+            // 2. Fetch 18-hour room history so all existing players appear immediately
+            fetchPublicCloudHistory();
+
+            // 3. Subscribe to real-time SSE stream across all phones on GitHub Pages
+            try {
+                if (ntfyEventSource) {
+                    ntfyEventSource.close();
+                }
+                ntfyEventSource = new EventSource(`${PUBLIC_SYNC_URL}/json`);
+                ntfyEventSource.onopen = () => {
+                    setTopSyncBadge('live', 'Live Kantine Sync');
+                };
+                ntfyEventSource.onmessage = (event) => {
+                    if (!event || !event.data) return;
+                    try {
+                        const envelope = JSON.parse(event.data);
+                        if (envelope && envelope.event === 'message' && envelope.message) {
+                            const pkt = JSON.parse(envelope.message);
+                            ingestIncomingPlayerPacket(pkt);
+                        }
+                    } catch (err) {}
+                };
+                ntfyEventSource.onerror = () => {
+                    // Automatic reconnect + periodic poll fallback
+                };
+            } catch (e) {}
+
+            // Push our own state if we already have a name or checked cans
+            if (playerName || Object.keys(finishedCans).length > 0) {
+                setTimeout(() => pushStateToPublicCloud(false), 600);
+            }
+        }
+
+        function forceRefreshPublicSync() {
+            setTopSyncBadge('live', 'Synchroniseren...');
+            fetchPublicCloudHistory();
+            if (playerName || Object.keys(finishedCans).length > 0) {
+                pushStateToPublicCloud(true);
+            }
+        }
+
+        /**
          * Switches between Live mode (Oct 2, 2026 19:30:00) and Demo simulation modes
          */
         function setSimulationMode(mode) {
-            simulationMode = mode;
-            const now = Date.now();
-            const modeLabel = document.getElementById('mode-label');
-            const targetDisplay = document.getElementById('target-time-display');
-            const statusDot = document.getElementById('status-dot');
-
-            if (mode === 'starting_soon') {
-                demoStartTimestamp = now + 10 * 1000;
-                modeLabel.textContent = 'Demo Modus:';
-                targetDisplay.textContent = 'Start over 10 seconden (Ronde #1)!';
-                statusDot.className = 'w-3 h-3 rounded-full bg-amber-500 animate-ping';
-            } else if (mode === 'mid_party') {
-                const secondsIntoParty = (7 * INTERVAL_MINUTES * 60) - 12;
-                demoStartTimestamp = now - secondsIntoParty * 1000;
-                modeLabel.textContent = 'Demo Modus:';
-                targetDisplay.textContent = 'Halverwege (Ronde #8 opent over 12 sec)!';
-                statusDot.className = 'w-3 h-3 rounded-full bg-pink-500 animate-ping';
-            } else {
-                demoStartTimestamp = null;
-                modeLabel.textContent = 'Live Aftellen naar:';
-                targetDisplay.textContent = 'Vrijdag 2 okt 19:30:00 (DVOV Kantine)';
-                statusDot.className = 'w-3 h-3 rounded-full bg-emerald-500 animate-pulse';
-            }
-
-            updateCountdowns();
-        }
-
+<!-- ... existing code ... -->
         // Initialize UI on load
         window.onload = function () {
             loadLocalState();
             buildCanCards();
             updateCountdowns();
             renderLeaderboardUI();
+            connectPublicLiveStream();
             setInterval(updateCountdowns, 250);
+            // Periodic background poll every 20s as an extra safety net for mobile sleep/wake
+            setInterval(fetchPublicCloudHistory, 20000);
         };
     </script>
 
@@ -1754,26 +494,10 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const syncBadge = document.getElementById('cloud-sync-badge');
-        const syncDot = document.getElementById('cloud-sync-dot');
-        const syncText = document.getElementById('cloud-sync-text');
-
-        function setSyncStatus(status, label) {
-            if (!syncBadge || !syncDot || !syncText) return;
-            syncText.textContent = label;
-            if (status === 'live') {
-                syncBadge.className = 'inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-black/30 text-emerald-300 border border-white/15';
-                syncDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
-            } else if (status === 'local') {
-                syncBadge.className = 'inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-black/30 text-amber-200 border border-white/15';
-                syncDot.className = 'w-2 h-2 rounded-full bg-amber-400';
-            }
-        }
-
         async function initMultiplayerLeaderboard() {
             try {
                 if (typeof __firebase_config === 'undefined' || !__firebase_config) {
-                    setSyncStatus('local', 'Lokale Modus');
+                    // Running on GitHub Pages or external host: handled automatically by connectPublicLiveStream()!
                     return;
                 }
 
@@ -1793,19 +517,18 @@
 
                 onAuthStateChanged(auth, (user) => {
                     if (!user) return;
-                    window.currentFirebaseUid = user.uid;
-                    setSyncStatus('live', 'Live Kantine Sync');
+                    const sharedUid = getOrCreateLocalPlayerUid();
+                    setTopSyncBadge('live', 'Live Kantine Sync');
 
-                    // Expose cloud sync function so UI buttons can push updates immediately
-                    window.syncPlayerToCloud = async function (forceNamePrompt = false) {
+                    // Expose Firestore sync function alongside the public GitHub Pages cloud sync
+                    window.syncPlayerToFirestore = async function () {
                         if (!auth.currentUser) return;
-                        const uid = auth.currentUser.uid;
                         const stats = computePlayerStats(finishedCans);
-                        const cleanName = (playerName && playerName.trim()) ? playerName.trim() : `Speler-${uid.slice(0, 4)}`;
+                        const cleanName = (playerName && playerName.trim()) ? playerName.trim() : `Speler-${sharedUid.slice(-4)}`;
 
-                        const playerDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'stelz_leaderboard', uid);
+                        const playerDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'stelz_leaderboard', sharedUid);
                         const payload = {
-                            uid,
+                            uid: sharedUid,
                             name: cleanName,
                             checkedCount: stats.checkedCount,
                             totalDeltaMs: stats.totalDeltaMs,
@@ -1820,18 +543,13 @@
 
                         try {
                             await setDoc(playerDocRef, payload, { merge: true });
-                            if (forceNamePrompt) {
-                                setSyncStatus('live', 'Naam Opgeslagen ✓');
-                                setTimeout(() => setSyncStatus('live', 'Live Kantine Sync'), 2000);
-                            }
                         } catch (err) {
                             console.error('Fout bij opslaan naar scorebord:', err);
                         }
                     };
 
-                    // Push initial state if player already has a name or checked cans
                     if (playerName || Object.keys(finishedCans).length > 0) {
-                        window.syncPlayerToCloud();
+                        window.syncPlayerToFirestore();
                     }
 
                     // RULE 1 & 2: Simple collection query on strict public path, sort in JS memory
@@ -1839,7 +557,7 @@
                     onSnapshot(
                         leaderboardCol,
                         (snapshot) => {
-                            const fetched = [];
+                            const fetchedMap = {};
                             snapshot.forEach((docSnap) => {
                                 const data = docSnap.data();
                                 if (!data) return;
@@ -1852,8 +570,9 @@
                                     if (data.typesJson) parsedTypes = JSON.parse(data.typesJson);
                                 } catch (e) {}
 
-                                fetched.push({
-                                    uid: data.uid || docSnap.id,
+                                const pUid = data.uid || docSnap.id;
+                                fetchedMap[pUid] = {
+                                    uid: pUid,
                                     name: data.name || 'Kantineheld',
                                     checkedCount: Number(data.checkedCount || 0),
                                     totalDeltaMs: Number(data.totalDeltaMs || 0),
@@ -1864,21 +583,19 @@
                                     updatedAtMs: Number(data.updatedAtMs || 0),
                                     cansMap: parsedCans,
                                     typesMap: parsedTypes
-                                });
+                                };
                             });
 
-                            leaderboardPlayers = fetched;
-                            renderLeaderboardUI();
+                            firebasePlayersMap = fetchedMap;
+                            rebuildCombinedLeaderboardPlayers();
                         },
                         (error) => {
                             console.error('Live scorebord listener fout:', error);
-                            setSyncStatus('local', 'Offline Fallback');
                         }
                     );
                 });
             } catch (err) {
                 console.error('Firebase init fout:', err);
-                setSyncStatus('local', 'Lokale Modus');
             }
         }
 
