@@ -4342,81 +4342,85 @@
   let currentTourIdx = 0;
   let previousHighlightedEl = null;
 
-  function clearTourHighlight() {
-    if (previousHighlightedEl) {
-      previousHighlightedEl.classList.remove('ring-4', 'ring-pink-500', 'ring-offset-4', 'ring-offset-[#4A3718]', 'z-40', ' transition-all');
-      previousHighlightedEl = null;
+function clearTourHighlight() {
+      if (previousHighlightedEl) {
+        previousHighlightedEl.classList.remove('ring-4', 'ring-pink-500', 'ring-offset-4', 'transition-all');
+        previousHighlightedEl = null;
+      }
     }
-  }
 
-  function startOnboardingTour(manualClick = false) {
-    if (!manualClick && localStorage.getItem('dvov_tour_done_v1') === '1') return;
-    currentTourIdx = 0;
-    const popup = document.getElementById('tourPopupCard');
-    if (!popup) return;
-    popup.classList.remove('hidden');
-    renderTourStep();
-  }
-
-  function renderTourStep() {
-    const step = TOUR_STEPS[currentTourIdx];
-    if (!step) return;
-
-    clearTourHighlight();
-
-    document.getElementById('tourStepBadge').textContent = `RONDLEIDING • STAP ${currentTourIdx + 1} VAN ${TOUR_STEPS.length}`;
-    document.getElementById('tourStepEmoji').textContent = step.emoji;
-    document.getElementById('tourStepTitle').textContent = step.title;
-    document.getElementById('tourStepText').textContent = step.text;
-
-    // Vorige / Volgende knoppen bijwerken
-    const prevBtn = document.getElementById('tourPrevBtn');
-    const nextBtn = document.getElementById('tourNextBtn');
-    prevBtn.style.visibility = currentTourIdx === 0 ? 'hidden' : 'visible';
-    nextBtn.textContent = currentTourIdx === TOUR_STEPS.length - 1 ? '🍻 Begrepen, Feesten!' : 'Volgende →';
-
-    // Stipjes onderin
-    const dotsWrap = document.getElementById('tourDotsWrap');
-    dotsWrap.innerHTML = TOUR_STEPS.map((_, idx) =>
-      `<span class="w-2.5 h-2.5 rounded-full transition-all ${idx === currentTourIdx ? 'bg-[#F2CB6B] w-5' : 'bg-white/25'}"></span>`
-    ).join('');
-
-    // Scroll naar het onderdeel en geef het een opvallende roze/gouden highlight-rand
-    const targetEl = document.getElementById(step.targetId);
-    if (targetEl) {
-      targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      targetEl.classList.add('ring-4', 'ring-pink-500', 'ring-offset-4', 'ring-offset-[#4A3718]', 'transition-all');
-      previousHighlightedEl = targetEl;
-    }
-  }
-
-  function nextTourStep() {
-    playCanOpenSound('stelz');
-    if (currentTourIdx < TOUR_STEPS.length - 1) {
-      currentTourIdx++;
+    window.startOnboardingTour = function(manualClick = false) {
+      try {
+        if (!manualClick && localStorage.getItem('dvov_tour_done_v1') === '1') return;
+      } catch (e) {}
+      currentTourIdx = 0;
+      const popup = document.getElementById('tourPopupCard');
+      if (!popup) return;
+      popup.style.zIndex = '9999';
+      popup.classList.remove('hidden');
       renderTourStep();
-    } else {
-      endOnboardingTour();
-      fireConfetti();
-    }
-  }
+    };
 
-  function prevTourStep() {
-    if (currentTourIdx > 0) {
-      currentTourIdx--;
-      renderTourStep();
-    }
-  }
+    window.renderTourStep = function() {
+      const step = TOUR_STEPS[currentTourIdx];
+      if (!step) return;
 
-  function endOnboardingTour() {
-    clearTourHighlight();
-    localStorage.setItem('dvov_tour_done_v1', '1');
-    const popup = document.getElementById('tourPopupCard');
-    if (popup) popup.classList.add('hidden');
-  }
+      clearTourHighlight();
 
-  // Start automatisch de eerste keer dat iemand de pagina opent!
-  setTimeout(() => startOnboardingTour(false), 900);
+      document.getElementById('tourStepBadge').textContent = `RONDLEIDING • STAP ${currentTourIdx + 1} VAN ${TOUR_STEPS.length}`;
+      document.getElementById('tourStepEmoji').textContent = step.emoji;
+      document.getElementById('tourStepTitle').textContent = step.title;
+      document.getElementById('tourStepText').textContent = step.text;
+
+      const prevBtn = document.getElementById('tourPrevBtn');
+      const nextBtn = document.getElementById('tourNextBtn');
+      if (prevBtn) prevBtn.style.visibility = currentTourIdx === 0 ? 'hidden' : 'visible';
+      if (nextBtn) nextBtn.textContent = currentTourIdx === TOUR_STEPS.length - 1 ? '🍻 Begrepen, Feesten!' : 'Volgende →';
+
+      const dotsWrap = document.getElementById('tourDotsWrap');
+      if (dotsWrap) {
+        dotsWrap.innerHTML = TOUR_STEPS.map((_, idx) =>
+          `<span class="w-2.5 h-2.5 rounded-full transition-all ${idx === currentTourIdx ? 'bg-[#F2CB6B] w-5' : 'bg-white/25'}"></span>`
+        ).join('');
+      }
+
+      const targetEl = document.getElementById(step.targetId);
+      if (targetEl) {
+        try {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          targetEl.classList.add('ring-4', 'ring-pink-500', 'ring-offset-4', 'transition-all');
+          previousHighlightedEl = targetEl;
+        } catch (e) {}
+      }
+    };
+
+    window.nextTourStep = function() {
+      try { playCanOpenSound('stelz'); } catch (e) {}
+      if (currentTourIdx < TOUR_STEPS.length - 1) {
+        currentTourIdx++;
+        renderTourStep();
+      } else {
+        endOnboardingTour();
+        try { fireConfetti(); } catch (e) {}
+      }
+    };
+
+    window.prevTourStep = function() {
+      if (currentTourIdx > 0) {
+        currentTourIdx--;
+        renderTourStep();
+      }
+    };
+
+    window.endOnboardingTour = function() {
+      clearTourHighlight();
+      try { localStorage.setItem('dvov_tour_done_v1', '1'); } catch (e) {}
+      const popup = document.getElementById('tourPopupCard');
+      if (popup) popup.classList.add('hidden');
+    };
+
+    // Start automatisch de eerste keer dat iemand de pagina opent!
+    setTimeout(() => window.startOnboardingTour(false), 900);
     
     connectNtfyRealtimeStream();
     forceCloudPull(false);
