@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DVOV Stëlz Party Countdown — 20x Elke 12 Min + Live Kantine Leaderboard</title>
+  <title>DVOV Stëlz Party Countdown — 20x Elke 12 Min + Live Leaderboard & Badges</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -92,7 +92,6 @@
       box-shadow: 0 4px 0 #755327, 0 6px 12px rgba(0,0,0,0.12);
     }
 
-    /* Animated ocean waves */
     @keyframes floatSlow {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
       50% { transform: translateY(-7px) rotate(1.5deg); }
@@ -111,14 +110,22 @@
 
     @keyframes popIn {
       0% { transform: scale(0.92); }
-      50% { transform: scale(1.03); }
+      50% { transform: scale(1.04); }
       100% { transform: scale(1); }
     }
     .animate-pop {
       animation: popIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    /* Custom Scrollbar */
+    /* Special shimmer for 69 / 67 / Legendary badges */
+    @keyframes badgeShine {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.22); }
+    }
+    .badge-legendary {
+      animation: badgeShine 2.2s ease-in-out infinite;
+    }
+
     ::-webkit-scrollbar { width: 10px; }
     ::-webkit-scrollbar-track { background: #FDFBF3; }
     ::-webkit-scrollbar-thumb { background: #C49A47; border-radius: 999px; }
@@ -129,18 +136,19 @@
   <!-- Confetti Canvas Overlay -->
   <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
 
-  <!-- Toast / Motivational Pop-up Banner -->
+  <!-- Toast / Motivational & Achievement Pop-up Banner -->
   <div id="motivationToast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-8 transition-all duration-300 max-w-md w-[92%]">
     <div class="bg-gradient-to-r from-[#5A3E1B] via-[#7A5626] to-[#5A3E1B] text-[#FDFBF3] px-5 py-4 rounded-2xl shadow-2xl border-2 border-[#F2CB6B] flex items-center gap-3.5">
       <div class="text-3xl shrink-0 animate-bounce" id="toastEmoji">🎺</div>
       <div class="flex-1 min-w-0">
         <div class="text-[11px] font-black uppercase tracking-widest text-[#F2CB6B]" id="toastTitle">BLIKJE #1 AFGEVINKT!</div>
         <div class="font-poster text-base sm:text-lg leading-snug text-white" id="toastQuote">"Hoppa! De kop is eraf!"</div>
+        <div id="toastBadgesRow" class="hidden mt-1.5 pt-1.5 border-t border-amber-400/30 text-xs font-extrabold text-pink-300"></div>
       </div>
     </div>
   </div>
 
-  <!-- Top Palm Leaves & DVOV Shield Decoration -->
+  <!-- Top Palm Leaves Decoration -->
   <div class="pointer-events-none select-none overflow-hidden">
     <svg class="fixed top-0 left-0 w-44 sm:w-64 md:w-80 text-lime-700/85 z-10 -translate-x-6 -translate-y-4" viewBox="0 0 260 200" fill="none">
       <path d="M0,0 C70,15 145,55 210,125 C165,95 110,75 40,65 C100,95 140,130 165,175 C115,135 65,110 10,95 C60,130 85,165 95,195 C55,160 25,135 0,120 Z" fill="#5E9A34"/>
@@ -160,7 +168,6 @@
         <span class="font-bold tracking-wide text-amber-200">DVOV KANTINE • VRIJDAG 2 OKT (19:30 - 23:00)</span>
       </div>
 
-      <!-- Mode Controls -->
       <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
         <button id="btnRealMode" onclick="setRealPartyMode()" class="px-2.5 py-1 rounded-lg font-bold bg-amber-500 text-amber-950 hover:bg-amber-400 transition shadow-sm">
           📅 Echte Tijd (19:30)
@@ -169,12 +176,12 @@
           ⚡ Demo: Start over 10s
         </button>
         <button id="btnDemoMid" onclick="setDemoMode(-2500)" class="px-2.5 py-1 rounded-lg font-semibold bg-amber-900/80 text-amber-100 hover:bg-amber-800 border border-amber-600/50 transition">
-          🦩 Demo: Midden in het feest
+          🦩 Demo: Midden in feest
         </button>
-        <button id="btnSoundToggle" onclick="toggleSound()" class="px-2.5 py-1 rounded-lg font-semibold bg-amber-900/80 text-amber-100 hover:bg-amber-800 border border-amber-600/50 transition" title="Blikje + Feesttoeter geluid aan/uit">
+        <button id="btnSoundToggle" onclick="toggleSound()" class="px-2.5 py-1 rounded-lg font-semibold bg-amber-900/80 text-amber-100 hover:bg-amber-800 border border-amber-600/50 transition">
           🔊 Toeter & Blikje: AAN
         </button>
-        <button onclick="testHornAndCan()" class="px-2.5 py-1 rounded-lg font-semibold bg-pink-600 text-white hover:bg-pink-500 transition shadow-sm" title="Test het blikje openmaken + feesttoeter geluid">
+        <button onclick="testHornAndCan()" class="px-2.5 py-1 rounded-lg font-semibold bg-pink-600 text-white hover:bg-pink-500 transition shadow-sm">
           🎺 Test Geluid
         </button>
       </div>
@@ -186,39 +193,35 @@
 
     <!-- Flyer Hero Header -->
     <section class="text-center relative mb-6">
-      <!-- DVOV Shield Badge -->
       <div class="inline-flex items-center gap-2 bg-[#BC9348] text-white px-4 py-1.5 rounded-full border-2 border-[#4A3718] shadow-md mb-2">
         <span class="text-base">⚽</span>
         <span class="font-extrabold tracking-wider text-xs sm:text-sm uppercase">Sinds 1932 • DVOV Presenteert</span>
       </div>
 
-      <!-- STELZ 3D Title -->
       <div class="relative flex justify-center items-center mt-1">
         <h1 class="font-poster text-6xl sm:text-8xl md:text-9xl font-extrabold stelz-3d tracking-wider select-none leading-none">
           STËLZ
         </h1>
       </div>
 
-      <!-- Bamboo PARTY Banner -->
       <div class="max-w-md mx-auto mt-2 mb-5 bamboo-frame rounded-xl py-2.5 px-6 transform -rotate-1">
         <h2 class="font-poster text-4xl sm:text-6xl font-extrabold party-3d tracking-widest">
           PARTY
         </h2>
       </div>
 
-      <!-- Signpost Chips -->
-      <div class="flex flex-wrap justify-center gap-2 sm:gap-3 max-w-2xl mx-auto mb-4">
+      <div class="flex flex-wrap justify-center gap-2 sm:gap-3 max-w-3xl mx-auto mb-4">
         <span class="wood-sign px-3.5 py-1 rounded-lg font-extrabold text-xs sm:text-sm text-[#4A3718] transform -rotate-2">
           🎧 MET DJ
         </span>
         <span class="wood-sign px-3.5 py-1 rounded-lg font-extrabold text-xs sm:text-sm text-[#4A3718] transform rotate-1">
-          🥫🍺🍷 20 RONDJES • ELKE 12 MINUTEN
+          🥫🍺🍷 20 RONDJES • ELKE 12 MIN
         </span>
         <span class="wood-sign px-3.5 py-1 rounded-lg font-extrabold text-xs sm:text-sm text-[#4A3718] transform -rotate-1">
-          🔞 NIX18
+          🎖️ 69 & 67 MEME BADGES
         </span>
         <span class="wood-sign px-3.5 py-1 rounded-lg font-extrabold text-xs sm:text-sm text-[#4A3718] transform rotate-2">
-          📍 DVOV KANTINE
+          🔞 NIX18 • DVOV KANTINE
         </span>
       </div>
     </section>
@@ -229,17 +232,15 @@
     <section class="max-w-4xl mx-auto mb-7">
       <div id="heroCard" class="relative overflow-hidden rounded-3xl border-4 border-[#856324] bg-gradient-to-b from-[#4EC3E0] via-[#3BB4D4] to-[#F2CB6B] p-5 sm:p-7 shadow-2xl transition-all duration-300">
         
-        <!-- Top Status Pill & Target Clock -->
         <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
           <div id="mainStatusBadge" class="inline-flex items-center gap-2 bg-[#4A3718] text-[#F2CB6B] px-4 py-1.5 rounded-full font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow">
             ⏳ Aftellen naar de aftrap & Drankje #1
           </div>
           <div class="bg-white/90 backdrop-blur px-3.5 py-1.5 rounded-full font-bold text-xs sm:text-sm text-[#4A3718] shadow border border-amber-700/20">
-            🎯 Starttijd: <span class="font-extrabold text-pink-600">19:30:00</span> • Huidige klok: <span id="liveClockDisplay" class="font-mono-timer font-extrabold">--:--:--</span>
+            🎯 Starttijd: <span class="font-extrabold text-pink-600">19:30:00</span> • Klok: <span id="liveClockDisplay" class="font-mono-timer font-extrabold">--:--:--</span>
           </div>
         </div>
 
-        <!-- Main Countdown Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
           <div class="lg:col-span-8 text-center lg:text-left">
             <p class="text-white font-extrabold text-xs sm:text-sm uppercase tracking-widest drop-shadow mb-1">
@@ -249,7 +250,6 @@
               Tijd tot de start & het 1e drankje:
             </h3>
 
-            <!-- Digital Clock Boxes -->
             <div class="grid grid-cols-4 gap-2 sm:gap-3 max-w-xl mx-auto lg:mx-0">
               <div class="bg-[#FDFBF3] border-b-4 border-[#856324] rounded-2xl p-2.5 sm:p-3.5 text-center shadow-lg">
                 <div id="mainDays" class="font-mono-timer text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#4A3718]">00</div>
@@ -270,14 +270,12 @@
             </div>
           </div>
 
-          <!-- Flamingo + Quick Action for Can #1 -->
           <div class="lg:col-span-4 flex flex-col items-center justify-center">
             <div class="float-flamingo relative bg-white/95 backdrop-blur rounded-2xl p-4 border-2 border-pink-400 shadow-xl w-full max-w-xs text-center">
               <div id="heroCanBadge" class="inline-block bg-pink-500 text-white text-xs font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider mb-1">
                 RONDE #1 • DE AFTRAP
               </div>
               
-              <!-- Interactive Can #1 Graphic -->
               <div class="my-2 flex justify-center">
                 <div onclick="toggleCanChecked(1)" class="cursor-pointer group relative w-20 h-32 rounded-xl bg-gradient-to-b from-slate-100 via-white to-amber-100 border-2 border-slate-300 shadow-md flex flex-col items-center justify-between p-2 transition-transform hover:scale-105" title="Klik om Ronde #1 af te vinken!">
                   <div class="w-12 h-1.5 bg-slate-300 rounded-full"></div>
@@ -322,7 +320,7 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- 🏆 LIVE KANTINE LEADERBOARD (MULTIPLAYER VIA CLOUD SYNC + FIREBASE) -->
+    <!-- 🏆 LIVE KANTINE LEADERBOARD + ACHIEVEMENTS & CHALLENGES             -->
     <!-- =================================================================== -->
     <section class="max-w-6xl mx-auto mb-8">
       <div class="rounded-3xl border-4 border-[#856324] bg-gradient-to-b from-[#4A3718] to-[#34250F] text-[#FDFBF3] p-4 sm:p-6 shadow-2xl">
@@ -336,7 +334,7 @@
             <div>
               <div class="flex flex-wrap items-center gap-2">
                 <h2 class="font-poster text-xl sm:text-2xl font-extrabold text-[#F2CB6B] tracking-wide">
-                  LIVE DVOV KANTINE SCOREBORD
+                  LIVE DVOV KANTINE SCOREBORD & BADGES
                 </h2>
                 <span id="syncStatusBadge" class="inline-flex items-center gap-1.5 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
                   <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
@@ -344,14 +342,14 @@
                 </span>
               </div>
               <p class="text-xs sm:text-sm text-amber-200/80 font-medium mt-0.5">
-                Vul je naam in, kies per vakje <strong>🥫 Stëlz</strong>, <strong>🍺 Bier</strong> of <strong>🍷 Wijn</strong> en strijd live mee in de kantine!
+                Verdien automatisch badges (zoals <strong>😏 69</strong>, <strong>🤪 67</strong>, <strong>🎯 Sniper</strong>) of deel gekke <strong>Kantine Challenges</strong> uit aan elkaar!
               </p>
             </div>
           </div>
 
-          <!-- Player Profile Form -->
-          <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-black/30 p-2 rounded-2xl border border-amber-500/30">
-            <div class="flex items-center gap-2 flex-1 min-w-[180px]">
+          <!-- Player Profile Form + Action Buttons -->
+          <div class="flex flex-wrap items-center gap-2 bg-black/30 p-2 rounded-2xl border border-amber-500/30">
+            <div class="flex items-center gap-2 flex-1 min-w-[165px]">
               <span class="text-lg pl-1.5">🙋‍♂️</span>
               <input
                 id="playerNameInput"
@@ -364,22 +362,41 @@
             </div>
             <button
               onclick="savePlayerName()"
-              class="px-4 py-2 rounded-xl font-extrabold text-xs sm:text-sm uppercase tracking-wider bg-gradient-to-r from-pink-500 to-amber-500 hover:from-pink-600 hover:to-amber-600 text-white shadow-md transition shrink-0"
+              class="px-3.5 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-gradient-to-r from-pink-500 to-amber-500 hover:from-pink-600 hover:to-amber-600 text-white shadow-md transition shrink-0"
             >
-              💾 Opslaan & Sync
+              💾 Opslaan
+            </button>
+            <button
+              onclick="openChallengesModal()"
+              class="px-3.5 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-purple-600 hover:bg-purple-500 text-white shadow-md transition shrink-0 flex items-center gap-1 border border-purple-300/40"
+              title="Bekijk alle Achievements & deel Kantine Challenges uit!"
+            >
+              🎖️ Badges & Challenges
             </button>
             <button
               onclick="openShareModal()"
-              class="px-3 py-2 rounded-xl font-extrabold text-xs sm:text-sm uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition shrink-0 flex items-center gap-1"
-              title="Toon QR-code of deel via WhatsApp zodat anderen op het scorebord komen"
+              class="px-3 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition shrink-0 flex items-center gap-1"
             >
               📲 QR / Deel
             </button>
           </div>
         </div>
 
+        <!-- My Unlocked Badges Bar -->
+        <div class="mt-3 bg-black/30 rounded-2xl px-3.5 py-2.5 border border-amber-500/25 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[11px] font-black uppercase tracking-wider text-amber-300">🎖️ Jouw Badges:</span>
+            <div id="myBadgesPreviewRow" class="flex flex-wrap items-center gap-1.5">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+          <button onclick="openChallengesModal(myPlayer.id)" class="text-[11px] font-extrabold text-pink-300 hover:text-pink-200 underline shrink-0">
+            + Challenge afvinken / Badge uitdelen →
+          </button>
+        </div>
+
         <!-- Live Activity Ticker + Kantine Totals -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 my-4">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 my-3.5">
           <div class="lg:col-span-8 bg-black/25 rounded-2xl px-4 py-2.5 border border-amber-500/20 flex items-center gap-2.5 overflow-hidden">
             <span class="text-base shrink-0">🎺</span>
             <span class="text-[11px] font-black uppercase tracking-wider text-pink-400 shrink-0">LIVE BAR FEED</span>
@@ -399,14 +416,14 @@
         </div>
 
         <!-- Leaderboard Table / Cards -->
-        <div id="leaderboardList" class="space-y-2 max-h-80 overflow-y-auto pr-1">
+        <div id="leaderboardList" class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
           <!-- Dynamically populated by JS -->
         </div>
 
         <!-- Bottom Bar of Leaderboard -->
         <div class="mt-3 pt-3 border-t border-amber-500/20 flex flex-wrap items-center justify-between gap-2 text-[11px] text-amber-200/75 font-semibold">
           <div>
-            💡 <strong>Tie-breaker:</strong> Bij gelijke stand staat de speler met de <strong>meeste voorsprong / minste totale achterstand</strong> bovenaan! Klik op een speler om zijn stempelkaart te bekijken.
+            💡 <strong>Geheime Tijd-Badges:</strong> Vink af met <strong>69</strong> of <strong>67</strong> achter elkaar ergens in de tijd/timer voor de legendarische <strong>😏 69</strong> of <strong>🤪 6-7</strong> badge! Klik op een speler om badges uit te delen.
           </div>
           <div class="flex items-center gap-2">
             <button onclick="forceCloudPull(true)" class="px-2.5 py-1 rounded-lg bg-amber-900/80 hover:bg-amber-800 text-amber-200 font-bold border border-amber-500/30 transition">
@@ -430,17 +447,16 @@
             🥫🍺🍷 Jouw 20 Rondes Schema (+12 min per ronde)
           </h3>
           <p class="text-xs sm:text-sm font-semibold text-[#7A5B2B]">
-            Standaard staat elk vakje op <strong>🥫 Stëlz</strong>, maar je kunt per ronde switchen naar <strong>🍺 Bier</strong> of <strong>🍷 Wijn</strong>. Niet op tijd afgevinkt? Dan loopt de klok <strong>in de min</strong> en wordt je tijd vastgelegd bij het afvinken!
+            Kies per vakje <strong>🥫 Stëlz</strong>, <strong>🍺 Bier</strong> of <strong>🍷 Wijn</strong>. Niet op tijd afgevinkt? Dan loopt de klok <strong>in de min</strong>! Let op de seconden voor de <strong>😏 69</strong>, <strong>🤪 67</strong> of <strong>🎯 Sniper</strong> badge!
           </p>
         </div>
 
         <div class="flex flex-wrap items-center gap-2 shrink-0">
-          <!-- Set all uncompleted drinks to choice -->
           <div class="inline-flex items-center bg-white/90 rounded-xl p-1 border border-[#C49A47] text-xs font-extrabold">
             <span class="px-2 text-[#7A5B2B] hidden sm:inline">Alles op:</span>
-            <button onclick="setAllDrinkTypes('stelz')" class="px-2 py-1 rounded-lg hover:bg-pink-100 text-[#4A3718] transition" title="Zet alle rondes op Stëlz">🥫 Stëlz</button>
-            <button onclick="setAllDrinkTypes('bier')" class="px-2 py-1 rounded-lg hover:bg-amber-100 text-[#4A3718] transition" title="Zet alle rondes op Bier">🍺 Bier</button>
-            <button onclick="setAllDrinkTypes('wijn')" class="px-2 py-1 rounded-lg hover:bg-rose-100 text-[#4A3718] transition" title="Zet alle rondes op Wijn">🍷 Wijn</button>
+            <button onclick="setAllDrinkTypes('stelz')" class="px-2 py-1 rounded-lg hover:bg-pink-100 text-[#4A3718] transition">🥫 Stëlz</button>
+            <button onclick="setAllDrinkTypes('bier')" class="px-2 py-1 rounded-lg hover:bg-amber-100 text-[#4A3718] transition">🍺 Bier</button>
+            <button onclick="setAllDrinkTypes('wijn')" class="px-2 py-1 rounded-lg hover:bg-rose-100 text-[#4A3718] transition">🍷 Wijn</button>
           </div>
 
           <button onclick="resetAllChecks()" class="px-3.5 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-white hover:bg-rose-50 text-rose-700 border-2 border-rose-300 shadow-sm transition">
@@ -449,7 +465,6 @@
         </div>
       </div>
 
-      <!-- Grid for Can 1 .. Can 20 -->
       <div id="cansGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <!-- Dynamically injected by JS -->
       </div>
@@ -457,12 +472,91 @@
 
   </main>
 
+  <!-- ===================================================================== -->
+  <!-- 🎖️ MODAL: ACHIEVEMENTS, CHALLENGES & BADGE UITDELEN                  -->
+  <!-- ===================================================================== -->
+  <div id="challengesModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/65 backdrop-blur-sm p-3 sm:p-4" onclick="closeChallengesModal(event)">
+    <div class="bg-[#FDFBF3] border-4 border-[#856324] rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl text-[#4A3718] overflow-hidden" onclick="event.stopPropagation()">
+      
+      <!-- Modal Header -->
+      <div class="p-4 sm:p-5 bg-gradient-to-r from-[#4A3718] to-[#63481F] text-white flex items-center justify-between gap-3">
+        <div>
+          <div class="text-[11px] font-black uppercase tracking-widest text-[#F2CB6B]">DVOV Kantine Hall of Fame</div>
+          <h4 class="font-poster text-xl sm:text-2xl font-extrabold">🎖️ Achievements, 69/67 Badges & Kantine Challenges</h4>
+        </div>
+        <button onclick="closeChallengesModal()" class="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 font-extrabold text-xs text-white shrink-0">
+          ✕ Sluiten
+        </button>
+      </div>
+
+      <!-- Modal Scrollable Body -->
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-5 flex-1">
+        
+        <!-- Target Player Selector (Who gets the challenge badge?) -->
+        <div class="bg-amber-100/90 border-2 border-[#C49A47] rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="text-xs font-black uppercase tracking-wider text-amber-900">🎯 Voor wie vink je een Challenge of Badge aan?</div>
+            <p class="text-xs text-amber-800 font-semibold">Kies jezelf of deel een badge uit aan een teamgenoot op het scorebord!</p>
+          </div>
+          <select id="badgeTargetPlayerSelect" onchange="renderChallengesModalContent()" class="bg-white font-extrabold text-sm text-[#4A3718] px-3.5 py-2 rounded-xl border-2 border-[#856324] shadow-sm focus:outline-none">
+            <!-- Populated by JS -->
+          </select>
+        </div>
+
+        <!-- SECTION 1: Kantine Challenges (Nothing to do with drinking speed - can be awarded!) -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h5 class="font-poster text-lg font-extrabold text-[#4A3718]">
+              🎪 Uitdeelbare Kantine Challenges (Los van de drankjes!)
+            </h5>
+            <span class="text-[11px] font-bold text-purple-700 bg-purple-100 px-2.5 py-0.5 rounded-full">Klik om aan/uit te zetten</span>
+          </div>
+          <p class="text-xs font-semibold text-[#7A5B2B] mb-3">
+            Heeft iemand gefrituurd, een plaatje aangevraagd bij de DJ, met de flamingo gedanst of een glas omgestoten? Klik erop om de badge direct achter zijn/haar naam te plakken!
+          </p>
+          <div id="awardableChallengesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Custom Badge Creator -->
+        <div class="bg-gradient-to-r from-pink-50 to-amber-50 border-2 border-pink-300 rounded-2xl p-3.5">
+          <div class="text-xs font-black uppercase tracking-wider text-pink-700 mb-1">✨ Eigen Kantine Badge Verzinnen & Uitdelen</div>
+          <p class="text-xs text-[#6E5227] font-semibold mb-2.5">
+            Verzin ter plekke een eigen titel of kroeg-achievement voor de geselecteerde speler:
+          </p>
+          <div class="flex flex-wrap sm:flex-nowrap gap-2">
+            <input id="customBadgeEmoji" type="text" maxlength="4" placeholder="🦸‍♂️" value="🏅" class="w-14 text-center bg-white font-extrabold text-base px-2 py-2 rounded-xl border border-pink-300" />
+            <input id="customBadgeLabel" type="text" maxlength="24" placeholder="Bijv. Kantine Koning, De Voorstopper..." class="flex-1 bg-white font-extrabold text-xs sm:text-sm px-3 py-2 rounded-xl border border-pink-300 focus:outline-none focus:border-pink-500" onkeydown="if(event.key==='Enter') addCustomBadgeToTarget()" />
+            <button onclick="addCustomBadgeToTarget()" class="px-4 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-pink-600 hover:bg-pink-500 text-white shadow transition shrink-0">
+              + Plak Badge Op!
+            </button>
+          </div>
+        </div>
+
+        <!-- SECTION 2: Automatic Time & Number Achievements (69, 67, Sniper, etc.) -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h5 class="font-poster text-lg font-extrabold text-[#4A3718]">
+              ⏱️ Automatische Tijd-, 69/67- & Drink-Achievements
+            </h5>
+            <span class="text-[11px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full">Worden automatisch ontgrendeld</span>
+          </div>
+          <div id="autoAchievementsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- Modal to Inspect Another Player's Card -->
   <div id="playerInspectModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4" onclick="closePlayerInspectModal(event)">
     <div class="bg-[#FDFBF3] border-4 border-[#856324] rounded-3xl max-w-lg w-full p-5 shadow-2xl text-[#4A3718]" onclick="event.stopPropagation()">
       <div class="flex items-center justify-between pb-3 border-b-2 border-amber-200">
         <div>
-          <div class="text-xs font-black uppercase tracking-wider text-pink-600">Speler Stempelkaart</div>
+          <div class="text-xs font-black uppercase tracking-wider text-pink-600">Speler Stempelkaart & Badges</div>
           <h4 id="inspectModalTitle" class="font-poster text-2xl font-extrabold">Speler</h4>
         </div>
         <button onclick="closePlayerInspectModal()" class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 font-extrabold text-xs">
@@ -470,7 +564,13 @@
         </button>
       </div>
       <div id="inspectModalSummary" class="my-3 text-xs sm:text-sm font-bold bg-amber-50 p-3 rounded-2xl border border-amber-200"></div>
-      <div id="inspectModalGrid" class="grid grid-cols-4 sm:grid-cols-5 gap-2 max-h-72 overflow-y-auto p-1"></div>
+      <div id="inspectModalBadges" class="mb-3 flex flex-wrap gap-1.5"></div>
+      <div id="inspectModalGrid" class="grid grid-cols-4 sm:grid-cols-5 gap-2 max-h-60 overflow-y-auto p-1"></div>
+      <div class="mt-3 pt-3 border-t border-amber-200 flex justify-end">
+        <button id="inspectGiveBadgeBtn" class="px-3.5 py-2 rounded-xl font-extrabold text-xs uppercase bg-purple-600 hover:bg-purple-500 text-white shadow">
+          🎖️ Deel Challenge Badge uit aan deze speler
+        </button>
+      </div>
     </div>
   </div>
 
@@ -526,35 +626,198 @@
     // CONFIGURATION: 20 DRINKS, 12 MINUTES APART, COLORS & MOTIVATIONAL QUOTES
     // =========================================================================
     const TOTAL_CANS = 20;
-    const INTERVAL_MINUTES = 12; // 12 minutes between each drink
+    const INTERVAL_MINUTES = 12;
     const INTERVAL_MS = INTERVAL_MINUTES * 60 * 1000;
 
-    // Drink Definitions (Stëlz default, Bier, Wijn)
     const DRINK_TYPES = {
-      stelz: {
-        id: 'stelz',
-        name: 'Stëlz',
-        emoji: '🥫',
-        unitSingular: 'Blikje',
-        actionVerb: 'Blikje open & toeteren!'
-      },
-      bier: {
-        id: 'bier',
-        name: 'Bier',
-        emoji: '🍺',
-        unitSingular: 'Biertje',
-        actionVerb: 'Goudgele rakker aftikken!'
-      },
-      wijn: {
-        id: 'wijn',
-        name: 'Wijn',
-        emoji: '🍷',
-        unitSingular: 'Wijntje',
-        actionVerb: 'Wijntje aftikken!'
-      }
+      stelz: { id: 'stelz', name: 'Stëlz', emoji: '🥫', unitSingular: 'Blikje' },
+      bier:  { id: 'bier',  name: 'Bier',  emoji: '🍺', unitSingular: 'Biertje' },
+      wijn:  { id: 'wijn',  name: 'Wijn',  emoji: '🍷', unitSingular: 'Wijntje' }
     };
 
-    // Cheerful summer color palettes (no flavor names)
+    // =========================================================================
+    // 🎖️ ACHIEVEMENTS & CHALLENGES CATALOG
+    // =========================================================================
+    // 1. Automatic Badges (unlocked by timestamps, 69/67 numbers, speed, drink mix)
+    const AUTO_ACHIEVEMENTS = [
+      {
+        id: 'nice_69',
+        emoji: '😏',
+        title: '69 Nice!',
+        short: '69 Nice',
+        style: 'bg-gradient-to-r from-pink-500 to-rose-500 text-white border-pink-200 badge-legendary',
+        desc: 'Een drankje afgevinkt met "69" achter elkaar in de tijd, timer of seconden!'
+      },
+      {
+        id: 'meme_67',
+        emoji: '🤪',
+        title: '6-7 Meme!',
+        short: '6-7!',
+        style: 'bg-gradient-to-r from-purple-600 to-indigo-500 text-white border-purple-200 badge-legendary',
+        desc: 'Een drankje afgevinkt met "67" achter elkaar in de tijd, timer of seconden!'
+      },
+      {
+        id: 'sniper',
+        emoji: '🎯',
+        title: 'Sniper!',
+        short: 'Sniper',
+        style: 'bg-emerald-500 text-emerald-950 border-emerald-200',
+        desc: 'Precies binnen 5 seconden van de streeftijd een drankje afgevinkt!'
+      },
+      {
+        id: 'early_bird',
+        emoji: '⚡',
+        title: 'Valse Start',
+        short: 'Valse Start',
+        style: 'bg-amber-400 text-amber-950 border-amber-200',
+        desc: 'Een drankje al met meer dan 1 minuut voorsprong op de klok geklapt!'
+      },
+      {
+        id: 'diesel',
+        emoji: '🐢',
+        title: 'De Diesel',
+        short: 'Diesel',
+        style: 'bg-orange-600 text-white border-orange-300',
+        desc: 'Een drankje met meer dan 10 minuten achterstand alsnog binnengekopt!'
+      },
+      {
+        id: 'alchemist',
+        emoji: '🍹',
+        title: 'De Alchemist',
+        short: 'Alchemist',
+        style: 'bg-fuchsia-600 text-white border-fuchsia-300',
+        desc: 'Minstens 1x Stëlz, 1x Bier én 1x Wijn gedronken op dezelfde avond!'
+      },
+      {
+        id: 'stelz_purist',
+        emoji: '🥫',
+        title: 'Stëlz Purist',
+        short: '100% Stëlz',
+        style: 'bg-pink-500 text-white border-pink-200',
+        desc: 'Minstens 5 drankjes geklapt en allemaal 100% Stëlz!'
+      },
+      {
+        id: 'hattrick',
+        emoji: '⚽',
+        title: 'Zuivere Hattrick',
+        short: 'Hattrick (3)',
+        style: 'bg-lime-500 text-lime-950 border-lime-200',
+        desc: '3 drankjes achter de kiezen!'
+      },
+      {
+        id: 'halftime',
+        emoji: '🔟',
+        title: 'Ruststand (10/20)',
+        short: 'Halverwege',
+        style: 'bg-cyan-400 text-cyan-950 border-cyan-200',
+        desc: '10 van de 20 rondes voltooid!'
+      },
+      {
+        id: 'cruijff_14',
+        emoji: '🐐',
+        title: 'Nummer 14 (Cruijff)',
+        short: '#14 Cruijff',
+        style: 'bg-orange-500 text-white border-orange-200',
+        desc: '14 drankjes afgevinkt — elk nadeel heb z\'n voordeel!'
+      },
+      {
+        id: 'eindbaas_20',
+        emoji: '👑',
+        title: 'DVOV Eindbaas (20/20)',
+        short: 'EINDBAAS',
+        style: 'bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 text-amber-950 border-white badge-legendary',
+        desc: 'Alle 20 rondes op de Stëlz Party uitgespeeld!'
+      }
+    ];
+
+    // 2. Awardable Kantine Challenges (Nothing to do with drinking - can be given to anyone!)
+    const AWARDABLE_CHALLENGES = [
+      {
+        id: 'ch_dj',
+        emoji: '🎧',
+        title: 'DJ Verzoekplaatje',
+        short: 'DJ Verzoekje',
+        style: 'bg-sky-500 text-white border-sky-200',
+        desc: 'Heeft een (fout) verzoekplaatje aangevraagd bij de DJ!'
+      },
+      {
+        id: 'ch_bitterbal',
+        emoji: '🍟',
+        title: 'Bitterbal Koning(in)',
+        short: 'Frituur Held',
+        style: 'bg-amber-600 text-white border-amber-300',
+        desc: 'Heeft een schaal bruin fruit / bitterballen voor de groep geregeld!'
+      },
+      {
+        id: 'ch_flamingo',
+        emoji: '🦩',
+        title: 'Flamingo Fluisteraar',
+        short: 'Flamingo Dans',
+        style: 'bg-pink-500 text-white border-pink-200',
+        desc: 'Heeft met de roze opblaasflamingo gedanst of op de foto gestaan!'
+      },
+      {
+        id: 'ch_dance',
+        emoji: '🕺',
+        title: 'Kantine Dansvloer',
+        short: 'Dansvloer',
+        style: 'bg-purple-500 text-white border-purple-200',
+        desc: 'Stond als eerste te vlammen op de dansvloer (of op een stoel/tafel)!'
+      },
+      {
+        id: 'ch_spook',
+        emoji: '🚽',
+        title: 'De Spookrijder',
+        short: 'Spoorloos',
+        style: 'bg-slate-600 text-white border-slate-300',
+        desc: 'Was ineens 15 minuten spoorloos verdwenen in de kantine!'
+      },
+      {
+        id: 'ch_coach',
+        emoji: '📋',
+        title: 'Kleedkamer Filosoof',
+        short: 'Tacticus',
+        style: 'bg-emerald-600 text-white border-emerald-300',
+        desc: 'Begon aan de bar een veel te diepe tactische analyse over voetbal!'
+      },
+      {
+        id: 'ch_spons',
+        emoji: '🧽',
+        title: 'De Spons',
+        short: 'Geknoeid!',
+        style: 'bg-rose-600 text-white border-rose-300',
+        desc: 'Heeft een blikje of glas omgestoten op de bar!'
+      },
+      {
+        id: 'ch_paparazzi',
+        emoji: '📸',
+        title: 'Kantine Paparazzi',
+        short: 'Paparazzi',
+        style: 'bg-indigo-500 text-white border-indigo-200',
+        desc: 'Heeft de meest legendarische foto/video in de groepsapp gegooid!'
+      },
+      {
+        id: 'ch_polonaise',
+        emoji: '🚂',
+        title: 'Polonaise Kapitein',
+        short: 'Polonaise',
+        style: 'bg-orange-500 text-white border-orange-200',
+        desc: 'Heeft de polonaise door de DVOV kantine ingezet!'
+      },
+      {
+        id: 'ch_water',
+        emoji: '💧',
+        title: 'Tactisch Watertje',
+        short: 'Tussendoor-Water',
+        style: 'bg-cyan-500 text-white border-cyan-200',
+        desc: 'Verstandig tussendoor een glas water gedronken!'
+      }
+    ];
+
+    const ALL_BADGE_MAP = {};
+    AUTO_ACHIEVEMENTS.forEach(b => ALL_BADGE_MAP[b.id] = b);
+    AWARDABLE_CHALLENGES.forEach(b => ALL_BADGE_MAP[b.id] = b);
+
     const COLOR_THEMES = [
       { badge: 'bg-amber-500 text-white', ring: 'border-amber-400', softBg: 'from-amber-50 to-orange-50', bar: 'from-amber-400 to-orange-500', canBottom: 'from-amber-500 to-orange-400', accentText: 'text-amber-700' },
       { badge: 'bg-pink-500 text-white', ring: 'border-pink-400', softBg: 'from-pink-50 to-rose-50', bar: 'from-pink-500 to-rose-500', canBottom: 'from-pink-500 to-rose-400', accentText: 'text-pink-700' },
@@ -564,7 +827,6 @@
       { badge: 'bg-rose-500 text-white', ring: 'border-rose-400', softBg: 'from-rose-50 to-amber-50', bar: 'from-rose-500 to-amber-500', canBottom: 'from-rose-500 to-amber-500', accentText: 'text-rose-700' }
     ];
 
-    // 20 Motivational Dutch Football / Kantine Quotes (one for each drink)
     const MOTIVATIONAL_QUOTES = [
       "Hoppa! De kop is eraf, we zijn officieel begonnen in de DVOV kantine! 🌴",
       "Op één been kun je niet staan! Dat smaakt meteen naar meer! 🦩",
@@ -589,29 +851,27 @@
     ];
 
     let baseStartTimestamp = getRealPartyTimestamp();
-    let currentMode = 'real'; // 'real' | 'demo'
+    let currentMode = 'real';
     let soundEnabled = true;
     let audioCtx = null;
     let toastTimeout = null;
     let leaderboardCollapsed = false;
 
-    // Local Player State
-    const STORAGE_KEY_V3 = 'dvov_stelz_state_v3';
+    const STORAGE_KEY_V3 = 'dvov_stelz_state_v4';
     const STORAGE_PLAYER_KEY = 'dvov_stelz_player_v1';
 
     let myPlayer = loadOrInitPlayer();
-    // Map of canNumber (1..20) -> { completedAtMs, targetTimeMs, deltaMs, completedTimeStr, drinkType }
     let completedCans = {};
-    // Map of canNumber (1..20) -> 'stelz' | 'bier' | 'wijn' (default 'stelz')
     let drinkTypes = {};
+    let myManualBadges = []; // array of badge IDs or custom objects {id, emoji, short, title}
+    // Map of targetPlayerId -> array of manual badges awarded across the room
+    const awardedBadgesByPlayer = new Map();
 
-    // Initialize defaults
     for (let i = 1; i <= TOTAL_CANS; i++) {
       drinkTypes[i] = 'stelz';
     }
     loadLocalState();
 
-    // Map of playerId -> playerRecord from Firebase / BroadcastChannel / local
     const allPlayersMap = new Map();
 
     function loadOrInitPlayer() {
@@ -634,7 +894,7 @@
 
     function loadLocalState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY_V3);
+        const raw = localStorage.getItem(STORAGE_KEY_V3) || localStorage.getItem('dvov_stelz_state_v3');
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && typeof parsed === 'object') {
@@ -643,6 +903,9 @@
               for (let i = 1; i <= TOTAL_CANS; i++) {
                 drinkTypes[i] = parsed.drinkTypes[i] || 'stelz';
               }
+            }
+            if (Array.isArray(parsed.myManualBadges)) {
+              myManualBadges = parsed.myManualBadges;
             }
           }
         }
@@ -653,20 +916,19 @@
       try {
         localStorage.setItem(STORAGE_KEY_V3, JSON.stringify({
           completedCans,
-          drinkTypes
+          drinkTypes,
+          myManualBadges
         }));
       } catch (e) {}
     }
 
-    // Determine Friday Oct 2 at 19:30:00 local time
     function getRealPartyTimestamp() {
       const now = new Date();
       const year = now.getFullYear();
-      const partyDate = new Date(year, 9, 2, 19, 30, 0, 0); // Month 9 = October
+      const partyDate = new Date(year, 9, 2, 19, 30, 0, 0);
       return partyDate.getTime();
     }
 
-    // Format HH:MM:SS for target time badge
     function formatTimeOfDay(timestampMs) {
       const d = new Date(timestampMs);
       const hh = String(d.getHours()).padStart(2, '0');
@@ -682,7 +944,6 @@
       return `${hh}:${mm}`;
     }
 
-    // Format signed duration (-00:04:12 or +00:01:20)
     function formatSignedClock(deltaMs) {
       const sign = deltaMs < 0 ? '-' : '+';
       const absSec = Math.floor(Math.abs(deltaMs) / 1000);
@@ -692,7 +953,6 @@
       return `${sign}${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     }
 
-    // Format readable Dutch text for how far behind/ahead
     function formatBehindText(deltaMs) {
       const absSec = Math.floor(Math.abs(deltaMs) / 1000);
       const hrs = Math.floor(absSec / 3600);
@@ -705,15 +965,115 @@
       timeParts.push(`${secs}s`);
       const formatted = timeParts.join(' ');
 
-      if (deltaMs < 0) {
-        return `${formatted} achterstand`;
-      } else {
-        return `${formatted} voorsprong`;
-      }
+      return deltaMs < 0 ? `${formatted} achterstand` : `${formatted} voorsprong`;
     }
 
     // =========================================================================
-    // AUDIO SYNTHESIZER: CAN OPEN ("PSSSJT-KLIK") + PARTY HORM ("TOET-TOET!")
+    // CHECK FOR "69" OR "67" ANYWHERE IN TIME OR TIMER DIGITS!
+    // =========================================================================
+    function checkContainsPattern(record, patternStr) {
+      if (!record) return false;
+      // 1) Check formatted clock time e.g. "19:46:09" -> raw digits "194609" or with colons
+      const clockStr = String(record.completedTimeStr || '');
+      const clockDigits = clockStr.replace(/\D/g, '');
+      // Also strip leading zeros in segments so "06:09" -> "69" matches!
+      const clockPartsNoZero = clockStr.split(':').map(p => String(Number(p))).join('');
+
+      // 2) Check formatted signed delta timer e.g. "-00:06:09" -> "000609" and "69"
+      const deltaClock = formatSignedClock(record.deltaMs || 0);
+      const deltaDigits = deltaClock.replace(/\D/g, '');
+      const deltaPartsNoZero = deltaClock.replace(/^[+-]/, '').split(':').map(p => String(Number(p))).join('');
+
+      // 3) Check raw total seconds of delta (e.g., 69 seconds or 67 seconds behind/ahead)
+      const totalAbsSec = String(Math.floor(Math.abs(record.deltaMs || 0) / 1000));
+
+      return (
+        clockStr.includes(patternStr) ||
+        clockDigits.includes(patternStr) ||
+        clockPartsNoZero.includes(patternStr) ||
+        deltaClock.includes(patternStr) ||
+        deltaDigits.includes(patternStr) ||
+        deltaPartsNoZero.includes(patternStr) ||
+        totalAbsSec.includes(patternStr)
+      );
+    }
+
+    // Compute all automatic achievement IDs for a player's completed cans
+    function evaluateAutoAchievementsFromCans(cansMap) {
+      const unlocked = new Set();
+      let count = 0;
+      let stelz = 0, bier = 0, wijn = 0;
+
+      Object.keys(cansMap || {}).forEach(k => {
+        const rec = cansMap[k];
+        if (!rec) return;
+        count++;
+        const t = rec.drinkType || rec.t || 'stelz';
+        if (t === 'bier') bier++;
+        else if (t === 'wijn') wijn++;
+        else stelz++;
+
+        const deltaMs = Number(rec.deltaMs !== undefined ? rec.deltaMs : (rec.d || 0));
+        const completedTimeStr = rec.completedTimeStr || rec.c || '';
+        const normRec = { deltaMs, completedTimeStr };
+
+        // Check 69 & 67 anywhere in clock or timer!
+        if (checkContainsPattern(normRec, '69')) unlocked.add('nice_69');
+        if (checkContainsPattern(normRec, '67')) unlocked.add('meme_67');
+
+        // Sniper: within 5 seconds of target time (-5000ms to +5000ms)
+        if (Math.abs(deltaMs) <= 5000) unlocked.add('sniper');
+
+        // Early bird: completed more than 60s before target time
+        if (deltaMs >= 60000) unlocked.add('early_bird');
+
+        // Diesel: completed with more than 10 minutes behind schedule
+        if (deltaMs <= -600000) unlocked.add('diesel');
+      });
+
+      if (stelz >= 1 && bier >= 1 && wijn >= 1) unlocked.add('alchemist');
+      if (count >= 5 && stelz === count) unlocked.add('stelz_purist');
+      if (count >= 3) unlocked.add('hattrick');
+      if (count >= 10) unlocked.add('halftime');
+      if (count >= 14) unlocked.add('cruijff_14');
+      if (count >= 20) unlocked.add('eindbaas_20');
+
+      return Array.from(unlocked);
+    }
+
+    // Helper to render a badge pill
+    function renderBadgePillHTML(badgeIdOrObj, extraClasses = '') {
+      let b = null;
+      if (typeof badgeIdOrObj === 'string') {
+        if (badgeIdOrObj.startsWith('custom:')) {
+          const parts = badgeIdOrObj.split(':');
+          b = {
+            emoji: parts[1] || '🏅',
+            short: parts.slice(2).join(':') || 'Badge',
+            title: parts.slice(2).join(':') || 'Custom Badge',
+            style: 'bg-gradient-to-r from-pink-500 to-amber-500 text-white border-amber-200'
+          };
+        } else {
+          b = ALL_BADGE_MAP[badgeIdOrObj];
+        }
+      } else if (badgeIdOrObj && typeof badgeIdOrObj === 'object') {
+        b = badgeIdOrObj;
+      }
+      if (!b) return '';
+
+      return `
+        <span
+          title="${escapeHtml(b.title || b.short)}: ${escapeHtml(b.desc || 'Kantine Challenge Badge')}"
+          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold border shadow-sm select-none ${b.style || 'bg-amber-500 text-amber-950 border-amber-200'} ${extraClasses}"
+        >
+          <span>${b.emoji}</span>
+          <span>${escapeHtml(b.short || b.title)}</span>
+        </span>
+      `;
+    }
+
+    // =========================================================================
+    // AUDIO SYNTHESIZER: CAN OPEN ("PSSSJT-KLIK") + PARTY HORN ("TOET-TOET!")
     // =========================================================================
     function getAudioContext() {
       if (!audioCtx) {
@@ -726,7 +1086,6 @@
       return audioCtx;
     }
 
-    // Realistic Soda/Hard Seltzer Can Pop + Carbonation Fizz ("Klik-Psssjjt!")
     function playCanOpenSound(drinkType = 'stelz') {
       if (!soundEnabled) return;
       try {
@@ -735,7 +1094,6 @@
         const now = ctx.currentTime;
 
         if (drinkType === 'wijn') {
-          // Wine cork pop + pour chime
           const popOsc = ctx.createOscillator();
           const popGain = ctx.createGain();
           popOsc.type = 'sine';
@@ -748,7 +1106,6 @@
           popOsc.start(now);
           popOsc.stop(now + 0.085);
 
-          // Glass clink
           const clink = ctx.createOscillator();
           const clinkGain = ctx.createGain();
           clink.type = 'sine';
@@ -762,7 +1119,6 @@
           return;
         }
 
-        // 1. Metallic pull-tab lever click ("Klik!")
         const clickOsc = ctx.createOscillator();
         const clickGain = ctx.createGain();
         clickOsc.type = 'triangle';
@@ -775,7 +1131,6 @@
         clickOsc.start(now);
         clickOsc.stop(now + 0.04);
 
-        // 2. Second sharper metallic seal break ("Klak!")
         const sealOsc = ctx.createOscillator();
         const sealGain = ctx.createGain();
         sealOsc.type = 'square';
@@ -788,7 +1143,6 @@
         sealOsc.start(now + 0.045);
         sealOsc.stop(now + 0.09);
 
-        // 3. Pressurized carbonation hiss ("Pssssjjt!")
         const bufferSize = Math.floor(ctx.sampleRate * 0.38);
         const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
         const output = noiseBuffer.getChannelData(0);
@@ -818,7 +1172,6 @@
       } catch (e) {}
     }
 
-    // Festive Multi-Harmonic Party Horn ("Toet-toet-TOEEEET!")
     function playPartyHorn(delaySeconds = 0) {
       if (!soundEnabled) return;
       try {
@@ -975,22 +1328,29 @@
     }
 
     // =========================================================================
-    // MOTIVATIONAL TOAST BANNER
+    // MOTIVATIONAL TOAST BANNER (WITH NEW BADGE UNLOCK ALERTS!)
     // =========================================================================
-    function showMotivationToast(canNumber, record) {
+    function showMotivationToast(canNumber, record, newlyUnlockedBadges = []) {
       const toast = document.getElementById('motivationToast');
       const title = document.getElementById('toastTitle');
       const quote = document.getElementById('toastQuote');
       const emoji = document.getElementById('toastEmoji');
+      const badgesRow = document.getElementById('toastBadgesRow');
 
       const dType = DRINK_TYPES[record.drinkType || 'stelz'] || DRINK_TYPES.stelz;
-      const deltaStatus = record.deltaMs < 0
-        ? `(${formatBehindText(record.deltaMs)} vastgelegd)`
-        : `(${formatBehindText(record.deltaMs)}!)`;
+      const deltaStatus = `(${formatBehindText(record.deltaMs)})`;
 
       title.textContent = `${dType.emoji} RONDE #${canNumber} (${dType.name.toUpperCase()}) AFGEVINKT! ${deltaStatus}`;
       quote.textContent = MOTIVATIONAL_QUOTES[(canNumber - 1) % MOTIVATIONAL_QUOTES.length];
       emoji.textContent = canNumber === 20 ? '👑' : dType.emoji;
+
+      if (newlyUnlockedBadges.length > 0) {
+        badgesRow.classList.remove('hidden');
+        badgesRow.innerHTML = `🎖️ NIEUWE BADGE UNLOCKED: ` + newlyUnlockedBadges.map(id => renderBadgePillHTML(id)).join(' ');
+      } else {
+        badgesRow.classList.add('hidden');
+        badgesRow.innerHTML = '';
+      }
 
       toast.classList.remove('opacity-0', 'translate-y-8');
       toast.classList.add('opacity-100', 'translate-y-0');
@@ -999,11 +1359,11 @@
       toastTimeout = setTimeout(() => {
         toast.classList.remove('opacity-100', 'translate-y-0');
         toast.classList.add('opacity-0', 'translate-y-8');
-      }, 4800);
+      }, 5200);
     }
 
     // =========================================================================
-    // RENDER DRINK GRAPHIC (STËLZ CAN, BEER MUG OR WINE GLASS)
+    // RENDER DRINK GRAPHIC
     // =========================================================================
     function renderDrinkIllustrationHTML(canNumber, type, theme) {
       if (type === 'bier') {
@@ -1024,7 +1384,6 @@
           </div>
         `;
       }
-      // Default: Stëlz Can
       return `
         <div class="w-11 h-16 rounded-lg bg-gradient-to-b from-white via-slate-50 to-slate-100 border border-slate-300 shadow flex flex-col items-center justify-between p-1">
           <div class="w-6 h-1 bg-slate-300 rounded-full"></div>
@@ -1038,7 +1397,7 @@
     }
 
     // =========================================================================
-    // BUILD CARDS FOR ALL 20 DRINKS (CAN 1 TO CAN 20)
+    // BUILD CARDS FOR ALL 20 DRINKS
     // =========================================================================
     function buildCansGrid() {
       const grid = document.getElementById('cansGrid');
@@ -1058,11 +1417,9 @@
         card.className = `relative rounded-2xl border-2 ${theme.ring} bg-gradient-to-b ${theme.softBg} p-4 shadow-md transition-all duration-300 flex flex-col justify-between`;
 
         card.innerHTML = `
-          <!-- Top Row: Drink Visual + Number + Target Time -->
           <div>
             <div class="flex items-start justify-between gap-2 mb-2.5">
               <div class="flex items-center gap-2.5">
-                <!-- Interactive Drink Icon -->
                 <div
                   id="canGraphicWrap-${i}"
                   onclick="playCanOpenSound(drinkTypes[${i}]);"
@@ -1084,7 +1441,6 @@
                 </div>
               </div>
 
-              <!-- Target Clock Chip -->
               <div class="text-right shrink-0">
                 <div class="text-[10px] font-extrabold uppercase text-amber-800/70">Streeftijd</div>
                 <div id="canTargetTime-${i}" class="font-mono-timer text-xs font-extrabold bg-white/90 px-2 py-0.5 rounded-md border border-amber-900/15 text-[#4A3718]">
@@ -1093,32 +1449,18 @@
               </div>
             </div>
 
-            <!-- Per-Slot Drink Selector: Stëlz (default) | Bier | Wijn -->
             <div class="grid grid-cols-3 gap-1 bg-white/80 p-1 rounded-xl border border-amber-900/15 mb-2.5">
-              <button
-                id="typeBtn-${i}-stelz"
-                onclick="setDrinkType(${i}, 'stelz')"
-                class="py-1 px-1.5 rounded-lg text-[11px] font-extrabold transition flex items-center justify-center gap-1"
-              >
+              <button id="typeBtn-${i}-stelz" onclick="setDrinkType(${i}, 'stelz')" class="py-1 px-1.5 rounded-lg text-[11px] font-extrabold transition flex items-center justify-center gap-1">
                 <span>🥫</span><span>Stëlz</span>
               </button>
-              <button
-                id="typeBtn-${i}-bier"
-                onclick="setDrinkType(${i}, 'bier')"
-                class="py-1 px-1.5 rounded-lg text-[11px] font-extrabold transition flex items-center justify-center gap-1"
-              >
+              <button id="typeBtn-${i}-bier" onclick="setDrinkType(${i}, 'bier')" class="py-1 px-1.5 rounded-lg text-[11px] font-extrabold transition flex items-center justify-center gap-1">
                 <span>🍺</span><span>Bier</span>
               </button>
-              <button
-                id="typeBtn-${i}-wijn"
-                onclick="setDrinkType(${i}, 'wijn')"
-                class="py-1 px-1.5 rounded-lg text-[11px] font-extrabold transition flex items-center justify-center gap-1"
-              >
+              <button id="typeBtn-${i}-wijn" onclick="setDrinkType(${i}, 'wijn')" class="py-1 px-1.5 rounded-lg text-[11px] font-extrabold transition flex items-center justify-center gap-1">
                 <span>🍷</span><span>Wijn</span>
               </button>
             </div>
 
-            <!-- Countdown / Behind / Locked Time Box -->
             <div id="canTimerBox-${i}" class="bg-white/95 rounded-xl p-2.5 border border-amber-900/10 text-center shadow-inner mb-2.5 transition-colors">
               <div id="canStatusLabel-${i}" class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-0.5">
                 Tijd tot ronde #${i}
@@ -1131,21 +1473,19 @@
               </div>
             </div>
 
-            <!-- Interval Progress Bar -->
             <div class="w-full h-2 bg-white/80 rounded-full overflow-hidden border border-amber-900/10 mb-3">
               <div id="canBar-${i}" class="h-full bg-gradient-to-r ${theme.bar} transition-all duration-300" style="width: 0%"></div>
             </div>
 
-            <!-- Motivational Quote Box (revealed when checked off) -->
             <div id="canMotivation-${i}" class="hidden mb-3 rounded-xl bg-emerald-50 border border-emerald-300 p-2.5 text-xs font-bold text-emerald-950 shadow-sm">
               <div class="flex items-start gap-2">
                 <span class="text-base leading-none">🎺</span>
                 <span class="italic leading-snug">"${quoteText}"</span>
               </div>
+              <div id="canSpecialBadges-${i}" class="mt-1.5 flex flex-wrap gap-1"></div>
             </div>
           </div>
 
-          <!-- Check-off Action Button -->
           <button
             id="canCheckBtn-${i}"
             onclick="toggleCanChecked(${i})"
@@ -1196,12 +1536,9 @@
     function setDrinkType(canNumber, newType) {
       if (!DRINK_TYPES[newType]) return;
       drinkTypes[canNumber] = newType;
-
-      // If already checked off, also update the stored drinkType
       if (completedCans[canNumber]) {
         completedCans[canNumber].drinkType = newType;
       }
-
       saveLocalState();
       updateDrinkTypeButtonsUI(canNumber);
       playCanOpenSound(newType);
@@ -1225,7 +1562,7 @@
     }
 
     // =========================================================================
-    // CHECK OFF / UNCHECK A DRINK & LOCK IN THE TIME + BEHIND/AHEAD DELTA
+    // CHECK OFF / UNCHECK A DRINK & CHECK FOR 69 / 67 / SNIPER BADGES!
     // =========================================================================
     function toggleCanChecked(canNumber) {
       const nowMs = Date.now();
@@ -1235,7 +1572,8 @@
       if (completedCans[canNumber]) {
         delete completedCans[canNumber];
       } else {
-        // deltaMs < 0 means behind schedule, deltaMs >= 0 means completed before target time
+        const beforeAuto = new Set(evaluateAutoAchievementsFromCans(completedCans));
+
         const deltaMs = targetTimeMs - nowMs;
         completedCans[canNumber] = {
           completedAtMs: nowMs,
@@ -1245,10 +1583,12 @@
           drinkType: chosenType
         };
 
-        // Play sound + party horn + confetti + motivational quote
+        const afterAuto = evaluateAutoAchievementsFromCans(completedCans);
+        const newlyUnlocked = afterAuto.filter(id => !beforeAuto.has(id));
+
         playCheckoffComboSound(chosenType);
         fireConfetti();
-        showMotivationToast(canNumber, completedCans[canNumber]);
+        showMotivationToast(canNumber, completedCans[canNumber], newlyUnlocked);
 
         const card = document.getElementById(`canCard-${canNumber}`);
         if (card) {
@@ -1271,6 +1611,221 @@
     }
 
     // =========================================================================
+    // 🎖️ CHALLENGES & BADGE AWARDING LOGIC
+    // =========================================================================
+    function getEffectivePlayerBadges(playerObj) {
+      if (!playerObj) return [];
+      let cansMap = {};
+      try {
+        cansMap = playerObj.cansJson ? JSON.parse(playerObj.cansJson) : {};
+      } catch (e) {}
+
+      const autoIds = evaluateAutoAchievementsFromCans(cansMap);
+      const manualFromPlayer = Array.isArray(playerObj.manualBadges) ? playerObj.manualBadges : [];
+      const awardedRoomWide = awardedBadgesByPlayer.get(playerObj.id) || [];
+
+      const combined = [...autoIds, ...manualFromPlayer, ...awardedRoomWide];
+      return Array.from(new Set(combined));
+    }
+
+    function openChallengesModal(preselectPlayerId = null) {
+      const modal = document.getElementById('challengesModal');
+      const select = document.getElementById('badgeTargetPlayerSelect');
+
+      // Ensure local player is in map
+      const mySummary = computeMyPlayerSummary();
+      allPlayersMap.set(myPlayer.id, mySummary);
+
+      const players = Array.from(allPlayersMap.values());
+      select.innerHTML = players.map(p => {
+        const label = p.id === myPlayer.id ? `${p.name || 'Jijzelf'} (Jij)` : (p.name || 'Speler');
+        return `<option value="${p.id}">${escapeHtml(label)}</option>`;
+      }).join('');
+
+      if (preselectPlayerId && allPlayersMap.has(preselectPlayerId)) {
+        select.value = preselectPlayerId;
+      } else {
+        select.value = myPlayer.id;
+      }
+
+      renderChallengesModalContent();
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeChallengesModal() {
+      const modal = document.getElementById('challengesModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function renderChallengesModalContent() {
+      const select = document.getElementById('badgeTargetPlayerSelect');
+      const targetId = select ? select.value : myPlayer.id;
+      const targetPlayer = allPlayersMap.get(targetId) || computeMyPlayerSummary();
+      const activeBadges = new Set(getEffectivePlayerBadges(targetPlayer));
+
+      // 1. Render Awardable Kantine Challenges
+      const chGrid = document.getElementById('awardableChallengesGrid');
+      chGrid.innerHTML = AWARDABLE_CHALLENGES.map(ch => {
+        const isActive = activeBadges.has(ch.id);
+        return `
+          <div
+            onclick="toggleAwardChallenge('${targetId}', '${ch.id}')"
+            class="cursor-pointer rounded-2xl p-3 border-2 transition-all flex items-center justify-between gap-3 ${
+              isActive
+                ? 'bg-emerald-50 border-emerald-500 shadow-md'
+                : 'bg-white hover:bg-amber-50/70 border-amber-200'
+            }"
+          >
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 ${ch.style}">
+                ${ch.emoji}
+              </div>
+              <div class="min-w-0">
+                <div class="font-poster font-extrabold text-sm text-[#4A3718] flex items-center gap-1.5">
+                  <span>${escapeHtml(ch.title)}</span>
+                  ${isActive ? '<span class="text-[10px] bg-emerald-600 text-white px-1.5 py-0.2 rounded-full">ACTIEF</span>' : ''}
+                </div>
+                <div class="text-[11px] font-semibold text-[#7A5B2B] leading-snug">
+                  ${escapeHtml(ch.desc)}
+                </div>
+              </div>
+            </div>
+            <div class="w-6 h-6 rounded-lg border-2 flex items-center justify-center font-black text-xs shrink-0 ${
+              isActive ? 'bg-emerald-600 border-emerald-700 text-white' : 'border-amber-300 text-transparent'
+            }">
+              ✓
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 2. Render Automatic Time & Number Achievements
+      const autoGrid = document.getElementById('autoAchievementsGrid');
+      autoGrid.innerHTML = AUTO_ACHIEVEMENTS.map(ach => {
+        const isUnlocked = activeBadges.has(ach.id);
+        return `
+          <div class="rounded-2xl p-3 border-2 flex items-center justify-between gap-3 ${
+            isUnlocked
+              ? 'bg-amber-50 border-amber-400 shadow-sm'
+              : 'bg-white/60 border-amber-200/60 opacity-65'
+          }">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 ${ach.style}">
+                ${ach.emoji}
+              </div>
+              <div class="min-w-0">
+                <div class="font-poster font-extrabold text-sm text-[#4A3718] flex items-center gap-1.5">
+                  <span>${escapeHtml(ach.title)}</span>
+                  ${isUnlocked ? '<span class="text-[10px] bg-amber-500 text-amber-950 px-1.5 py-0.2 rounded-full font-black">BEHAALD!</span>' : ''}
+                </div>
+                <div class="text-[11px] font-semibold text-[#7A5B2B] leading-snug">
+                  ${escapeHtml(ach.desc)}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleAwardChallenge(targetPlayerId, badgeId) {
+      const chObj = ALL_BADGE_MAP[badgeId];
+      if (targetPlayerId === myPlayer.id) {
+        const idx = myManualBadges.indexOf(badgeId);
+        if (idx >= 0) {
+          myManualBadges.splice(idx, 1);
+        } else {
+          myManualBadges.push(badgeId);
+          playPartyHorn(0);
+          fireConfetti();
+        }
+        saveLocalState();
+        syncMyStateToCloud(null, chObj ? `heeft de badge ${chObj.emoji} ${chObj.title} gepakt!` : null);
+      } else {
+        // Awarding to another player in the room!
+        const existing = awardedBadgesByPlayer.get(targetPlayerId) || [];
+        const idx = existing.indexOf(badgeId);
+        let actionRemoved = false;
+        if (idx >= 0) {
+          existing.splice(idx, 1);
+          actionRemoved = true;
+        } else {
+          existing.push(badgeId);
+          playPartyHorn(0);
+          fireConfetti();
+        }
+        awardedBadgesByPlayer.set(targetPlayerId, existing);
+
+        // Also update target player in allPlayersMap and broadcast badge grant
+        const targetPlayer = allPlayersMap.get(targetPlayerId);
+        if (targetPlayer) {
+          targetPlayer.manualBadges = Array.from(new Set([...(targetPlayer.manualBadges || []), ...existing])).filter(b => !(actionRemoved && b === badgeId));
+          targetPlayer.updatedAt = Date.now();
+          if (!actionRemoved && chObj) {
+            targetPlayer.lastActionText = `kreeg de badge "${chObj.emoji} ${chObj.title}" uitgedeeld!`;
+          }
+          allPlayersMap.set(targetPlayerId, targetPlayer);
+          pushToNtfyRelay(targetPlayer);
+          if (bcChannel) {
+            try { bcChannel.postMessage(targetPlayer); } catch (e) {}
+          }
+        }
+        renderLeaderboard();
+      }
+      renderChallengesModalContent();
+    }
+
+    function addCustomBadgeToTarget() {
+      const select = document.getElementById('badgeTargetPlayerSelect');
+      const targetPlayerId = select ? select.value : myPlayer.id;
+      const emojiInput = document.getElementById('customBadgeEmoji');
+      const labelInput = document.getElementById('customBadgeLabel');
+
+      const emoji = (emojiInput.value || '🏅').trim().slice(0, 4) || '🏅';
+      const label = (labelInput.value || '').trim().replace(/:/g, '').slice(0, 22);
+      if (!label) {
+        labelInput.focus();
+        return;
+      }
+
+      const customToken = `custom:${emoji}:${label}`;
+      labelInput.value = '';
+
+      if (targetPlayerId === myPlayer.id) {
+        if (!myManualBadges.includes(customToken)) {
+          myManualBadges.push(customToken);
+        }
+        saveLocalState();
+        playPartyHorn(0);
+        fireConfetti();
+        syncMyStateToCloud(null, `kreeg de custom badge "${emoji} ${label}"!`);
+      } else {
+        const existing = awardedBadgesByPlayer.get(targetPlayerId) || [];
+        if (!existing.includes(customToken)) {
+          existing.push(customToken);
+        }
+        awardedBadgesByPlayer.set(targetPlayerId, existing);
+        const targetPlayer = allPlayersMap.get(targetPlayerId);
+        if (targetPlayer) {
+          targetPlayer.manualBadges = Array.from(new Set([...(targetPlayer.manualBadges || []), customToken]));
+          targetPlayer.lastActionText = `kreeg de badge "${emoji} ${label}" opgeplakt!`;
+          targetPlayer.updatedAt = Date.now();
+          allPlayersMap.set(targetPlayerId, targetPlayer);
+          pushToNtfyRelay(targetPlayer);
+          if (bcChannel) {
+            try { bcChannel.postMessage(targetPlayer); } catch (e) {}
+          }
+        }
+        playPartyHorn(0);
+        fireConfetti();
+        renderLeaderboard();
+      }
+      renderChallengesModalContent();
+    }
+
+    // =========================================================================
     // PLAYER NAME & LEADERBOARD LOGIC
     // =========================================================================
     function savePlayerName() {
@@ -1290,12 +1845,12 @@
       syncMyStateToCloud();
     }
 
-    function computeMyPlayerSummary(lastCheckedCan = null) {
+    function computeMyPlayerSummary(lastCheckedCan = null, customActionText = null) {
       let stelzCount = 0;
       let bierCount = 0;
       let wijnCount = 0;
       let totalCount = 0;
-      let totalDeltaMs = 0; // sum of deltaMs (higher = more ahead / less behind)
+      let totalDeltaMs = 0;
       let compactCans = {};
 
       for (let i = 1; i <= TOTAL_CANS; i++) {
@@ -1316,11 +1871,14 @@
         }
       }
 
-      let lastActionText = '';
-      if (lastCheckedCan && completedCans[lastCheckedCan]) {
+      const roomAwardedToMe = awardedBadgesByPlayer.get(myPlayer.id) || [];
+      const mergedManualBadges = Array.from(new Set([...myManualBadges, ...roomAwardedToMe]));
+
+      let lastActionText = customActionText || '';
+      if (!lastActionText && lastCheckedCan && completedCans[lastCheckedCan]) {
         const r = completedCans[lastCheckedCan];
         const dObj = DRINK_TYPES[r.drinkType || 'stelz'] || DRINK_TYPES.stelz;
-        const deltaLabel = r.deltaMs < 0 ? formatBehindText(r.deltaMs) : formatBehindText(r.deltaMs);
+        const deltaLabel = formatBehindText(r.deltaMs);
         lastActionText = `heeft zojuist #${lastCheckedCan} (${dObj.emoji} ${dObj.name}) geklapt om ${r.completedTimeStr} (${deltaLabel})!`;
       }
 
@@ -1333,24 +1891,35 @@
         wijnCount,
         totalDeltaMs: Math.round(totalDeltaMs),
         cansJson: JSON.stringify(compactCans),
+        manualBadges: mergedManualBadges,
         lastActionText,
         updatedAt: Date.now()
       };
     }
 
-    function renderLeaderboard() {
-      // Always make sure local user is represented in allPlayersMap
+    function renderMyBadgesPreviewBar() {
       const mySummary = computeMyPlayerSummary();
-      if (myPlayer.name || mySummary.totalCount > 0) {
+      const badges = getEffectivePlayerBadges(mySummary);
+      const container = document.getElementById('myBadgesPreviewRow');
+      if (!container) return;
+
+      if (badges.length === 0) {
+        container.innerHTML = `<span class="text-xs text-amber-200/60 italic">Nog geen badges — vink een drankje af (bijv. met 69 of 67 op de klok) of kies een Kantine Challenge!</span>`;
+      } else {
+        container.innerHTML = badges.map(b => renderBadgePillHTML(b)).join('');
+      }
+    }
+
+    function renderLeaderboard() {
+      const mySummary = computeMyPlayerSummary();
+      if (myPlayer.name || mySummary.totalCount > 0 || (mySummary.manualBadges && mySummary.manualBadges.length > 0)) {
         allPlayersMap.set(myPlayer.id, mySummary);
       }
 
+      renderMyBadgesPreviewBar();
+
       const players = Array.from(allPlayersMap.values());
 
-      // Sort by:
-      // 1) Most completed drinks (descending)
-      // 2) Best totalDeltaMs (higher = more ahead / less behind)
-      // 3) Most recently updated
       players.sort((a, b) => {
         if ((b.totalCount || 0) !== (a.totalCount || 0)) {
           return (b.totalCount || 0) - (a.totalCount || 0);
@@ -1361,7 +1930,6 @@
         return (b.updatedAt || 0) - (a.updatedAt || 0);
       });
 
-      // Compute Kantine totals
       let sumStelz = 0, sumBeer = 0, sumWine = 0, sumAll = 0;
       let latestTickerPlayer = null;
 
@@ -1421,9 +1989,11 @@
         const deltaLabel =
           (p.totalCount || 0) === 0
             ? 'Nog 0 geklapt'
-            : `Totaal tijd: ${formatSignedClock(deltaMs)} (${deltaMs < 0 ? 'achter' : 'voor'})`;
+            : `Tijd: ${formatSignedClock(deltaMs)} (${deltaMs < 0 ? 'achter' : 'voor'})`;
 
         const pct = Math.min(100, Math.round(((p.totalCount || 0) / TOTAL_CANS) * 100));
+        const playerBadges = getEffectivePlayerBadges(p);
+        const badgesHtml = playerBadges.map(b => renderBadgePillHTML(b)).join('');
 
         return `
           <div
@@ -1436,7 +2006,7 @@
           >
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-3 min-w-0">
-                <span class="font-poster font-extrabold text-sm sm:text-base px-2.5 py-1 rounded-xl ${
+                <span class="font-poster font-extrabold text-sm sm:text-base px-2.5 py-1 rounded-xl shrink-0 ${
                   rank === 1 ? 'bg-amber-400 text-amber-950' :
                   rank === 2 ? 'bg-slate-200 text-slate-900' :
                   rank === 3 ? 'bg-amber-700 text-amber-100' : 'bg-amber-950 text-amber-200 border border-amber-600/40'
@@ -1445,20 +2015,29 @@
                 </span>
 
                 <div class="min-w-0">
-                  <div class="flex items-center gap-2">
+                  <div class="flex flex-wrap items-center gap-1.5">
                     <span class="font-poster font-extrabold text-base sm:text-lg text-white truncate">
                       ${escapeHtml(p.name || 'Speler')}
                     </span>
                     ${isMe ? '<span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-pink-500 text-white">JIJ</span>' : ''}
+                    ${badgesHtml}
                   </div>
-                  <div class="text-[11px] text-amber-200/75 font-semibold truncate">
+                  <div class="text-[11px] text-amber-200/75 font-semibold truncate mt-0.5">
                     ${p.lastActionText ? escapeHtml(p.lastActionText) : 'Staat klaar aan de bar!'}
                   </div>
                 </div>
               </div>
 
-              <!-- Right Stats: Mix + Delta + Score -->
+              <!-- Right Stats: Give Badge + Mix + Delta + Score -->
               <div class="flex flex-wrap items-center gap-2 ml-auto">
+                <button
+                  onclick="event.stopPropagation(); openChallengesModal('${p.id}')"
+                  class="px-2 py-1 rounded-xl bg-purple-600/80 hover:bg-purple-500 text-white text-[10px] font-extrabold border border-purple-300/40 transition"
+                  title="Deel een Challenge Badge uit aan ${escapeHtml(p.name || 'Speler')}"
+                >
+                  🎖️ +Badge
+                </button>
+
                 <div class="flex items-center gap-1.5 bg-black/35 px-2.5 py-1 rounded-xl border border-amber-500/20 text-xs font-extrabold">
                   <span title="Stëlz">🥫 ${p.stelzCount || 0}</span>
                   <span class="text-amber-500/40">•</span>
@@ -1477,7 +2056,6 @@
               </div>
             </div>
 
-            <!-- Mini Progress Bar -->
             <div class="mt-2 w-full h-1.5 bg-black/40 rounded-full overflow-hidden">
               <div class="h-full bg-gradient-to-r from-pink-500 via-amber-400 to-emerald-400 transition-all duration-300" style="width: ${pct}%"></div>
             </div>
@@ -1500,7 +2078,9 @@
       const modal = document.getElementById('playerInspectModal');
       const title = document.getElementById('inspectModalTitle');
       const summary = document.getElementById('inspectModalSummary');
+      const badgesWrap = document.getElementById('inspectModalBadges');
       const grid = document.getElementById('inspectModalGrid');
+      const giveBtn = document.getElementById('inspectGiveBadgeBtn');
 
       title.textContent = `${p.name || 'Speler'} (${p.totalCount || 0}/${TOTAL_CANS})`;
       summary.innerHTML = `
@@ -1509,6 +2089,16 @@
           <span class="font-mono-timer font-extrabold">Totale tijdscore: ${formatSignedClock(p.totalDeltaMs || 0)}</span>
         </div>
       `;
+
+      const badges = getEffectivePlayerBadges(p);
+      badgesWrap.innerHTML = badges.length > 0
+        ? badges.map(b => renderBadgePillHTML(b)).join('')
+        : `<span class="text-xs text-amber-800/70 italic">Nog geen badges behaald of uitgedeeld.</span>`;
+
+      giveBtn.onclick = () => {
+        closePlayerInspectModal();
+        openChallengesModal(playerId);
+      };
 
       let cansObj = {};
       try {
@@ -1521,9 +2111,11 @@
         if (entry) {
           const dObj = DRINK_TYPES[entry.t || 'stelz'] || DRINK_TYPES.stelz;
           const isBehind = Number(entry.d || 0) < 0;
+          const has69 = checkContainsPattern({ deltaMs: entry.d, completedTimeStr: entry.c }, '69');
+          const has67 = checkContainsPattern({ deltaMs: entry.d, completedTimeStr: entry.c }, '67');
           cellsHtml += `
-            <div class="rounded-xl p-2 text-center border-2 ${isBehind ? 'bg-rose-50 border-rose-300' : 'bg-emerald-50 border-emerald-300'}">
-              <div class="text-[10px] font-black text-slate-500">#${i}</div>
+            <div class="rounded-xl p-2 text-center border-2 ${isBehind ? 'bg-rose-50 border-rose-300' : 'bg-emerald-50 border-emerald-300'} relative">
+              <div class="text-[10px] font-black text-slate-500">#${i} ${has69 ? '😏' : ''}${has67 ? '🤪' : ''}</div>
               <div class="text-lg my-0.5">${dObj.emoji}</div>
               <div class="font-mono-timer text-[10px] font-extrabold ${isBehind ? 'text-rose-700' : 'text-emerald-700'}">
                 ${formatSignedClock(entry.d || 0)}
@@ -1546,7 +2138,7 @@
       modal.classList.add('flex');
     }
 
-    function closePlayerInspectModal(e) {
+    function closePlayerInspectModal() {
       const modal = document.getElementById('playerInspectModal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
@@ -1581,7 +2173,7 @@
 
     function shareViaWhatsApp() {
       const url = window.location.href.split('#')[0];
-      const text = `🦩🍻 Doe live mee met het DVOV Stëlz Party Scorebord (20 rondes, elke 12 min)! Vul je naam in: ${url}`;
+      const text = `🦩🍻 Doe live mee met het DVOV Stëlz Party Scorebord (20 rondes, elke 12 min + 69/67 Badges)! Vul je naam in: ${url}`;
       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
 
@@ -1601,7 +2193,6 @@
       const now = Date.now();
       document.getElementById('liveClockDisplay').textContent = formatTimeOfDay(now);
 
-      // 1. Update Main Countdown (Start & Can #1)
       const diffMain = baseStartTimestamp - now;
       const can1Record = completedCans[1];
       const heroCanBadge = document.getElementById('heroCanBadge');
@@ -1616,11 +2207,9 @@
         heroCanBadge.className = 'inline-block bg-emerald-600 text-white text-xs font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider mb-1';
         heroBtnCan1.className = 'mt-2 w-full py-2 px-3 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-700 text-white shadow transition flex items-center justify-center gap-1.5';
         heroBtnCan1Label.textContent = `Vastgelegd (${can1Record.completedTimeStr})`;
-        can1StatusText.textContent = can1Record.deltaMs < 0
-          ? `🔒 Vastgelegd met ${formatBehindText(can1Record.deltaMs)}`
-          : `🔒 Vastgelegd met ${formatBehindText(can1Record.deltaMs)}!`;
+        can1StatusText.textContent = `🔒 Vastgelegd met ${formatBehindText(can1Record.deltaMs)}`;
       } else if (diffMain <= 0) {
-        const behindMs = diffMain; // negative value
+        const behindMs = diffMain;
         heroCanBadge.textContent = `🚨 #1 LOOPT IN DE MIN!`;
         heroCanBadge.className = 'inline-block bg-rose-600 text-white text-xs font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider mb-1 animate-pulse';
         heroBtnCan1.className = 'mt-2 w-full py-2 px-3 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-rose-600 hover:bg-rose-700 text-white shadow transition flex items-center justify-center gap-1.5';
@@ -1658,7 +2247,6 @@
         document.getElementById('mainHeadline').textContent = '🔥 De DVOV Stëlz Party is in volle gang!';
       }
 
-      // 2. Update All 20 Cans
       let unlockedCount = diffMain <= 0 ? 1 : 0;
       let checkedTotal = 0;
       let myStelz = 0, myBier = 0, myWijn = 0;
@@ -1668,7 +2256,7 @@
       for (let i = 1; i <= TOTAL_CANS; i++) {
         const targetTime = baseStartTimestamp + (i - 1) * INTERVAL_MS;
         const prevTargetTime = i === 1 ? baseStartTimestamp - INTERVAL_MS : baseStartTimestamp + (i - 2) * INTERVAL_MS;
-        const diff = targetTime - now; // positive before target, negative when overdue!
+        const diff = targetTime - now;
 
         const card = document.getElementById(`canCard-${i}`);
         const timerBox = document.getElementById(`canTimerBox-${i}`);
@@ -1677,6 +2265,7 @@
         const subStatusEl = document.getElementById(`canSubStatus-${i}`);
         const barEl = document.getElementById(`canBar-${i}`);
         const motivationEl = document.getElementById(`canMotivation-${i}`);
+        const specialBadgesEl = document.getElementById(`canSpecialBadges-${i}`);
         const checkBtn = document.getElementById(`canCheckBtn-${i}`);
         const checkIcon = document.getElementById(`canCheckIcon-${i}`);
         const checkText = document.getElementById(`canCheckText-${i}`);
@@ -1699,7 +2288,6 @@
           nextUpcomingTimeStr = formatShortTime(targetTime);
         }
 
-        // CASE A: CAN IS CHECKED OFF -> LOCK TIME & SHOW RECORDED DELTA
         if (isChecked) {
           const wasBehind = record.deltaMs < 0;
           const lockedClockStr = formatSignedClock(record.deltaMs);
@@ -1724,6 +2312,15 @@
 
           motivationEl.classList.remove('hidden');
 
+          // Show per-can special badges if this specific drink triggered 69, 67 or Sniper!
+          if (specialBadgesEl) {
+            let canPills = [];
+            if (checkContainsPattern(record, '69')) canPills.push(renderBadgePillHTML('nice_69'));
+            if (checkContainsPattern(record, '67')) canPills.push(renderBadgePillHTML('meme_67'));
+            if (Math.abs(record.deltaMs) <= 5000) canPills.push(renderBadgePillHTML('sniper'));
+            specialBadgesEl.innerHTML = canPills.join('');
+          }
+
           checkBtn.className = 'w-full py-2.5 px-3 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow bg-emerald-600 hover:bg-emerald-700 text-white border-2 border-emerald-700';
           checkIcon.className = 'w-4 h-4 rounded bg-white text-emerald-700 flex items-center justify-center text-[11px] font-black';
           checkIcon.textContent = '✓';
@@ -1731,13 +2328,11 @@
           continue;
         }
 
-        // Not checked off: hide motivation box & reset check button
         motivationEl.classList.add('hidden');
         card.classList.remove('ring-2', 'ring-emerald-500');
 
-        // CASE B: TARGET TIME PASSED & NOT CHECKED -> RUN NEGATIVE TIMER (IN DE MIN!)
         if (diff <= 0) {
-          const negClock = formatSignedClock(diff); // e.g. -00:04:18
+          const negClock = formatSignedClock(diff);
           const behindDescription = formatBehindText(diff);
 
           statusLabelEl.textContent = `🚨 ACHTERSTAND OP ${dTypeObj.unitSingular.toUpperCase()} #${i}!`;
@@ -1757,9 +2352,7 @@
           checkIcon.className = 'w-4 h-4 rounded border-2 border-white flex items-center justify-center text-[10px]';
           checkIcon.textContent = '!';
           checkText.textContent = `${dTypeObj.emoji} Nu Afvinken & Tijd Vastleggen!`;
-        }
-        // CASE C: STILL COUNTING DOWN TO TARGET TIME
-        else {
+        } else {
           const totalSec = Math.ceil(diff / 1000);
           const hrs = Math.floor(totalSec / 3600);
           const mins = Math.floor((totalSec % 3600) / 60);
@@ -1773,7 +2366,6 @@
           checkIcon.textContent = '';
           checkText.textContent = `Afvinken (${dTypeObj.emoji} ${dTypeObj.name} op)`;
 
-          // Highlight the immediate next drink in the 12-minute window
           if (now >= prevTargetTime && now < targetTime && diffMain <= 0) {
             card.classList.add('active-can-glow');
             statusLabelEl.textContent = `⏳ NU AAN DE BEURT (ELKE 12 MIN)`;
@@ -1797,7 +2389,6 @@
         }
       }
 
-      // 3. Update Overall Progress Bar & Badges
       const pctTotal = (checkedTotal / TOTAL_CANS) * 100;
       document.getElementById('overallProgressBar').style.width = `${pctTotal}%`;
       document.getElementById('overallProgressLabel').textContent =
@@ -1822,7 +2413,7 @@
     }
 
     // =========================================================================
-    // MODE SWITCHERS (REAL 19:30 vs DEMO MODES)
+    // MODE SWITCHERS
     // =========================================================================
     function refreshTargetTimesOnCards() {
       for (let i = 1; i <= TOTAL_CANS; i++) {
@@ -1860,7 +2451,6 @@
       });
     }
 
-    // Initialize UI
     if (myPlayer.name) {
       document.getElementById('playerNameInput').value = myPlayer.name;
     }
@@ -1869,9 +2459,7 @@
     setInterval(tick, 200);
 
     // =========================================================================
-    // MULTI-TRANSPORT LIVE CLOUD SYNC (WORKS OUT-OF-THE-BOX ON GITHUB PAGES!)
-    // Transport 1: ntfy.sh Public Realtime SSE Stream + History (Zero-Config!)
-    // Transport 2: BroadcastChannel for instant same-device tabs
+    // MULTI-TRANSPORT LIVE CLOUD SYNC (GITHUB PAGES READY!)
     // =========================================================================
     const NTFY_TOPIC = 'dvov_stelz_kantine_2026_live_v3';
     const NTFY_BASE_URL = `https://ntfy.sh/${NTFY_TOPIC}`;
@@ -1889,9 +2477,16 @@
       }
     }
 
-    // Merge incoming player state if it is newer than what we have
     function mergeIncomingPlayerRecord(rec) {
       if (!rec || !rec.id) return;
+      // Preserve any room-awarded badges
+      if (Array.isArray(rec.manualBadges)) {
+        awardedBadgesByPlayer.set(rec.id, rec.manualBadges);
+        if (rec.id === myPlayer.id) {
+          myManualBadges = Array.from(new Set([...myManualBadges, ...rec.manualBadges]));
+          saveLocalState();
+        }
+      }
       const existing = allPlayersMap.get(rec.id);
       if (!existing || (rec.updatedAt || 0) >= (existing.updatedAt || 0)) {
         allPlayersMap.set(rec.id, rec);
@@ -1899,7 +2494,6 @@
       }
     }
 
-    // BroadcastChannel for instant multi-tab testing on same device
     let bcChannel = null;
     try {
       if ('BroadcastChannel' in window) {
@@ -1912,7 +2506,6 @@
       }
     } catch (e) {}
 
-    // Push current player state to all connected phones
     async function pushToNtfyRelay(summary) {
       try {
         await fetch(NTFY_BASE_URL, {
@@ -1926,7 +2519,6 @@
       } catch (e) {}
     }
 
-    // Pull recent history (last 18 hours) from ntfy relay so new phones see everyone immediately
     async function forceCloudPull(manualClick = false) {
       if (manualClick) {
         updateSyncBadge('Synchroniseren...', true);
@@ -1952,7 +2544,6 @@
       } catch (e) {}
     }
 
-    // Subscribe to real-time Server-Sent Events stream from ntfy
     function connectNtfyRealtimeStream() {
       if (typeof EventSource === 'undefined') return;
       try {
@@ -1981,16 +2572,15 @@
       } catch (e) {}
     }
 
-    // Sync local player state to all channels
-    window.syncMyStateToCloud = async function(lastCheckedCan = null) {
-      const summary = computeMyPlayerSummary(lastCheckedCan);
+    window.syncMyStateToCloud = async function(lastCheckedCan = null, customActionText = null) {
+      const summary = computeMyPlayerSummary(lastCheckedCan, customActionText);
 
-      if (myPlayer.name || summary.totalCount > 0) {
+      if (myPlayer.name || summary.totalCount > 0 || (summary.manualBadges && summary.manualBadges.length > 0)) {
         allPlayersMap.set(myPlayer.id, summary);
       }
       renderLeaderboard();
 
-      if (!myPlayer.name && summary.totalCount === 0) return;
+      if (!myPlayer.name && summary.totalCount === 0 && (!summary.manualBadges || summary.manualBadges.length === 0)) return;
 
       if (bcChannel) {
         try { bcChannel.postMessage(summary); } catch (e) {}
@@ -1999,12 +2589,11 @@
       pushToNtfyRelay(summary);
     };
 
-    // Start cloud sync immediately on page load
     connectNtfyRealtimeStream();
     forceCloudPull(false);
     setInterval(() => forceCloudPull(false), 20000);
 
-    if (myPlayer.name || Object.keys(completedCans).length > 0) {
+    if (myPlayer.name || Object.keys(completedCans).length > 0 || myManualBadges.length > 0) {
       setTimeout(() => window.syncMyStateToCloud(), 700);
     }
   </script>
