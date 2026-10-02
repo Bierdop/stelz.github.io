@@ -149,6 +149,29 @@
   <!-- Confetti Canvas Overlay -->
   <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
 
+<!-- ===================================================================== -->
+<!-- 🎮 XBOX-STYLE ACHIEVEMENT POP-UP (SCHUIFT BOVENIN BINNEN)              -->
+<!-- ===================================================================== -->
+<div id="xboxAchievementPopup" class="fixed -top-32 left-1/2 -translate-x-1/2 z-[999] transition-all duration-500 ease-out pointer-events-none w-[94%] max-w-sm">
+  <div class="bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 border-2 border-amber-400/80 rounded-2xl p-3.5 shadow-[0_15px_40px_rgba(0,0,0,0.8)] flex items-center gap-3 text-white">
+    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 border border-amber-200 flex items-center justify-center text-2xl shrink-0 shadow-lg" id="xboxAchIcon">
+      🏆
+    </div>
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center justify-between">
+        <span class="text-[9px] font-black uppercase tracking-widest text-amber-400">ACHIEVEMENT UNLOCKED</span>
+        <span class="text-[9px] font-mono-timer text-zinc-400">GamerScore 50G</span>
+      </div>
+      <div id="xboxAchTitle" class="font-poster text-base font-extrabold text-white truncate">
+        Titel van Achievement
+      </div>
+      <div id="xboxAchDesc" class="text-[11px] text-zinc-300 font-medium truncate">
+        Beschrijving van de badge...
+      </div>
+    </div>
+  </div>
+</div>
+  
   <!-- Toast / Motivational & Achievement Pop-up Banner -->
   <div id="motivationToast" class="fixed top-14 sm:top-auto sm:bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 -translate-y-4 sm:translate-y-8 transition-all duration-300 max-w-md w-[94%]">
     <div class="bg-gradient-to-r from-[#5A3E1B] via-[#7A5626] to-[#5A3E1B] text-[#FDFBF3] px-5 py-4 rounded-2xl shadow-2xl border-2 border-[#F2CB6B] flex items-center gap-3.5">
@@ -1808,6 +1831,84 @@
     const customCheerAudio = new Audio('sound.mp3');
     customCheerAudio.preload = 'auto';
 
+function playXboxAchievementSound() {
+    if (!soundEnabled) return;
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      // Iconisch Xbox 360-achtige triomfaccoord (twee snelle tonen omhoog)
+      const notes = [
+        { freq: 523.25, time: 0.0, dur: 0.12 }, // C5
+        { freq: 659.25, time: 0.1, dur: 0.14 }, // E5
+        { freq: 783.99, time: 0.2, dur: 0.18 }, // G5
+        { freq: 1046.50, time: 0.32, dur: 0.4 }  // C6
+      ];
+      notes.forEach(n => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(n.freq, now + n.time);
+        gain.gain.setValueAtTime(0.001, now + n.time);
+        gain.gain.linearRampToValueAtTime(0.25, now + n.time + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + n.time + n.dur);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + n.time);
+        osc.stop(now + n.time + n.dur + 0.05);
+      });
+    } catch (e) {}
+  }
+
+  let xboxQueue = [];
+  let isShowingXboxPopup = false;
+
+  function triggerXboxAchievementPopup(badgeObj) {
+    if (!badgeObj) return;
+    xboxQueue.push(badgeObj);
+    processXboxQueue();
+  }
+
+  function processXboxQueue() {
+    if (isShowingXboxPopup || xboxQueue.length === 0) return;
+    isShowingXboxPopup = true;
+    const b = xboxQueue.shift();
+
+    const popup = document.getElementById('xboxAchievementPopup');
+    const iconEl = document.getElementById('xboxAchIcon');
+    const titleEl = document.getElementById('xboxAchTitle');
+    const descEl = document.getElementById('xboxAchDesc');
+
+    if (!popup) {
+      isShowingXboxPopup = false;
+      return;
+    }
+
+    iconEl.textContent = b.emoji || '🏆';
+    titleEl.textContent = b.title || b.short || 'Achievement';
+    descEl.textContent = b.desc || 'Badge ontgrendeld in de kantine!';
+
+    playXboxAchievementSound();
+    if ('vibrate' in navigator) {
+      try { navigator.vibrate([100, 50, 200, 50, 300]); } catch (e) {}
+    }
+
+    // Schuif omlaag naar binnen
+    popup.classList.remove('-top-32');
+    popup.classList.add('top-4');
+
+    setTimeout(() => {
+      // Schuif weer omhoog na 3.8 seconden
+      popup.classList.remove('top-4');
+      popup.classList.add('-top-32');
+
+      setTimeout(() => {
+        isShowingXboxPopup = false;
+        processXboxQueue();
+      }, 500);
+    }, 3800);
+  }
+    
     function playSynthFallbackHorn() {
       try {
         const ctx = getAudioContext();
@@ -2220,12 +2321,18 @@
           drinkType: chosenType
         };
 
-        const afterAuto = evaluateAutoAchievementsFromCans(completedCans);
-        const newlyUnlocked = afterAuto.filter(id => !beforeAuto.has(id));
+const afterAuto = evaluateAutoAchievementsFromCans(completedCans);
+      const newlyUnlocked = afterAuto.filter(id => !beforeAuto.has(id));
 
-        playCheckoffComboSound(chosenType);
-        fireConfetti();
-        showMotivationToast(canNumber, completedCans[canNumber], newlyUnlocked);
+      playCheckoffComboSound(chosenType);
+      fireConfetti();
+      showMotivationToast(canNumber, completedCans[canNumber], newlyUnlocked);
+
+      // Activeer direct voor elke nieuwe badge de Xbox achievement pop-up!
+      newlyUnlocked.forEach(badgeId => {
+        const bObj = ALL_BADGE_MAP[badgeId];
+        if (bObj) triggerXboxAchievementPopup(bObj);
+      });
 
         const card = document.getElementById(`canCard-${canNumber}`);
         if (card) {
