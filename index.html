@@ -149,29 +149,6 @@
   <!-- Confetti Canvas Overlay -->
   <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
 
-<!-- ===================================================================== -->
-<!-- 🎮 XBOX-STYLE ACHIEVEMENT POP-UP (SCHUIFT BOVENIN BINNEN)              -->
-<!-- ===================================================================== -->
-<div id="xboxAchievementPopup" class="fixed -top-32 left-1/2 -translate-x-1/2 z-[999] transition-all duration-500 ease-out pointer-events-none w-[94%] max-w-sm">
-  <div class="bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 border-2 border-amber-400/80 rounded-2xl p-3.5 shadow-[0_15px_40px_rgba(0,0,0,0.8)] flex items-center gap-3 text-white">
-    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 border border-amber-200 flex items-center justify-center text-2xl shrink-0 shadow-lg" id="xboxAchIcon">
-      🏆
-    </div>
-    <div class="flex-1 min-w-0">
-      <div class="flex items-center justify-between">
-        <span class="text-[9px] font-black uppercase tracking-widest text-amber-400">ACHIEVEMENT UNLOCKED</span>
-        <span class="text-[9px] font-mono-timer text-zinc-400">GamerScore 50G</span>
-      </div>
-      <div id="xboxAchTitle" class="font-poster text-base font-extrabold text-white truncate">
-        Titel van Achievement
-      </div>
-      <div id="xboxAchDesc" class="text-[11px] text-zinc-300 font-medium truncate">
-        Beschrijving van de badge...
-      </div>
-    </div>
-  </div>
-</div>
-  
   <!-- Toast / Motivational & Achievement Pop-up Banner -->
   <div id="motivationToast" class="fixed top-14 sm:top-auto sm:bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 -translate-y-4 sm:translate-y-8 transition-all duration-300 max-w-md w-[94%]">
     <div class="bg-gradient-to-r from-[#5A3E1B] via-[#7A5626] to-[#5A3E1B] text-[#FDFBF3] px-5 py-4 rounded-2xl shadow-2xl border-2 border-[#F2CB6B] flex items-center gap-3.5">
@@ -204,21 +181,12 @@
         <span class="font-extrabold tracking-wide text-amber-200 truncate">DVOV STËLZ PARTY • VRIJDAG 2 OKT (19:30)</span>
       </div>
 
-      <div class="flex items-center gap-1.5 shrink-0">
-      <button
-        onclick="startOnboardingTour(true)"
-        class="px-2.5 py-1 rounded-lg font-extrabold bg-pink-600 hover:bg-pink-500 text-white shadow-sm transition"
-        title="Start de korte rondleiding over de pagina"
-      >
-        ❓ Uitleg
-      </button>
       <button
         onclick="document.getElementById('mobileTopMenu').classList.toggle('hidden')"
-        class="sm:hidden px-2.5 py-1 rounded-lg font-extrabold bg-amber-500/20 text-amber-200 border border-amber-400/40"
+        class="sm:hidden px-2.5 py-1 rounded-lg font-extrabold bg-amber-500/20 text-amber-200 border border-amber-400/40 shrink-0"
       >
-        ⚙️ Opties
+        ⚙️ Opties & Geluid
       </button>
-    </div>
 
       <div id="mobileTopMenu" class="hidden sm:flex flex-wrap items-center gap-1.5 w-full sm:w-auto pt-2 sm:pt-0 border-t border-amber-500/20 sm:border-0 mt-2 sm:mt-0">
         <button id="btnRealMode" onclick="setRealPartyMode()" class="px-2.5 py-1.5 rounded-lg font-bold bg-amber-500 text-amber-950 transition">
@@ -1018,47 +986,6 @@
     </div>
   </div>
 
-<!-- ===================================================================== -->
-<!-- 🧭 INTERACTIEVE 5-STAPPEN TUTORIAL POP-UP                             -->
-<!-- ===================================================================== -->
-<div id="tourPopupCard" class="fixed inset-x-3 bottom-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:bottom-6 z-50 hidden max-w-md w-auto sm:w-full bg-gradient-to-b from-[#4A3718] to-[#2B1E0B] text-[#FDFBF3] border-4 border-[#F2CB6B] rounded-3xl p-4 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.75)] animate-pop">
-  <div class="flex items-center justify-between gap-2 mb-2">
-    <span id="tourStepBadge" class="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-pink-500 text-white">
-      STAP 1 VAN 5
-    </span>
-    <button onclick="endOnboardingTour()" class="text-xs font-extrabold text-amber-300/80 hover:text-white px-2 py-0.5 rounded-lg bg-white/10">
-      ✕ Overslaan
-    </button>
-  </div>
-
-  <div class="flex items-start gap-3 my-2">
-    <div id="tourStepEmoji" class="w-12 h-12 rounded-2xl bg-amber-400/20 border-2 border-[#F2CB6B] flex items-center justify-center text-2xl shrink-0">
-      🙋‍♂️
-    </div>
-    <div>
-      <h4 id="tourStepTitle" class="font-poster text-lg sm:text-xl font-extrabold text-[#F2CB6B] leading-snug">
-        Welkom bij de DVOV Stëlz Party!
-      </h4>
-      <p id="tourStepText" class="text-xs sm:text-sm text-amber-100/90 font-semibold mt-1 leading-relaxed">
-        Uitleg tekst...
-      </p>
-    </div>
-  </div>
-
-  <!-- Voortgangs-stipjes + Vorige/Volgende knoppen -->
-  <div class="flex items-center justify-between gap-2 mt-4 pt-3 border-t border-amber-500/30">
-    <div id="tourDotsWrap" class="flex items-center gap-1.5"></div>
-    <div class="flex items-center gap-2">
-      <button id="tourPrevBtn" onclick="prevTourStep()" class="px-3 py-2 rounded-xl font-extrabold text-xs uppercase bg-white/10 hover:bg-white/20 text-amber-200 transition">
-        ← Vorige
-      </button>
-      <button id="tourNextBtn" onclick="nextTourStep()" class="px-4 py-2 rounded-xl font-poster font-extrabold text-xs sm:text-sm uppercase bg-gradient-to-r from-emerald-500 to-lime-500 text-emerald-950 shadow-lg transition">
-        Volgende →
-      </button>
-    </div>
-  </div>
-</div>
-  
   <!-- Beach & Ocean Footer met Made by Job Janssen -->
   <footer class="relative z-10 mt-auto pt-8 bg-gradient-to-b from-transparent via-[#F2CB6B]/45 to-[#4EC3E0] border-t-4 border-[#F2CB6B]">
     <div class="max-w-6xl mx-auto px-4 pb-8 text-center flex flex-col items-center gap-2.5">
@@ -1831,84 +1758,6 @@
     const customCheerAudio = new Audio('sound.mp3');
     customCheerAudio.preload = 'auto';
 
-function playXboxAchievementSound() {
-    if (!soundEnabled) return;
-    try {
-      const ctx = getAudioContext();
-      if (!ctx) return;
-      const now = ctx.currentTime;
-      // Iconisch Xbox 360-achtige triomfaccoord (twee snelle tonen omhoog)
-      const notes = [
-        { freq: 523.25, time: 0.0, dur: 0.12 }, // C5
-        { freq: 659.25, time: 0.1, dur: 0.14 }, // E5
-        { freq: 783.99, time: 0.2, dur: 0.18 }, // G5
-        { freq: 1046.50, time: 0.32, dur: 0.4 }  // C6
-      ];
-      notes.forEach(n => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(n.freq, now + n.time);
-        gain.gain.setValueAtTime(0.001, now + n.time);
-        gain.gain.linearRampToValueAtTime(0.25, now + n.time + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + n.time + n.dur);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + n.time);
-        osc.stop(now + n.time + n.dur + 0.05);
-      });
-    } catch (e) {}
-  }
-
-  let xboxQueue = [];
-  let isShowingXboxPopup = false;
-
-  function triggerXboxAchievementPopup(badgeObj) {
-    if (!badgeObj) return;
-    xboxQueue.push(badgeObj);
-    processXboxQueue();
-  }
-
-  function processXboxQueue() {
-    if (isShowingXboxPopup || xboxQueue.length === 0) return;
-    isShowingXboxPopup = true;
-    const b = xboxQueue.shift();
-
-    const popup = document.getElementById('xboxAchievementPopup');
-    const iconEl = document.getElementById('xboxAchIcon');
-    const titleEl = document.getElementById('xboxAchTitle');
-    const descEl = document.getElementById('xboxAchDesc');
-
-    if (!popup) {
-      isShowingXboxPopup = false;
-      return;
-    }
-
-    iconEl.textContent = b.emoji || '🏆';
-    titleEl.textContent = b.title || b.short || 'Achievement';
-    descEl.textContent = b.desc || 'Badge ontgrendeld in de kantine!';
-
-    playXboxAchievementSound();
-    if ('vibrate' in navigator) {
-      try { navigator.vibrate([100, 50, 200, 50, 300]); } catch (e) {}
-    }
-
-    // Schuif omlaag naar binnen
-    popup.classList.remove('-top-32');
-    popup.classList.add('top-4');
-
-    setTimeout(() => {
-      // Schuif weer omhoog na 3.8 seconden
-      popup.classList.remove('top-4');
-      popup.classList.add('-top-32');
-
-      setTimeout(() => {
-        isShowingXboxPopup = false;
-        processXboxQueue();
-      }, 500);
-    }, 3800);
-  }
-    
     function playSynthFallbackHorn() {
       try {
         const ctx = getAudioContext();
@@ -2321,18 +2170,12 @@ function playXboxAchievementSound() {
           drinkType: chosenType
         };
 
-const afterAuto = evaluateAutoAchievementsFromCans(completedCans);
-      const newlyUnlocked = afterAuto.filter(id => !beforeAuto.has(id));
+        const afterAuto = evaluateAutoAchievementsFromCans(completedCans);
+        const newlyUnlocked = afterAuto.filter(id => !beforeAuto.has(id));
 
-      playCheckoffComboSound(chosenType);
-      fireConfetti();
-      showMotivationToast(canNumber, completedCans[canNumber], newlyUnlocked);
-
-      // Activeer direct voor elke nieuwe badge de Xbox achievement pop-up!
-      newlyUnlocked.forEach(badgeId => {
-        const bObj = ALL_BADGE_MAP[badgeId];
-        if (bObj) triggerXboxAchievementPopup(bObj);
-      });
+        playCheckoffComboSound(chosenType);
+        fireConfetti();
+        showMotivationToast(canNumber, completedCans[canNumber], newlyUnlocked);
 
         const card = document.getElementById(`canCard-${canNumber}`);
         if (card) {
@@ -3304,83 +3147,28 @@ const afterAuto = evaluateAutoAchievementsFromCans(completedCans);
       }
     }
 
-function purgePlayerCompletely(targetId) {
-    deletedPlayersSet.add(targetId);
-    try {
+    async function adminRemovePlayer(targetPlayerId) {
+      if (!adminUnlocked) return;
+      const p = allPlayersMap.get(targetPlayerId);
+      const name = p ? p.name : targetPlayerId;
+      if (!confirm(`Weet je zeker dat je "${name}" van het live scorebord wilt verwijderen?`)) return;
+
+      deletedPlayersSet.add(targetPlayerId);
       localStorage.setItem('dvov_deleted_players', JSON.stringify(Array.from(deletedPlayersSet)));
-    } catch (e) {}
-
-    allPlayersMap.delete(targetId);
-    awardedBadgesByPlayer.delete(targetId);
-
-    if (targetId === myPlayer.id) {
-      completedCans = {};
-      myManualBadges = [];
-      myShotgunCount = 0;
-      shotgunCooldownUntil = 0;
-      TOTAL_CANS = DEFAULT_CANS;
-      for (let i = 1; i <= TOTAL_CANS; i++) drinkTypes[i] = 'stelz';
-
-      myPlayer = {
-        id: 'p_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now().toString(36),
-        name: '',
-        team: 'DVOV 1',
-        gender: 'M',
-        weightKg: 80
-      };
+      allPlayersMap.delete(targetPlayerId);
+      renderLeaderboard();
 
       try {
-        localStorage.removeItem(STORAGE_KEY_V3);
-        localStorage.removeItem('dvov_stelz_state_v3');
-        localStorage.removeItem('dvov_shotgun_cd');
-        localStorage.removeItem('dvov_shotgun_count');
-        localStorage.setItem(STORAGE_PLAYER_KEY, JSON.stringify(myPlayer));
+        await fetch(NTFY_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body: JSON.stringify({
+            type: 'player_sync',
+            player: { id: targetPlayerId, deleted: true, updatedAt: Date.now() + 99999999 }
+          })
+        });
       } catch (e) {}
-
-      const nameInput = document.getElementById('playerNameInput');
-      if (nameInput) nameInput.value = '';
-
-      buildCansGrid();
-      tick();
     }
-
-    renderLeaderboard();
-    const statsModal = document.getElementById('kantineStatsModal');
-    if (statsModal && !statsModal.classList.contains('hidden')) {
-      renderStatsModalContent();
-    }
-    const chModal = document.getElementById('challengesModal');
-    if (chModal && !chModal.classList.contains('hidden')) {
-      renderChallengesModalContent();
-    }
-    closePlayerInspectModal();
-  }
-
-  async function adminRemovePlayer(targetPlayerId) {
-    if (!adminUnlocked) return;
-    const p = allPlayersMap.get(targetPlayerId);
-    const name = p ? p.name : targetPlayerId;
-    if (!confirm(`Weet je zeker dat je "${name}" + al zijn/haar drankjes, badges en statistieken volledig wilt wissen?`)) return;
-
-    purgePlayerCompletely(targetPlayerId);
-
-    const deletePayload = {
-      type: 'player_sync',
-      player: { id: targetPlayerId, deleted: true, updatedAt: Date.now() + 99999999 }
-    };
-
-    if (bcChannel) {
-      try { bcChannel.postMessage(deletePayload.player); } catch (e) {}
-    }
-
-    try {
-      await fetch(NTFY_BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-        body: JSON.stringify(deletePayload)
-      });
-    } catch (e) {}
-  }
 
     const NTFY_TOPIC = 'dvov_stelz_kantine_2026_live_v3';
     const NTFY_BASE_URL = `https://ntfy.sh/${NTFY_TOPIC}`;
@@ -3398,27 +3186,15 @@ function purgePlayerCompletely(targetId) {
       }
     }
 
-function mergeIncomingPlayerRecord(rec) {
-    if (!rec || !rec.id) return;
-    if (rec.deleted) {
-      purgePlayerCompletely(rec.id);
-      return;
-    }
-    if (deletedPlayersSet.has(rec.id)) return;
-
-    if (Array.isArray(rec.manualBadges)) {
-      awardedBadgesByPlayer.set(rec.id, rec.manualBadges);
-      if (rec.id === myPlayer.id) {
-        myManualBadges = Array.from(new Set([...myManualBadges, ...rec.manualBadges]));
-        saveLocalState();
+    function mergeIncomingPlayerRecord(rec) {
+      if (!rec || !rec.id) return;
+      if (rec.deleted) {
+        deletedPlayersSet.add(rec.id);
+        localStorage.setItem('dvov_deleted_players', JSON.stringify(Array.from(deletedPlayersSet)));
+        allPlayersMap.delete(rec.id);
+        renderLeaderboard();
+        return;
       }
-    }
-    const existing = allPlayersMap.get(rec.id);
-    if (!existing || (rec.updatedAt || 0) >= (existing.updatedAt || 0)) {
-      allPlayersMap.set(rec.id, rec);
-      renderLeaderboard();
-    }
-  }
       if (deletedPlayersSet.has(rec.id)) return;
 
       if (Array.isArray(rec.manualBadges)) {
@@ -4477,125 +4253,6 @@ function mergeIncomingPlayerRecord(rec) {
     tick();
     setInterval(tick, 200);
 
-// =========================================================================
-  // 🧭 INTERACTIEVE RONDLEIDING (5 STAPPEN DOOR DE PAGINA HEEN)
-  // =========================================================================
-  const TOUR_STEPS = [
-    {
-      targetId: 'playerNameInput',
-      emoji: '🙋‍♂️',
-      title: '1. Vul je Naam, Team & Gewicht in',
-      text: 'Begin hier! Vul je naam, DVOV-team, geslacht en gewicht in en tik op "💾 Opslaan". Zo verschijn je direct live op het kantine-scorebord!'
-    },
-    {
-      targetId: 'bacStateTitle',
-      emoji: '🧪',
-      title: '2. Live Promillage & 10 Toestanden',
-      text: 'Op basis van je gewicht zie je hier live je geschatte promillage én in welke van de 10 Kantine-Toestanden je zit. Drink je even niks? Dan telt hij per seconde weer af!'
-    },
-    {
-      targetId: 'leaderboardList',
-      emoji: '🏆',
-      title: '3. Scorebord, 📊 Stats & 🎖️ Badges',
-      text: 'Zie wie er voorop loopt, check via "📊 Stats" welk DVOV-team het meeste drinkt en deel via "🎖️ Badges" gekke kantine-challenges uit aan je teamgenoten!'
-    },
-    {
-      targetId: 'canCard-1',
-      emoji: '🥫',
-      title: '4. 20 Rondes (Elke 12 Min) & 69/67',
-      text: 'Kies per ronde 🥫 Stëlz, 🍺 Bier of 🍷 Wijn en vink af zodra je glas leeg is. Te laat? Dan loopt je klok in de min! Tip: vink af met 69 of 67 in de tijd voor geheime badges!'
-    },
-    {
-      targetId: 'floatingShotgunBtn',
-      emoji: '🔫',
-      title: '5. Shotgun-Por & ⚡ 1v1 Ad-Duel!',
-      text: 'Rechtsonder kun je elke 12 min iemand porren voor een 🔫 Shotgun (weigeraars krijgen de Kleine Speler badge!) of je telefoon plat op tafel leggen voor een ⚡ 1v1 Split-Screen Ad-Wedstrijd!'
-    }
-  ];
-
-  let currentTourIdx = 0;
-  let previousHighlightedEl = null;
-
-function clearTourHighlight() {
-      if (previousHighlightedEl) {
-        previousHighlightedEl.classList.remove('ring-4', 'ring-pink-500', 'ring-offset-4', 'transition-all');
-        previousHighlightedEl = null;
-      }
-    }
-
-    window.startOnboardingTour = function(manualClick = false) {
-      try {
-        if (!manualClick && localStorage.getItem('dvov_tour_done_v1') === '1') return;
-      } catch (e) {}
-      currentTourIdx = 0;
-      const popup = document.getElementById('tourPopupCard');
-      if (!popup) return;
-      popup.style.zIndex = '9999';
-      popup.classList.remove('hidden');
-      renderTourStep();
-    };
-
-    window.renderTourStep = function() {
-      const step = TOUR_STEPS[currentTourIdx];
-      if (!step) return;
-
-      clearTourHighlight();
-
-      document.getElementById('tourStepBadge').textContent = `RONDLEIDING • STAP ${currentTourIdx + 1} VAN ${TOUR_STEPS.length}`;
-      document.getElementById('tourStepEmoji').textContent = step.emoji;
-      document.getElementById('tourStepTitle').textContent = step.title;
-      document.getElementById('tourStepText').textContent = step.text;
-
-      const prevBtn = document.getElementById('tourPrevBtn');
-      const nextBtn = document.getElementById('tourNextBtn');
-      if (prevBtn) prevBtn.style.visibility = currentTourIdx === 0 ? 'hidden' : 'visible';
-      if (nextBtn) nextBtn.textContent = currentTourIdx === TOUR_STEPS.length - 1 ? '🍻 Begrepen, Feesten!' : 'Volgende →';
-
-      const dotsWrap = document.getElementById('tourDotsWrap');
-      if (dotsWrap) {
-        dotsWrap.innerHTML = TOUR_STEPS.map((_, idx) =>
-          `<span class="w-2.5 h-2.5 rounded-full transition-all ${idx === currentTourIdx ? 'bg-[#F2CB6B] w-5' : 'bg-white/25'}"></span>`
-        ).join('');
-      }
-
-      const targetEl = document.getElementById(step.targetId);
-      if (targetEl) {
-        try {
-          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          targetEl.classList.add('ring-4', 'ring-pink-500', 'ring-offset-4', 'transition-all');
-          previousHighlightedEl = targetEl;
-        } catch (e) {}
-      }
-    };
-
-    window.nextTourStep = function() {
-      try { playCanOpenSound('stelz'); } catch (e) {}
-      if (currentTourIdx < TOUR_STEPS.length - 1) {
-        currentTourIdx++;
-        renderTourStep();
-      } else {
-        endOnboardingTour();
-        try { fireConfetti(); } catch (e) {}
-      }
-    };
-
-    window.prevTourStep = function() {
-      if (currentTourIdx > 0) {
-        currentTourIdx--;
-        renderTourStep();
-      }
-    };
-
-    window.endOnboardingTour = function() {
-      clearTourHighlight();
-      try { localStorage.setItem('dvov_tour_done_v1', '1'); } catch (e) {}
-      const popup = document.getElementById('tourPopupCard');
-      if (popup) popup.classList.add('hidden');
-    };
-
-    // Start automatisch de eerste keer dat iemand de pagina opent!
-    setTimeout(() => window.startOnboardingTour(false), 900);
-    
     connectNtfyRealtimeStream();
     forceCloudPull(false);
     setInterval(() => forceCloudPull(false), 120000);
