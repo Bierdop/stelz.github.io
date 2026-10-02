@@ -2,8 +2,10 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DVOV Stëlz Party Countdown — 20x Elke 12 Min + Live Leaderboard & Badges</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#4A3718" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>DVOV Stëlz Party Countdown — Live Kantine Scorebord, Stats & Mini-Games</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,7 +38,6 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
-    /* 3D Poster Text Effect like STELZ on the flyer */
     .stelz-3d {
       color: #C49A47;
       text-shadow:
@@ -55,7 +56,6 @@
         0 6px 10px rgba(0,0,0,0.18);
     }
 
-    /* Bamboo Banner Frame */
     .bamboo-frame {
       background: linear-gradient(180deg, #E2C69F 0%, #D5B588 100%);
       border: 6px solid #AC8244;
@@ -85,7 +85,6 @@
     .bamboo-frame::before { top: -8px; }
     .bamboo-frame::after { bottom: -8px; }
 
-    /* Wooden Signpost Plaque */
     .wood-sign {
       background: linear-gradient(90deg, #D9B382 0%, #C89B64 50%, #D6AD79 100%);
       border: 3px solid #8F6836;
@@ -117,7 +116,6 @@
       animation: popIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    /* Special shimmer for 69 / 67 / Legendary badges */
     @keyframes badgeShine {
       0%, 100% { filter: brightness(1); }
       50% { filter: brightness(1.22); }
@@ -129,6 +127,21 @@
     ::-webkit-scrollbar { width: 10px; }
     ::-webkit-scrollbar-track { background: #FDFBF3; }
     ::-webkit-scrollbar-thumb { background: #C49A47; border-radius: 999px; }
+
+    /* Mobiele optimalisaties (één-hand bediening aan de bar) */
+    button, input, select {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    @media (max-width: 640px) {
+      input[type="text"], input[type="number"], select {
+        font-size: 16px !important;
+      }
+      main {
+        padding-bottom: 8.5rem !important;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between relative selection:bg-pink-400 selection:text-white">
@@ -137,7 +150,7 @@
   <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
 
   <!-- Toast / Motivational & Achievement Pop-up Banner -->
-  <div id="motivationToast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-8 transition-all duration-300 max-w-md w-[92%]">
+  <div id="motivationToast" class="fixed top-14 sm:top-auto sm:bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 -translate-y-4 sm:translate-y-8 transition-all duration-300 max-w-md w-[94%]">
     <div class="bg-gradient-to-r from-[#5A3E1B] via-[#7A5626] to-[#5A3E1B] text-[#FDFBF3] px-5 py-4 rounded-2xl shadow-2xl border-2 border-[#F2CB6B] flex items-center gap-3.5">
       <div class="text-3xl shrink-0 animate-bounce" id="toastEmoji">🎺</div>
       <div class="flex-1 min-w-0">
@@ -160,42 +173,76 @@
     </svg>
   </div>
 
-  <!-- Top Utility / Demo Bar -->
-  <header class="relative z-20 bg-[#4A3718] text-[#FDFBF3] py-2.5 px-4 shadow-md border-b-2 border-[#C49A47]">
-    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
-      <div class="flex items-center gap-2">
-        <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-        <span class="font-bold tracking-wide text-amber-200">DVOV KANTINE • VRIJDAG 2 OKT (19:30 - 23:00)</span>
+  <!-- Top Utility / Demo Bar (Geoptimaliseerd voor mobiel) -->
+  <header class="sticky top-0 z-30 bg-[#4A3718]/95 backdrop-blur text-[#FDFBF3] py-2 px-3 shadow-md border-b-2 border-[#C49A47]">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2 truncate">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0"></span>
+        <span class="font-extrabold tracking-wide text-amber-200 truncate">DVOV STËLZ PARTY • VRIJDAG 2 OKT (19:30)</span>
       </div>
 
-      <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
-        <button id="btnRealMode" onclick="setRealPartyMode()" class="px-2.5 py-1 rounded-lg font-bold bg-amber-500 text-amber-950 hover:bg-amber-400 transition shadow-sm">
-          📅 Echte Tijd (19:30)
+      <button
+        onclick="document.getElementById('mobileTopMenu').classList.toggle('hidden')"
+        class="sm:hidden px-2.5 py-1 rounded-lg font-extrabold bg-amber-500/20 text-amber-200 border border-amber-400/40 shrink-0"
+      >
+        ⚙️ Opties & Geluid
+      </button>
+
+      <div id="mobileTopMenu" class="hidden sm:flex flex-wrap items-center gap-1.5 w-full sm:w-auto pt-2 sm:pt-0 border-t border-amber-500/20 sm:border-0 mt-2 sm:mt-0">
+        <button id="btnRealMode" onclick="setRealPartyMode()" class="px-2.5 py-1.5 rounded-lg font-bold bg-amber-500 text-amber-950 transition">
+          📅 19:30
         </button>
-        <button id="btnDemoSoon" onclick="setDemoMode(10)" class="px-2.5 py-1 rounded-lg font-semibold bg-amber-900/80 text-amber-100 hover:bg-amber-800 border border-amber-600/50 transition">
-          ⚡ Demo: Start over 10s
+        <button id="btnDemoSoon" onclick="setDemoMode(10)" class="px-2.5 py-1.5 rounded-lg font-semibold bg-amber-900/80 text-amber-100 border border-amber-600/50">
+          ⚡ Demo 10s
         </button>
-        <button id="btnDemoMid" onclick="setDemoMode(-2500)" class="px-2.5 py-1 rounded-lg font-semibold bg-amber-900/80 text-amber-100 hover:bg-amber-800 border border-amber-600/50 transition">
-          🦩 Demo: Midden in feest
+        <button id="btnDemoMid" onclick="setDemoMode(-2500)" class="px-2.5 py-1.5 rounded-lg font-semibold bg-amber-900/80 text-amber-100 border border-amber-600/50">
+          🦩 Demo Feest
         </button>
-        <button id="btnSoundToggle" onclick="toggleSound()" class="px-2.5 py-1 rounded-lg font-semibold bg-amber-900/80 text-amber-100 hover:bg-amber-800 border border-amber-600/50 transition">
-          🔊 Toeter & Blikje: AAN
+        <button id="btnSoundToggle" onclick="toggleSound()" class="px-2.5 py-1.5 rounded-lg font-semibold bg-amber-900/80 text-amber-100 border border-amber-600/50">
+          🔊 Geluid: AAN
         </button>
-        <button onclick="testHornAndCan()" class="px-2.5 py-1 rounded-lg font-semibold bg-pink-600 text-white hover:bg-pink-500 transition shadow-sm">
-          🎺 Test Geluid
+        <button onclick="testHornAndCan()" class="px-2.5 py-1.5 rounded-lg font-semibold bg-pink-600 text-white">
+          🎺 Test
+        </button>
+        <button id="btnAdminToggle" onclick="toggleAdminAuth()" class="px-2.5 py-1.5 rounded-lg font-semibold bg-stone-800 text-amber-200/80 border border-amber-600/40" title="Alleen voor de beheerder">
+          🔒 Beheer
         </button>
       </div>
     </div>
   </header>
 
   <!-- Main Content Container -->
-  <main class="relative z-10 max-w-6xl mx-auto w-full px-4 pt-6 pb-20">
+  <main class="relative z-10 max-w-6xl mx-auto w-full px-4 pt-5 pb-24">
 
-    <!-- Flyer Hero Header -->
+    <!-- Flyer Hero Header met DVOV Logo & Made by Job Janssen -->
     <section class="text-center relative mb-6">
-      <div class="inline-flex items-center gap-2 bg-[#BC9348] text-white px-4 py-1.5 rounded-full border-2 border-[#4A3718] shadow-md mb-2">
-        <span class="text-base">⚽</span>
-        <span class="font-extrabold tracking-wider text-xs sm:text-sm uppercase">Sinds 1932 • DVOV Presenteert</span>
+      <div class="flex flex-col items-center justify-center mb-3">
+        <!-- DVOV Logo Schild (gebruikt dvov.png als die geüpload is, anders het ingebouwde DVOV-schild) -->
+        <div class="relative w-20 h-20 sm:w-24 sm:h-24 mb-2 drop-shadow-xl transition-transform hover:scale-105">
+          <img
+            src="dvov.png"
+            alt="DVOV Logo"
+            class="w-full h-full object-contain"
+            onerror="this.style.display='none'; document.getElementById('dvovFallbackLogo').classList.remove('hidden');"
+          />
+          <svg id="dvovFallbackLogo" class="hidden w-full h-full" viewBox="0 0 120 140" fill="none">
+            <path d="M12 12 H108 V68 C108 102 60 128 60 128 C60 128 12 102 12 68 V12 Z" fill="#F2CB6B" stroke="#4A3718" stroke-width="7" stroke-linejoin="round"/>
+            <path d="M22 22 H98 V66 C98 93 60 115 60 115 C60 115 22 93 22 66 V22 Z" fill="#4A3718"/>
+            <path d="M22 48 L72 22 H98 V42 L26 82 C23 76 22 70 22 66 V48 Z" fill="#BC9348" opacity="0.35"/>
+            <text x="60" y="62" text-anchor="middle" fill="#F2CB6B" font-family="Fredoka, sans-serif" font-weight="800" font-size="25" letter-spacing="1.5">DVOV</text>
+            <text x="60" y="82" text-anchor="middle" fill="#FDFBF3" font-family="Montserrat, sans-serif" font-weight="800" font-size="11" letter-spacing="1">1932</text>
+            <circle cx="60" cy="98" r="7" fill="#F2CB6B"/>
+          </svg>
+        </div>
+
+        <div class="inline-flex flex-wrap items-center justify-center gap-2 bg-[#BC9348] text-white px-4 py-1.5 rounded-full border-2 border-[#4A3718] shadow-md">
+          <span class="text-base">⚽</span>
+          <span class="font-extrabold tracking-wider text-xs sm:text-sm uppercase">Sinds 1932 • DVOV Presenteert</span>
+          <span class="text-amber-200">•</span>
+          <span class="text-[11px] font-black uppercase tracking-wider bg-[#4A3718] text-[#F2CB6B] px-2.5 py-0.5 rounded-full">
+            ⚡ Made by Job Janssen
+          </span>
+        </div>
       </div>
 
       <div class="relative flex justify-center items-center mt-1">
@@ -218,7 +265,7 @@
           🥫🍺🍷 20 RONDJES • ELKE 12 MIN
         </span>
         <span class="wood-sign px-3.5 py-1 rounded-lg font-extrabold text-xs sm:text-sm text-[#4A3718] transform -rotate-1">
-          🎖️ 69 & 67 MEME BADGES
+          🔫 SHOTGUN POR & ⚡ 1V1 AD-DUEL
         </span>
         <span class="wood-sign px-3.5 py-1 rounded-lg font-extrabold text-xs sm:text-sm text-[#4A3718] transform rotate-2">
           🔞 NIX18 • DVOV KANTINE
@@ -230,7 +277,7 @@
     <!-- MAIN COUNTDOWN CARD (START + DRANKJE #1 @ 19:30:00)                 -->
     <!-- =================================================================== -->
     <section class="max-w-4xl mx-auto mb-7">
-      <div id="heroCard" class="relative overflow-hidden rounded-3xl border-4 border-[#856324] bg-gradient-to-b from-[#4EC3E0] via-[#3BB4D4] to-[#F2CB6B] p-5 sm:p-7 shadow-2xl transition-all duration-300">
+      <div id="heroCard" class="relative overflow-hidden rounded-3xl border-4 border-[#856324] bg-gradient-to-b from-[#4EC3E0] via-[#3BB4D4] to-[#F2CB6B] p-4 sm:p-7 shadow-2xl transition-all duration-300">
         
         <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
           <div id="mainStatusBadge" class="inline-flex items-center gap-2 bg-[#4A3718] text-[#F2CB6B] px-4 py-1.5 rounded-full font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow">
@@ -293,14 +340,14 @@
               <div id="can1StatusText" class="font-extrabold text-sm text-[#4A3718]">
                 Staat koud voor 19:30!
               </div>
-              <button id="heroBtnCan1" onclick="toggleCanChecked(1)" class="mt-2 w-full py-2 px-3 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-pink-500 hover:bg-pink-600 text-white shadow transition flex items-center justify-center gap-1.5">
+              <button id="heroBtnCan1" onclick="toggleCanChecked(1)" class="mt-2 w-full py-2.5 px-3 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-pink-500 hover:bg-pink-600 text-white shadow transition flex items-center justify-center gap-1.5">
                 <span>🎺</span> <span id="heroBtnCan1Label">Vink Ronde #1 Af</span>
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Overall Progress Bar Across All 20 Drinks -->
+        <!-- Overall Progress Bar -->
         <div class="mt-6 bg-white/90 backdrop-blur rounded-2xl p-3.5 border border-amber-900/15 shadow-inner">
           <div class="flex flex-wrap justify-between items-center text-xs sm:text-sm font-extrabold text-[#4A3718] mb-1.5 gap-2">
             <span id="overallProgressLabel">Schema voortgang: 0 / 20 rondes bereikt</span>
@@ -320,12 +367,12 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- 🏆 LIVE KANTINE LEADERBOARD + ACHIEVEMENTS & CHALLENGES             -->
+    <!-- 🏆 LIVE KANTINE LEADERBOARD + PROMILLAGE + STATS + BADGES           -->
     <!-- =================================================================== -->
     <section class="max-w-6xl mx-auto mb-8">
       <div class="rounded-3xl border-4 border-[#856324] bg-gradient-to-b from-[#4A3718] to-[#34250F] text-[#FDFBF3] p-4 sm:p-6 shadow-2xl">
         
-        <!-- Top Header & Player Name Input -->
+        <!-- Top Header & Player Profile Form -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-amber-500/30">
           <div class="flex items-start sm:items-center gap-3">
             <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-pink-500 flex items-center justify-center text-2xl shadow-lg shrink-0 border-2 border-amber-200">
@@ -334,7 +381,7 @@
             <div>
               <div class="flex flex-wrap items-center gap-2">
                 <h2 class="font-poster text-xl sm:text-2xl font-extrabold text-[#F2CB6B] tracking-wide">
-                  LIVE DVOV KANTINE SCOREBORD & BADGES
+                  LIVE DVOV KANTINE SCOREBORD
                 </h2>
                 <span id="syncStatusBadge" class="inline-flex items-center gap-1.5 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
                   <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
@@ -342,53 +389,162 @@
                 </span>
               </div>
               <p class="text-xs sm:text-sm text-amber-200/80 font-medium mt-0.5">
-                Verdien automatisch badges (zoals <strong>😏 69</strong>, <strong>🤪 67</strong>, <strong>🎯 Sniper</strong>) of deel gekke <strong>Kantine Challenges</strong> uit aan elkaar!
+                Kies je naam, team, geslacht en gewicht voor live <strong>Promillage & Toestand</strong>, <strong>Team-Stats</strong> en <strong>69/67 Badges</strong>!
               </p>
             </div>
           </div>
 
-          <!-- Player Profile Form + Action Buttons -->
-          <div class="flex flex-wrap items-center gap-2 bg-black/30 p-2 rounded-2xl border border-amber-500/30">
-            <div class="flex items-center gap-2 flex-1 min-w-[165px]">
-              <span class="text-lg pl-1.5">🙋‍♂️</span>
-              <input
-                id="playerNameInput"
-                type="text"
-                maxlength="22"
-                placeholder="Jouw naam / bijnaam..."
-                class="w-full bg-amber-950/70 text-white placeholder-amber-300/50 font-extrabold text-sm px-3 py-2 rounded-xl border border-amber-500/40 focus:outline-none focus:border-pink-400"
-                onkeydown="if(event.key==='Enter') savePlayerName()"
-              />
+          <!-- Player Profile Form + Team/Geslacht + Action Buttons -->
+          <div class="w-full lg:w-auto flex flex-col gap-2 bg-black/30 p-2.5 rounded-2xl border border-amber-500/30">
+            <!-- Rij 1: Naam + Team + Geslacht + Gewicht -->
+            <div class="grid grid-cols-2 sm:flex items-center gap-1.5 w-full">
+              <div class="col-span-2 sm:col-span-1 flex items-center bg-amber-950/80 rounded-xl border border-amber-500/40 px-2.5 py-2 flex-1 min-w-[140px]">
+                <span class="text-base mr-1.5 shrink-0">🙋‍♂️</span>
+                <input
+                  id="playerNameInput"
+                  type="text"
+                  maxlength="22"
+                  placeholder="Jouw naam..."
+                  class="w-full bg-transparent text-white placeholder-amber-300/50 font-extrabold text-sm focus:outline-none min-w-0"
+                  onkeydown="if(event.key==='Enter') savePlayerName()"
+                />
+              </div>
+
+              <select
+                id="playerTeamInput"
+                onchange="savePlayerName()"
+                class="bg-amber-950/80 text-amber-100 font-extrabold text-xs sm:text-sm px-2.5 py-2.5 rounded-xl border border-amber-500/40 focus:outline-none"
+                title="Kies jouw DVOV Team!"
+              >
+                <option value="DVOV 1">⚽ DVOV 1</option>
+                <option value="DVOV 2">⚽ DVOV 2</option>
+                <option value="DVOV 3">⚽ DVOV 3</option>
+                <option value="DVOV 4">⚽ DVOV 4</option>
+                <option value="DVOV 5">⚽ DVOV 5</option>
+                <option value="DVOV 6">⚽ DVOV 6</option>
+                <option value="DVOV 7">⚽ DVOV 7</option>
+                <option value="DVOV O23">⚡ DVOV O23</option>
+                <option value="DVOV VR1">🦩 DVOV VR1</option>
+                <option value="DVOV VR2">🦩 DVOV VR2</option>
+                <option value="DVOV 35+/45+">🍺 DVOV 35+/45+</option>
+                <option value="JO19 / Jeugd">🚀 JO19</option>
+                <option value="Bar & Bestuur">👑 Bar & Bestuur</option>
+                <option value="Supporters">🎺 Supporters</option>
+              </select>
+
+              <div class="col-span-2 sm:col-span-1 flex items-center gap-1.5">
+                <select
+                  id="playerGenderInput"
+                  onchange="savePlayerName()"
+                  class="bg-amber-950/80 text-amber-100 font-extrabold text-xs sm:text-sm px-2.5 py-2.5 rounded-xl border border-amber-500/40 focus:outline-none flex-1"
+                  title="Geslacht (voor statistieken & promillage)"
+                >
+                  <option value="M">🚹 Man</option>
+                  <option value="V">🚺 Vrouw</option>
+                </select>
+
+                <div class="flex items-center bg-amber-950/80 rounded-xl border border-amber-500/40 px-2.5 py-2 shrink-0" title="Jouw gewicht in kg">
+                  <span class="text-xs mr-1">⚖️</span>
+                  <input
+                    id="playerWeightInput"
+                    type="number"
+                    inputmode="numeric"
+                    min="40"
+                    max="180"
+                    placeholder="80"
+                    class="w-10 bg-transparent text-white font-mono-timer font-extrabold text-sm text-center focus:outline-none"
+                    onchange="savePlayerName()"
+                  />
+                  <span class="text-[11px] font-bold text-amber-300/80">kg</span>
+                </div>
+              </div>
             </div>
-            <button
-              onclick="savePlayerName()"
-              class="px-3.5 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-gradient-to-r from-pink-500 to-amber-500 hover:from-pink-600 hover:to-amber-600 text-white shadow-md transition shrink-0"
-            >
-              💾 Opslaan
-            </button>
-            <button
-              onclick="openChallengesModal()"
-              class="px-3.5 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-purple-600 hover:bg-purple-500 text-white shadow-md transition shrink-0 flex items-center gap-1 border border-purple-300/40"
-              title="Bekijk alle Achievements & deel Kantine Challenges uit!"
-            >
-              🎖️ Badges & Challenges
-            </button>
-            <button
-              onclick="openShareModal()"
-              class="px-3 py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition shrink-0 flex items-center gap-1"
-            >
-              📲 QR / Deel
-            </button>
+
+            <!-- Rij 2: 4 Knoppen (Opslaan, Stats, Badges, Deel) -->
+            <div class="grid grid-cols-4 gap-1.5 w-full">
+              <button
+                onclick="savePlayerName()"
+                class="py-2.5 px-2 rounded-xl font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-gradient-to-r from-pink-500 to-amber-500 active:scale-95 text-white shadow-md transition text-center"
+              >
+                💾 Opslaan
+              </button>
+              <button
+                onclick="openStatsModal()"
+                class="py-2.5 px-2 rounded-xl font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-sky-600 hover:bg-sky-500 active:scale-95 text-white shadow-md transition text-center border border-sky-300/40"
+              >
+                📊 Stats
+              </button>
+              <button
+                onclick="openChallengesModal()"
+                class="py-2.5 px-2 rounded-xl font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-purple-600 hover:bg-purple-500 active:scale-95 text-white shadow-md transition text-center border border-purple-300/40"
+              >
+                🎖️ Badges
+              </button>
+              <button
+                onclick="openShareModal()"
+                class="py-2.5 px-2 rounded-xl font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white shadow-md transition text-center"
+              >
+                📲 Deel
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🥴 LIVE DYNAMISCHE PROMILLAGE & 10-TOESTANDEN METER -->
+        <div class="mt-3.5 bg-gradient-to-r from-black/45 via-amber-950/60 to-black/45 rounded-2xl p-3.5 border border-amber-400/30 shadow-inner">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div id="bacStateEmoji" class="w-12 h-12 rounded-2xl bg-amber-500/20 border-2 border-amber-400/50 flex items-center justify-center text-2xl shrink-0 shadow">
+                🧘‍♂️
+              </div>
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-[10px] font-black uppercase tracking-widest text-amber-300/90">
+                    🧪 Geschatte Promillage (<span id="bacWeightLabel">80</span> kg):
+                  </span>
+                  <span id="bacValueDisplay" class="font-mono-timer text-lg sm:text-xl font-black text-pink-400">
+                    0.000‰
+                  </span>
+                  <span id="bacTrendBadge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                    💧 Nuchter
+                  </span>
+                </div>
+                <div id="bacStateTitle" class="font-poster text-base sm:text-lg font-extrabold text-white leading-tight mt-0.5">
+                  Fase 1/10: Kantine-Nuchter & Scherp
+                </div>
+                <div id="bacStateDesc" class="text-xs text-amber-200/80 font-medium">
+                  Je kunt de opstelling van zondag nog foutloos opdreunen.
+                </div>
+              </div>
+            </div>
+
+            <div class="md:text-right shrink-0 bg-black/30 px-3 py-2 rounded-xl border border-amber-500/20">
+              <div class="text-[10px] font-extrabold uppercase text-amber-300/75">Afbraak-tempo (-0.15‰ / uur)</div>
+              <div id="bacSoberTimeDisplay" class="font-mono-timer text-xs font-extrabold text-emerald-300 mt-0.5">
+                ✨ Volledig nuchter
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-2.5">
+            <div class="w-full h-2.5 bg-black/50 rounded-full overflow-hidden p-0.5 border border-amber-500/20">
+              <div id="bacProgressBar" class="h-full bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between text-[9px] font-bold text-amber-200/60 mt-1 px-0.5">
+              <span>0.0‰ (1. Nuchter)</span>
+              <span>0.5‰ (3. Losjes)</span>
+              <span>1.0‰ (5. DJ-Vriend)</span>
+              <span>1.5‰ (7. Flamingo)</span>
+              <span>2.2‰+ (10. Legende)</span>
+            </div>
           </div>
         </div>
 
         <!-- My Unlocked Badges Bar -->
         <div class="mt-3 bg-black/30 rounded-2xl px-3.5 py-2.5 border border-amber-500/25 flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-[11px] font-black uppercase tracking-wider text-amber-300">🎖️ Jouw Badges:</span>
-            <div id="myBadgesPreviewRow" class="flex flex-wrap items-center gap-1.5">
-              <!-- Populated by JS -->
-            </div>
+            <span class="text-[11px] font-black uppercase tracking-wider text-amber-300">🎖️️ Jouw Badges:</span>
+            <div id="myBadgesPreviewRow" class="flex flex-wrap items-center gap-1.5"></div>
           </div>
           <button onclick="openChallengesModal(myPlayer.id)" class="text-[11px] font-extrabold text-pink-300 hover:text-pink-200 underline shrink-0">
             + Challenge afvinken / Badge uitdelen →
@@ -415,17 +571,18 @@
           </div>
         </div>
 
-        <!-- Leaderboard Table / Cards -->
-        <div id="leaderboardList" class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
-          <!-- Dynamically populated by JS -->
-        </div>
+        <!-- Leaderboard List -->
+        <div id="leaderboardList" class="space-y-2.5 max-h-96 overflow-y-auto pr-1"></div>
 
         <!-- Bottom Bar of Leaderboard -->
         <div class="mt-3 pt-3 border-t border-amber-500/20 flex flex-wrap items-center justify-between gap-2 text-[11px] text-amber-200/75 font-semibold">
           <div>
-            💡 <strong>Geheime Tijd-Badges:</strong> Vink af met <strong>69</strong> of <strong>67</strong> achter elkaar ergens in de tijd/timer voor de legendarische <strong>😏 69</strong> of <strong>🤪 6-7</strong> badge! Klik op een speler om badges uit te delen.
+            💡 <strong>Geheime Tijd-Badges:</strong> Vink af met <strong>69</strong> of <strong>67</strong> naast elkaar ergens in de tijd/timer voor de <strong>😏 69</strong> of <strong>🤪 6-7</strong> badge!
           </div>
           <div class="flex items-center gap-2">
+            <button onclick="openStatsModal()" class="px-2.5 py-1 rounded-lg bg-sky-600/80 hover:bg-sky-500 text-white font-bold border border-sky-400/40 transition">
+              📊 Alle Statistieken
+            </button>
             <button onclick="forceCloudPull(true)" class="px-2.5 py-1 rounded-lg bg-amber-900/80 hover:bg-amber-800 text-amber-200 font-bold border border-amber-500/30 transition">
               🔄 Sync Nu
             </button>
@@ -438,13 +595,13 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- ALL 20 DRINKS GRID (DRINK 1 TO 20 • EVERY 12 MINUTES)               -->
+    <!-- ALL 20 DRINKS GRID (+ EXTRA RONDES KNOP ONDERAAN)                   -->
     <!-- =================================================================== -->
     <section>
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-5 gap-3 bg-[#F4E8C8]/85 p-4 rounded-2xl border-2 border-[#C49A47]">
         <div>
           <h3 class="font-poster text-2xl sm:text-3xl font-extrabold text-[#4A3718]">
-            🥫🍺🍷 Jouw 20 Rondes Schema (+12 min per ronde)
+            🥫🍺🍷 Jouw Rondes Schema (+12 min per ronde)
           </h3>
           <p class="text-xs sm:text-sm font-semibold text-[#7A5B2B]">
             Kies per vakje <strong>🥫 Stëlz</strong>, <strong>🍺 Bier</strong> of <strong>🍷 Wijn</strong>. Niet op tijd afgevinkt? Dan loopt de klok <strong>in de min</strong>! Let op de seconden voor de <strong>😏 69</strong>, <strong>🤪 67</strong> of <strong>🎯 Sniper</strong> badge!
@@ -468,6 +625,25 @@
       <div id="cansGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <!-- Dynamically injected by JS -->
       </div>
+
+      <!-- Knop om extra rondes (+12 min) toe te voegen bovenop de standaard 20 -->
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <button
+          onclick="addExtraCanBlock()"
+          class="px-6 py-3.5 rounded-2xl font-poster font-extrabold text-base sm:text-lg uppercase tracking-wider bg-gradient-to-r from-pink-500 via-amber-500 to-emerald-500 hover:scale-105 active:scale-95 text-white shadow-xl border-2 border-[#4A3718] transition flex items-center gap-2"
+        >
+          <span>➕</span>
+          <span id="btnAddExtraCanLabel">Voeg Ronde #21 toe (+12 min)</span>
+        </button>
+
+        <button
+          id="btnRemoveExtraCan"
+          onclick="removeLastExtraCanBlock()"
+          class="hidden px-4 py-3.5 rounded-2xl font-extrabold text-xs sm:text-sm uppercase tracking-wider bg-white hover:bg-rose-50 text-rose-700 border-2 border-rose-300 shadow transition"
+        >
+          ➖ Verwijder laatste extra ronde
+        </button>
+      </div>
     </section>
 
   </main>
@@ -477,8 +653,6 @@
   <!-- ===================================================================== -->
   <div id="challengesModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/65 backdrop-blur-sm p-3 sm:p-4" onclick="closeChallengesModal(event)">
     <div class="bg-[#FDFBF3] border-4 border-[#856324] rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl text-[#4A3718] overflow-hidden" onclick="event.stopPropagation()">
-      
-      <!-- Modal Header -->
       <div class="p-4 sm:p-5 bg-gradient-to-r from-[#4A3718] to-[#63481F] text-white flex items-center justify-between gap-3">
         <div>
           <div class="text-[11px] font-black uppercase tracking-widest text-[#F2CB6B]">DVOV Kantine Hall of Fame</div>
@@ -489,21 +663,15 @@
         </button>
       </div>
 
-      <!-- Modal Scrollable Body -->
       <div class="p-4 sm:p-5 overflow-y-auto space-y-5 flex-1">
-        
-        <!-- Target Player Selector (Who gets the challenge badge?) -->
         <div class="bg-amber-100/90 border-2 border-[#C49A47] rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div class="text-xs font-black uppercase tracking-wider text-amber-900">🎯 Voor wie vink je een Challenge of Badge aan?</div>
             <p class="text-xs text-amber-800 font-semibold">Kies jezelf of deel een badge uit aan een teamgenoot op het scorebord!</p>
           </div>
-          <select id="badgeTargetPlayerSelect" onchange="renderChallengesModalContent()" class="bg-white font-extrabold text-sm text-[#4A3718] px-3.5 py-2 rounded-xl border-2 border-[#856324] shadow-sm focus:outline-none">
-            <!-- Populated by JS -->
-          </select>
+          <select id="badgeTargetPlayerSelect" onchange="renderChallengesModalContent()" class="bg-white font-extrabold text-sm text-[#4A3718] px-3.5 py-2 rounded-xl border-2 border-[#856324] shadow-sm focus:outline-none"></select>
         </div>
 
-        <!-- SECTION 1: Kantine Challenges (Nothing to do with drinking speed - can be awarded!) -->
         <div>
           <div class="flex items-center justify-between mb-2">
             <h5 class="font-poster text-lg font-extrabold text-[#4A3718]">
@@ -514,12 +682,9 @@
           <p class="text-xs font-semibold text-[#7A5B2B] mb-3">
             Heeft iemand gefrituurd, een plaatje aangevraagd bij de DJ, met de flamingo gedanst of een glas omgestoten? Klik erop om de badge direct achter zijn/haar naam te plakken!
           </p>
-          <div id="awardableChallengesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <!-- Populated by JS -->
-          </div>
+          <div id="awardableChallengesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
         </div>
 
-        <!-- Custom Badge Creator -->
         <div class="bg-gradient-to-r from-pink-50 to-amber-50 border-2 border-pink-300 rounded-2xl p-3.5">
           <div class="text-xs font-black uppercase tracking-wider text-pink-700 mb-1">✨ Eigen Kantine Badge Verzinnen & Uitdelen</div>
           <p class="text-xs text-[#6E5227] font-semibold mb-2.5">
@@ -534,20 +699,34 @@
           </div>
         </div>
 
-        <!-- SECTION 2: Automatic Time & Number Achievements (69, 67, Sniper, etc.) -->
         <div>
           <div class="flex items-center justify-between mb-2">
             <h5 class="font-poster text-lg font-extrabold text-[#4A3718]">
-              ⏱️ Automatische Tijd-, 69/67- & Drink-Achievements
+              ⏱️ Automatische Tijd-, 69/67-, Shotgun-, Ad-Duel & Drink-Achievements
             </h5>
-            <span class="text-[11px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full">Worden automatisch ontgrendeld</span>
+            <span class="text-[11px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full">Automatisch ontgrendeld</span>
           </div>
-          <div id="autoAchievementsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <!-- Populated by JS -->
-          </div>
+          <div id="autoAchievementsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
         </div>
-
       </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 📊 MODAL: KANTINE STATISTIEKEN, TEAM RANGLIJST & NUTTELOZE ONGEIN     -->
+  <!-- ===================================================================== -->
+  <div id="kantineStatsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-2.5 sm:p-4" onclick="closeStatsModal()">
+    <div class="bg-[#FDFBF3] border-4 border-[#856324] rounded-3xl max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl text-[#4A3718] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="p-4 sm:p-5 bg-gradient-to-r from-[#4A3718] via-[#6B4E23] to-[#4A3718] text-white flex items-center justify-between gap-3 shrink-0">
+        <div>
+          <div class="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-[#F2CB6B]">DVOV Data-Analyse & Kantine-Wetenschap</div>
+          <h4 class="font-poster text-xl sm:text-2xl font-extrabold">📊 Live Team-, Geslacht- & Ongein-Statistieken</h4>
+        </div>
+        <button onclick="closeStatsModal()" class="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 font-extrabold text-xs text-white shrink-0">
+          ✕ Sluiten
+        </button>
+      </div>
+      <div id="statsModalContent" class="p-4 sm:p-5 overflow-y-auto space-y-5 flex-1"></div>
     </div>
   </div>
 
@@ -608,24 +787,229 @@
     </div>
   </div>
 
-  <!-- Beach & Ocean Footer -->
+  <!-- ===================================================================== -->
+  <!-- 🔫 FLOATING SHOTGUN & ⚡ 1V1 AD-DUEL KNOPPEN RECHTSONDER               -->
+  <!-- ===================================================================== -->
+  <div class="fixed bottom-4 right-3 sm:bottom-5 sm:right-5 z-40 flex flex-col items-end gap-1.5">
+    <button
+      onclick="openAdtBattleModal()"
+      class="px-3.5 py-2 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-amber-950 font-poster font-extrabold text-xs uppercase tracking-wider shadow-2xl border-2 border-[#4A3718] flex items-center gap-1.5 active:scale-90 transition"
+      title="Leg je telefoon op tafel voor een 1v1 Split-Screen Ad-Wedstrijd!"
+    >
+      <span>⚡🍻</span>
+      <span>1v1 Ad-Duel</span>
+    </button>
+    <div id="shotgunFloatingHint" class="bg-[#4A3718] text-[#F2CB6B] text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-lg border border-[#C49A47]">
+      🔫 Shotgun Klaar!
+    </div>
+    <button
+      id="floatingShotgunBtn"
+      onclick="openShotgunTargetModal()"
+      class="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-[#4A3718] via-[#6E4F22] to-[#34250F] text-white shadow-2xl flex flex-col items-center justify-center transition-transform active:scale-90 border-2 border-[#F2CB6B]"
+      title="Daag iemand uit voor een Shotgun! (1x per 12 min, reset bij weigering)"
+    >
+      <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="35" stroke="rgba(255,255,255,0.15)" stroke-width="5" fill="none" />
+        <circle
+          id="shotgunCircleProgress"
+          cx="40" cy="40" r="35"
+          stroke="#10B981"
+          stroke-width="5"
+          stroke-linecap="round"
+          fill="none"
+          stroke-dasharray="219.9"
+          stroke-dashoffset="0"
+          class="transition-all duration-300"
+        />
+      </svg>
+      <span class="text-xl sm:text-2xl leading-none">🔫🥫</span>
+      <span id="shotgunBtnTimerText" class="font-mono-timer text-[10px] font-extrabold text-[#F2CB6B] mt-0.5">
+        GO!
+      </span>
+    </button>
+  </div>
+
+  <!-- MODAL 1: KIES SLACHTOFFER OM TE PORREN VOOR EEN SHOTGUN -->
+  <div id="shotgunSelectModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="closeShotgunTargetModal()">
+    <div class="bg-[#FDFBF3] border-4 border-[#856324] rounded-3xl max-w-md w-full p-5 shadow-2xl text-[#4A3718]" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between pb-3 border-b-2 border-amber-200">
+        <div>
+          <div class="text-xs font-black uppercase tracking-wider text-rose-600">1x per 12 min • Reset bij weigering!</div>
+          <h4 class="font-poster text-2xl font-extrabold">🔫 Shotgunnentje Porren!</h4>
+        </div>
+        <button onclick="closeShotgunTargetModal()" class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 font-extrabold text-xs">✕</button>
+      </div>
+      <p class="text-xs sm:text-sm font-semibold text-[#6E5227] my-3">
+        Kies wie je wilt uitdagen. Diegene krijgt direct een pop-up op zijn telefoon! Wijst hij/zij af? Dan krijgt diegene de <strong>🐣 Kleine Speler</strong> badge en mag jij direct iemand anders kiezen!
+      </p>
+      <div id="shotgunTargetsList" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: INKOMENDE SHOTGUN UITDAGING POP-UP (VOOR DE ONTVANGER) -->
+  <div id="shotgunIncomingModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div class="bg-gradient-to-b from-[#4A3718] to-[#2B1E0B] border-4 border-[#F2CB6B] rounded-3xl max-w-md w-full p-6 shadow-2xl text-white text-center animate-pop">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-rose-500 to-amber-500 flex items-center justify-center text-4xl shadow-lg border-2 border-white mb-3 animate-bounce">
+        🔫
+      </div>
+      <div class="text-xs font-black uppercase tracking-widest text-amber-300">🚨 INKOMENDE SHOTGUN UITDAGING!</div>
+      <h4 id="incomingShotgunSender" class="font-poster text-2xl sm:text-3xl font-extrabold text-[#F2CB6B] mt-1">
+        Speler daagt je uit!
+      </h4>
+      <div id="incomingShotgunPrompt" class="my-4 bg-black/35 border border-amber-400/30 rounded-2xl p-4 font-poster text-lg text-white leading-snug">
+        "Shotgunnentje doen aan de bar?!"
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+        <button
+          id="btnAcceptShotgun"
+          onclick="respondToShotgunChallenge(true)"
+          class="py-3 px-4 rounded-2xl font-poster font-extrabold text-sm sm:text-base uppercase bg-gradient-to-r from-emerald-500 to-lime-500 hover:from-emerald-600 hover:to-lime-600 text-emerald-950 shadow-xl transition transform hover:scale-105"
+        >
+          🌪️ JA! KOM MAAR OP!
+        </button>
+        <button
+          id="btnRejectShotgun"
+          onclick="respondToShotgunChallenge(false)"
+          class="py-3 px-4 rounded-2xl font-poster font-extrabold text-xs sm:text-sm uppercase bg-rose-900/80 hover:bg-rose-800 text-rose-200 border border-rose-500/40 shadow transition"
+        >
+          🐣 Nee, ik ben een kleine speler
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: ANTWOORD POP-UP VOOR DE VERZENDER (GEACCEPTEERD OF KLEINE SPELER) -->
+  <div id="shotgunResultModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="closeShotgunResultModal()">
+    <div class="bg-[#FDFBF3] border-4 border-[#856324] rounded-3xl max-w-md w-full p-6 shadow-2xl text-[#4A3718] text-center animate-pop" onclick="event.stopPropagation()">
+      <div id="shotgunResultEmoji" class="text-5xl mb-2">🌪️</div>
+      <div id="shotgunResultBadge" class="inline-block text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 mb-2">
+        UITDAGING GEACCEPTEERD!
+      </div>
+      <h4 id="shotgunResultTitle" class="font-poster text-2xl font-extrabold text-[#4A3718]">
+        Hoppa! Shotgun tijd!
+      </h4>
+      <p id="shotgunResultMessage" class="my-3 text-sm sm:text-base font-bold text-[#6E5227] bg-amber-100/70 p-3.5 rounded-2xl border border-amber-300"></p>
+      <button onclick="closeShotgunResultModal()" class="mt-2 w-full py-3 rounded-2xl font-poster font-extrabold text-sm uppercase bg-[#4A3718] hover:bg-[#63481F] text-[#F2CB6B] shadow-lg transition">
+        🍻 Top, begrepen!
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- ⚡🍻 1v1 TAFEL AD-WEDSTRIJD (FULL-SCREEN SPLIT-SCREEN ARENA)          -->
+  <!-- ===================================================================== -->
+  <div id="adtBattleModal" class="fixed inset-0 z-50 hidden flex-col bg-[#1A1207] text-white select-none overflow-hidden">
+    <div id="adtSetupView" class="flex-1 flex flex-col items-center justify-center p-5 max-w-md mx-auto w-full text-center">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-rose-500 flex items-center justify-center text-3xl shadow-xl border-2 border-white mb-3">
+        ⚡🍻
+      </div>
+      <div class="text-xs font-black uppercase tracking-widest text-amber-400">Tafel Split-Screen Modus</div>
+      <h3 class="font-poster text-3xl font-extrabold text-[#F2CB6B] mt-1">1v1 Ad-Wedstrijd</h3>
+      <p class="text-xs sm:text-sm text-amber-100/85 font-semibold mt-2 mb-5">
+        Leg de telefoon <strong>plat op tafel tussen jullie in</strong>. Drink met je dominante hand je glas/blikje leeg, zet 'm neer en <strong>sla op jouw helft van het scherm</strong>!
+      </p>
+
+      <div class="w-full space-y-3 bg-white/10 p-4 rounded-2xl border border-amber-400/30 text-left mb-5">
+        <div>
+          <label class="text-[11px] font-black uppercase tracking-wider text-pink-300">🔼 Bovenkant Scherm (Overkant tafel):</label>
+          <select id="adtPlayerTopSelect" class="mt-1 w-full bg-amber-950 text-white font-extrabold text-sm px-3 py-2.5 rounded-xl border border-amber-400/50"></select>
+        </div>
+        <div>
+          <label class="text-[11px] font-black uppercase tracking-wider text-emerald-300">🔽 Onderkant Scherm (Jouw kant):</label>
+          <select id="adtPlayerBottomSelect" class="mt-1 w-full bg-amber-950 text-white font-extrabold text-sm px-3 py-2.5 rounded-xl border border-amber-400/50"></select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 w-full">
+        <button onclick="closeAdtBattleModal()" class="py-3 rounded-2xl font-poster font-extrabold text-sm uppercase bg-white/10 hover:bg-white/20 text-amber-200 border border-amber-400/30">
+          ✕ Sluiten
+        </button>
+        <button onclick="startAdtArenaCountdown()" class="py-3 rounded-2xl font-poster font-extrabold text-sm sm:text-base uppercase bg-gradient-to-r from-emerald-500 to-lime-500 text-emerald-950 shadow-xl">
+          🔥 Start Duel!
+        </button>
+      </div>
+    </div>
+
+    <div id="adtArenaView" class="hidden flex-1 flex flex-col w-full h-full relative">
+      <!-- BOVENSTE SPELER KNOP (180 graden gedraaid voor overkant tafel) -->
+      <button
+        id="adtTapZoneTop"
+        onpointerdown="handleAdtPlayerSlam('top', event)"
+        class="flex-1 w-full rotate-180 flex flex-col items-center justify-center p-4 transition-colors bg-gradient-to-b from-pink-700 to-rose-900 active:brightness-125 relative overflow-hidden"
+      >
+        <div id="adtTopStatusBadge" class="px-3 py-1 rounded-full bg-black/40 text-amber-300 font-extrabold text-xs uppercase tracking-widest mb-2">
+          Maak je klaar...
+        </div>
+        <div id="adtTopPlayerName" class="font-poster text-2xl sm:text-4xl font-extrabold text-white drop-shadow">
+          Speler 1
+        </div>
+        <div id="adtTopTimer" class="font-mono-timer text-5xl sm:text-7xl font-black text-[#F2CB6B] my-2 tracking-tight drop-shadow-lg">
+          00.00s
+        </div>
+        <div id="adtTopSubText" class="font-poster text-sm sm:text-lg font-bold text-white/90 uppercase tracking-wider bg-black/25 px-4 py-1.5 rounded-xl border border-white/20">
+          ✋ SLA HIER ZODRA JE GLAS OP TAFEL STAAT!
+        </div>
+      </button>
+
+      <!-- MIDDENLIJN -->
+      <div class="h-14 bg-[#2A1C0B] border-y-4 border-[#F2CB6B] flex items-center justify-between px-4 z-20 shrink-0 shadow-2xl">
+        <button onclick="closeAdtBattleModal()" class="px-3 py-1 rounded-lg bg-white/10 text-amber-200 font-extrabold text-xs">
+          ✕ Stop
+        </button>
+        <div id="adtCenterBanner" class="font-poster font-extrabold text-xs sm:text-base text-[#F2CB6B] uppercase tracking-wider text-center truncate px-2">
+          ⚡ LEG TELEFOON OP TAFEL ⚡
+        </div>
+        <button onclick="resetAdtRematch()" class="px-3 py-1 rounded-lg bg-amber-500 text-amber-950 font-extrabold text-xs">
+          🔄 Rematch
+        </button>
+      </div>
+
+      <!-- ONDERSTE SPELER KNOP -->
+      <button
+        id="adtTapZoneBottom"
+        onpointerdown="handleAdtPlayerSlam('bottom', event)"
+        class="flex-1 w-full flex flex-col items-center justify-center p-4 transition-colors bg-gradient-to-b from-cyan-700 to-sky-900 active:brightness-125 relative overflow-hidden"
+      >
+        <div id="adtBottomStatusBadge" class="px-3 py-1 rounded-full bg-black/40 text-amber-300 font-extrabold text-xs uppercase tracking-widest mb-2">
+          Maak je klaar...
+        </div>
+        <div id="adtBottomPlayerName" class="font-poster text-2xl sm:text-4xl font-extrabold text-white drop-shadow">
+          Speler 2
+        </div>
+        <div id="adtBottomTimer" class="font-mono-timer text-5xl sm:text-7xl font-black text-[#F2CB6B] my-2 tracking-tight drop-shadow-lg">
+          00.00s
+        </div>
+        <div id="adtBottomSubText" class="font-poster text-sm sm:text-lg font-bold text-white/90 uppercase tracking-wider bg-black/25 px-4 py-1.5 rounded-xl border border-white/20">
+          ✋ SLA HIER ZODRA JE GLAS OP TAFEL STAAT!
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Beach & Ocean Footer met Made by Job Janssen -->
   <footer class="relative z-10 mt-auto pt-8 bg-gradient-to-b from-transparent via-[#F2CB6B]/45 to-[#4EC3E0] border-t-4 border-[#F2CB6B]">
-    <div class="max-w-6xl mx-auto px-4 pb-6 text-center">
-      <div class="inline-flex flex-wrap items-center justify-center gap-3 bg-[#4A3718] text-[#FDFBF3] px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-lg">
+    <div class="max-w-6xl mx-auto px-4 pb-8 text-center flex flex-col items-center gap-2.5">
+      <div class="inline-flex flex-wrap items-center justify-center gap-3 bg-[#4A3718] text-[#FDFBF3] px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-lg border border-[#C49A47]">
         <span>🏝️ DVOV Kantine</span>
         <span>•</span>
         <span>Vrijdag 2 okt • 19:30 - 23:00</span>
         <span>•</span>
         <span class="text-amber-300">🔞 NIX18 — Geniet, maar drink met mate</span>
       </div>
+      <div class="inline-flex items-center gap-2 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-xs font-extrabold text-[#4A3718] shadow border border-[#856324]/40">
+        <span>🛠️</span>
+        <span>Concept & Realisatie: <strong class="text-pink-600 font-poster tracking-wide">Made by Job Janssen</strong></span>
+        <span>⚽🍻</span>
+      </div>
     </div>
   </footer>
 
   <script>
     // =========================================================================
-    // CONFIGURATION: 20 DRINKS, 12 MINUTES APART, COLORS & MOTIVATIONAL QUOTES
+    // CONFIGURATION: DEFAULT 20 DRINKS (+ EXTRA ADDABLE), 12 MINUTES APART
     // =========================================================================
-    const TOTAL_CANS = 20;
+    const DEFAULT_CANS = 20;
+    let TOTAL_CANS = DEFAULT_CANS;
     const INTERVAL_MINUTES = 12;
     const INTERVAL_MS = INTERVAL_MINUTES * 60 * 1000;
 
@@ -638,7 +1022,6 @@
     // =========================================================================
     // 🎖️ ACHIEVEMENTS & CHALLENGES CATALOG
     // =========================================================================
-    // 1. Automatic Badges (unlocked by timestamps, 69/67 numbers, speed, drink mix)
     const AUTO_ACHIEVEMENTS = [
       {
         id: 'nice_69',
@@ -646,7 +1029,7 @@
         title: '69 Nice!',
         short: '69 Nice',
         style: 'bg-gradient-to-r from-pink-500 to-rose-500 text-white border-pink-200 badge-legendary',
-        desc: 'Een drankje afgevinkt met "69" achter elkaar in de tijd, timer of seconden!'
+        desc: 'Een drankje afgevinkt met "69" direct naast elkaar in de tijd, timer of seconden!'
       },
       {
         id: 'meme_67',
@@ -654,7 +1037,7 @@
         title: '6-7 Meme!',
         short: '6-7!',
         style: 'bg-gradient-to-r from-purple-600 to-indigo-500 text-white border-purple-200 badge-legendary',
-        desc: 'Een drankje afgevinkt met "67" achter elkaar in de tijd, timer of seconden!'
+        desc: 'Een drankje afgevinkt met "67" direct naast elkaar in de tijd, timer of seconden!'
       },
       {
         id: 'sniper',
@@ -727,10 +1110,89 @@
         short: 'EINDBAAS',
         style: 'bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 text-amber-950 border-white badge-legendary',
         desc: 'Alle 20 rondes op de Stëlz Party uitgespeeld!'
+      },
+      {
+        id: 'overtime_unlock',
+        emoji: '➕',
+        title: 'Kantine Verlenging!',
+        short: 'Verlenging!',
+        style: 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-emerald-200 badge-legendary',
+        desc: 'Heeft na de 20 standaard rondes een extra blok (+12 min) toegevoegd!'
+      },
+      {
+        id: 'overtime_21',
+        emoji: '🔥',
+        title: 'De 3e Helft (21+ Op)',
+        short: '21+ LEGEND',
+        style: 'bg-gradient-to-r from-rose-600 via-orange-500 to-amber-400 text-white border-white badge-legendary',
+        desc: 'Heeft daadwerkelijk een 21e (of hoger!) drankje in de verlenging geklapt!'
+      },
+      {
+        id: 'nachtbraker_25',
+        emoji: '🦉',
+        title: 'Nachtbraker (25/25)',
+        short: '25x NACHTUIL',
+        style: 'bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white border-white badge-legendary',
+        desc: '25 rondes geklapt — sluit persoonlijk de DVOV kantine af!'
+      },
+      {
+        id: 'shotgun_init',
+        emoji: '🌪️',
+        title: 'Shotgun Soldaat',
+        short: 'Shotgun!',
+        style: 'bg-gradient-to-r from-orange-500 to-red-600 text-white border-orange-200 badge-legendary',
+        desc: 'Heeft een Stëlz of pilsje ge-shotgund aan de bar!'
+      },
+      {
+        id: 'shotgun_3x',
+        emoji: '🔫',
+        title: 'Shotgun Koning (3x)',
+        short: '3x Shotgun',
+        style: 'bg-gradient-to-r from-red-600 via-amber-500 to-yellow-400 text-amber-950 border-white badge-legendary',
+        desc: 'Minstens 3 Shotguns op één avond geklapt — ongekende zuigkracht!'
+      },
+      {
+        id: 'kleine_speler',
+        emoji: '🐣',
+        title: 'Kleine Speler',
+        short: 'Kleine Speler',
+        style: 'bg-slate-600 text-amber-200 border-slate-400',
+        desc: 'Heeft een eervolle Shotgun-uitdaging angstig geweigerd...'
+      },
+      {
+        id: 'adt_winner',
+        emoji: '⚡',
+        title: 'Ad-Koning (1v1 Winnaar)',
+        short: 'Ad-Koning',
+        style: 'bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-amber-950 border-white badge-legendary',
+        desc: 'Heeft een 1v1 Tafel Ad-Wedstrijd gewonnen!'
+      },
+      {
+        id: 'adt_trechter',
+        emoji: '🚀',
+        title: 'Menselijke Trechter (<3.5s)',
+        short: '<3.5s Trechter!',
+        style: 'bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 text-white border-white badge-legendary',
+        desc: 'Een 1v1 adje geklapt en afgeslagen binnen 3,50 seconden!'
+      },
+      {
+        id: 'adt_photofinish',
+        emoji: '📸',
+        title: 'Fotofinish (<0.30s)',
+        short: 'Fotofinish!',
+        style: 'bg-gradient-to-r from-pink-500 to-violet-600 text-white border-pink-200 badge-legendary',
+        desc: 'Een 1v1 Ad-Wedstrijd beslist met minder dan 0,30 seconde verschil!'
+      },
+      {
+        id: 'adt_schildpad',
+        emoji: '🐌',
+        title: 'Slokdarm Kramp',
+        short: 'Ad-Verliezer',
+        style: 'bg-stone-600 text-amber-200 border-stone-400',
+        desc: 'Heeft een 1v1 Tafel Ad-Wedstrijd verloren en hapte naar adem...'
       }
     ];
 
-    // 2. Awardable Kantine Challenges (Nothing to do with drinking - can be given to anyone!)
     const AWARDABLE_CHALLENGES = [
       {
         id: 'ch_dj',
@@ -850,6 +1312,64 @@
       "TWINTIG BLIKKEN VOLTOOID! Hulde! Jij bent de onbetwiste Eindbaas van DVOV! 👑🏆🎆"
     ];
 
+    // 10 Kantine-Toestanden op basis van geschat promillage (‰)
+    const BAC_STATES = [
+      { level: 1, min: 0.00, emoji: '🧘‍♂️', title: 'Fase 1/10: Kantine-Nuchter & Scherp',      short: 'Nuchter',         desc: 'Je kunt de opstelling van zondag nog foutloos opdreunen.' },
+      { level: 2, min: 0.05, emoji: '🙂',   title: 'Fase 2/10: De Eerste Tinteling',           short: 'Opgewarmd',       desc: 'De kop is eraf! De kantine-akoestiek klinkt ineens een stuk warmer.' },
+      { level: 3, min: 0.30, emoji: '🕺',   title: 'Fase 3/10: Sociaal Smeermiddel',           short: 'Lekker Losjes',   desc: 'Smalltalk aan de bar gaat vanzelf en de schouders gaan los.' },
+      { level: 4, min: 0.55, emoji: '⚽',   title: 'Fase 4/10: Kantine-Spits in Vorm',         short: 'In Vorm',         desc: 'Ideale kruissnelheid! Elke grap aan de bar is nu een wereldgoal.' },
+      { level: 5, min: 0.85, emoji: '🎧',   title: 'Fase 5/10: Beste Vriend van de DJ',        short: 'DJ-Modus',        desc: 'Je zingt elk refrein uit volle borst mee alsof je zelf in de booth staat.' },
+      { level: 6, min: 1.15, emoji: '🍟',   title: 'Fase 6/10: Bitterbal-Magneet',             short: 'Frituur-Focus',   desc: 'Sterke drang naar bruin fruit, tactische analyses en schouderklopjes.' },
+      { level: 7, min: 1.45, emoji: '🦩',   title: 'Fase 7/10: Volledige Flamingo-Modus',      short: 'Flamingo-Modus',  desc: 'Op één been staan wordt lastig, maar je dansmoves zijn legendarisch.' },
+      { level: 8, min: 1.75, emoji: '🚂',   title: 'Fase 8/10: Polonaise-Kapitein',            short: 'Polonaise!',      desc: 'Je houdt van iedereen in de DVOV-kantine en bestelt nog een rondje.' },
+      { level: 9, min: 2.05, emoji: '🥴',   title: 'Fase 9/10: De 3e Helft Filosoof',          short: 'Kantine-Filosoof',desc: 'De bar beweegt lichtjes mee op de beat; tijd voor een tactisch watertje?' },
+      { level: 10,min: 2.35, emoji: '🪐',   title: 'Fase 10/10: Buitenaards Kantine-Wezen',    short: 'Buitenaards',     desc: 'Maximale Stëlz-status bereikt! Jij zweeft boven het kunstgrasveld.' }
+    ];
+
+    function getBacStateObject(bacPromille) {
+      let current = BAC_STATES[0];
+      for (const st of BAC_STATES) {
+        if (bacPromille >= st.min) current = st;
+      }
+      return current;
+    }
+
+    function calculateDynamicBAC(cansMap, weightKg, nowMs = Date.now(), gender = 'M') {
+      const w = Math.max(40, Math.min(180, Number(weightKg) || 80));
+      const r = gender === 'V' ? 0.55 : 0.68;
+      const burnRatePerHour = 0.15;
+
+      const events = Object.values(cansMap || {})
+        .map(rec => ({
+          timeMs: Number(rec.completedAtMs || rec.at || 0),
+          type: rec.drinkType || rec.t || 'stelz'
+        }))
+        .filter(e => e.timeMs > 0 && e.timeMs <= nowMs)
+        .sort((a, b) => a.timeMs - b.timeMs);
+
+      if (events.length === 0) return 0;
+
+      const alcoholGramsByType = { stelz: 11.7, bier: 10.0, wijn: 14.2 };
+
+      let currentBac = 0;
+      let lastTimeMs = events[0].timeMs;
+
+      for (const ev of events) {
+        const elapsedHours = Math.max(0, (ev.timeMs - lastTimeMs) / 3600000);
+        currentBac = Math.max(0, currentBac - elapsedHours * burnRatePerHour);
+
+        const grams = alcoholGramsByType[ev.type] || 11.5;
+        const addedBac = grams / (w * r);
+        currentBac += addedBac;
+        lastTimeMs = ev.timeMs;
+      }
+
+      const hoursSinceLastDrink = Math.max(0, (nowMs - lastTimeMs) / 3600000);
+      currentBac = Math.max(0, currentBac - hoursSinceLastDrink * burnRatePerHour);
+
+      return currentBac;
+    }
+
     let baseStartTimestamp = getRealPartyTimestamp();
     let currentMode = 'real';
     let soundEnabled = true;
@@ -863,8 +1383,7 @@
     let myPlayer = loadOrInitPlayer();
     let completedCans = {};
     let drinkTypes = {};
-    let myManualBadges = []; // array of badge IDs or custom objects {id, emoji, short, title}
-    // Map of targetPlayerId -> array of manual badges awarded across the room
+    let myManualBadges = [];
     const awardedBadgesByPlayer = new Map();
 
     for (let i = 1; i <= TOTAL_CANS; i++) {
@@ -879,12 +1398,20 @@
         const raw = localStorage.getItem(STORAGE_PLAYER_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (parsed && parsed.id) return parsed;
+          if (parsed && parsed.id) {
+            if (!parsed.weightKg) parsed.weightKg = 80;
+            if (!parsed.team) parsed.team = 'DVOV 1';
+            if (!parsed.gender) parsed.gender = 'M';
+            return parsed;
+          }
         }
       } catch (e) {}
       const newPlayer = {
         id: 'p_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now().toString(36),
-        name: ''
+        name: '',
+        team: 'DVOV 1',
+        gender: 'M',
+        weightKg: 80
       };
       try {
         localStorage.setItem(STORAGE_PLAYER_KEY, JSON.stringify(newPlayer));
@@ -898,6 +1425,9 @@
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && typeof parsed === 'object') {
+            if (parsed.totalCans && Number(parsed.totalCans) >= DEFAULT_CANS) {
+              TOTAL_CANS = Number(parsed.totalCans);
+            }
             if (parsed.completedCans) completedCans = parsed.completedCans;
             if (parsed.drinkTypes) {
               for (let i = 1; i <= TOTAL_CANS; i++) {
@@ -915,11 +1445,74 @@
     function saveLocalState() {
       try {
         localStorage.setItem(STORAGE_KEY_V3, JSON.stringify({
+          totalCans: TOTAL_CANS,
           completedCans,
           drinkTypes,
           myManualBadges
         }));
       } catch (e) {}
+    }
+
+    function updateExtraCanButtonsUI() {
+      const addLabel = document.getElementById('btnAddExtraCanLabel');
+      const removeBtn = document.getElementById('btnRemoveExtraCan');
+      const nextNum = TOTAL_CANS + 1;
+      const nextTargetTime = formatShortTime(baseStartTimestamp + (nextNum - 1) * INTERVAL_MS);
+      if (addLabel) {
+        addLabel.textContent = `Voeg Ronde #${nextNum} toe (+12 min • ${nextTargetTime})`;
+      }
+      if (removeBtn) {
+        if (TOTAL_CANS > DEFAULT_CANS) {
+          removeBtn.classList.remove('hidden');
+        } else {
+          removeBtn.classList.add('hidden');
+        }
+      }
+    }
+
+    function addExtraCanBlock() {
+      TOTAL_CANS++;
+      if (!drinkTypes[TOTAL_CANS]) {
+        drinkTypes[TOTAL_CANS] = 'stelz';
+      }
+
+      let newlyAddedBadge = false;
+      if (!myManualBadges.includes('overtime_unlock')) {
+        myManualBadges.push('overtime_unlock');
+        newlyAddedBadge = true;
+      }
+
+      saveLocalState();
+      buildCansGrid();
+      updateExtraCanButtonsUI();
+      playCheckoffComboSound(drinkTypes[TOTAL_CANS]);
+      fireConfetti();
+      tick();
+
+      if (newlyAddedBadge) {
+        syncMyStateToCloud(null, `heeft zojuist de ➕ Kantine Verlenging (Ronde #${TOTAL_CANS}) geopend!`);
+      } else {
+        syncMyStateToCloud(null, `heeft extra Ronde #${TOTAL_CANS} (+12 min) toegevoegd!`);
+      }
+
+      setTimeout(() => {
+        const newCard = document.getElementById(`canCard-${TOTAL_CANS}`);
+        if (newCard) {
+          newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          newCard.classList.add('animate-pop');
+        }
+      }, 60);
+    }
+
+    function removeLastExtraCanBlock() {
+      if (TOTAL_CANS <= DEFAULT_CANS) return;
+      delete completedCans[TOTAL_CANS];
+      TOTAL_CANS--;
+      saveLocalState();
+      buildCansGrid();
+      updateExtraCanButtonsUI();
+      tick();
+      syncMyStateToCloud();
     }
 
     function getRealPartyTimestamp() {
@@ -969,36 +1562,29 @@
     }
 
     // =========================================================================
-    // CHECK FOR "69" OR "67" ANYWHERE IN TIME OR TIMER DIGITS!
+    // CHECK FOR "69" OR "67" DIRECTLY NEXT TO EACH OTHER IN TIME OR TIMER
     // =========================================================================
     function checkContainsPattern(record, patternStr) {
       if (!record) return false;
-      // 1) Check formatted clock time e.g. "19:46:09" -> raw digits "194609" or with colons
       const clockStr = String(record.completedTimeStr || '');
       const clockDigits = clockStr.replace(/\D/g, '');
-      // Also strip leading zeros in segments so "06:09" -> "69" matches!
-      const clockPartsNoZero = clockStr.split(':').map(p => String(Number(p))).join('');
+      const clockNoZero = clockStr.split(':').map(p => String(parseInt(p, 10) || 0)).join('');
 
-      // 2) Check formatted signed delta timer e.g. "-00:06:09" -> "000609" and "69"
-      const deltaClock = formatSignedClock(record.deltaMs || 0);
+      const deltaClock = formatSignedClock(record.deltaMs || 0).replace(/^[+-]/, '');
       const deltaDigits = deltaClock.replace(/\D/g, '');
-      const deltaPartsNoZero = deltaClock.replace(/^[+-]/, '').split(':').map(p => String(Number(p))).join('');
+      const deltaNoZero = deltaClock.split(':').map(p => String(parseInt(p, 10) || 0)).join('');
 
-      // 3) Check raw total seconds of delta (e.g., 69 seconds or 67 seconds behind/ahead)
       const totalAbsSec = String(Math.floor(Math.abs(record.deltaMs || 0) / 1000));
 
       return (
-        clockStr.includes(patternStr) ||
         clockDigits.includes(patternStr) ||
-        clockPartsNoZero.includes(patternStr) ||
-        deltaClock.includes(patternStr) ||
+        clockNoZero.includes(patternStr) ||
         deltaDigits.includes(patternStr) ||
-        deltaPartsNoZero.includes(patternStr) ||
+        deltaNoZero.includes(patternStr) ||
         totalAbsSec.includes(patternStr)
       );
     }
 
-    // Compute all automatic achievement IDs for a player's completed cans
     function evaluateAutoAchievementsFromCans(cansMap) {
       const unlocked = new Set();
       let count = 0;
@@ -1017,17 +1603,10 @@
         const completedTimeStr = rec.completedTimeStr || rec.c || '';
         const normRec = { deltaMs, completedTimeStr };
 
-        // Check 69 & 67 anywhere in clock or timer!
         if (checkContainsPattern(normRec, '69')) unlocked.add('nice_69');
         if (checkContainsPattern(normRec, '67')) unlocked.add('meme_67');
-
-        // Sniper: within 5 seconds of target time (-5000ms to +5000ms)
         if (Math.abs(deltaMs) <= 5000) unlocked.add('sniper');
-
-        // Early bird: completed more than 60s before target time
         if (deltaMs >= 60000) unlocked.add('early_bird');
-
-        // Diesel: completed with more than 10 minutes behind schedule
         if (deltaMs <= -600000) unlocked.add('diesel');
       });
 
@@ -1037,11 +1616,15 @@
       if (count >= 10) unlocked.add('halftime');
       if (count >= 14) unlocked.add('cruijff_14');
       if (count >= 20) unlocked.add('eindbaas_20');
+      if (count >= 21 || Object.keys(cansMap || {}).some(k => Number(k) >= 21)) {
+        unlocked.add('overtime_unlock');
+        unlocked.add('overtime_21');
+      }
+      if (count >= 25) unlocked.add('nachtbraker_25');
 
       return Array.from(unlocked);
     }
 
-    // Helper to render a badge pill
     function renderBadgePillHTML(badgeIdOrObj, extraClasses = '') {
       let b = null;
       if (typeof badgeIdOrObj === 'string') {
@@ -1073,7 +1656,7 @@
     }
 
     // =========================================================================
-    // AUDIO SYNTHESIZER: CAN OPEN ("PSSSJT-KLIK") + PARTY HORN ("TOET-TOET!")
+    // AUDIO: CAN OPEN ("PSSSJT-KLIK") + CUSTOM SOUND.MP3 (MET FALLBACK)
     // =========================================================================
     function getAudioContext() {
       if (!audioCtx) {
@@ -1172,43 +1755,31 @@
       } catch (e) {}
     }
 
-    function playPartyHorn(delaySeconds = 0) {
-      if (!soundEnabled) return;
+    const customCheerAudio = new Audio('sound.mp3');
+    customCheerAudio.preload = 'auto';
+
+    function playSynthFallbackHorn() {
       try {
         const ctx = getAudioContext();
         if (!ctx) return;
-
-        const now = ctx.currentTime + delaySeconds;
-
+        const now = ctx.currentTime;
         const notes = [
           { start: 0.0, dur: 0.14, freqStart: 420, freqEnd: 465 },
           { start: 0.17, dur: 0.48, freqStart: 510, freqEnd: 620 }
         ];
-
         notes.forEach(note => {
           [1, 1.25, 1.5].forEach((harmonic, idx) => {
             const osc = ctx.createOscillator();
-            const filter = ctx.createBiquadFilter();
             const gain = ctx.createGain();
-
             osc.type = idx === 0 ? 'sawtooth' : 'triangle';
             osc.frequency.setValueAtTime(note.freqStart * harmonic, now + note.start);
             osc.frequency.exponentialRampToValueAtTime(note.freqEnd * harmonic, now + note.start + note.dur * 0.7);
-
-            filter.type = 'bandpass';
-            filter.frequency.setValueAtTime(1100, now + note.start);
-            filter.Q.setValueAtTime(2.2, now + note.start);
-
-            const maxGain = idx === 0 ? 0.22 : 0.1;
+            const maxGain = idx === 0 ? 0.2 : 0.08;
             gain.gain.setValueAtTime(0.001, now + note.start);
             gain.gain.linearRampToValueAtTime(maxGain, now + note.start + 0.025);
-            gain.gain.setValueAtTime(maxGain, now + note.start + note.dur - 0.06);
             gain.gain.exponentialRampToValueAtTime(0.0001, now + note.start + note.dur);
-
-            osc.connect(filter);
-            filter.connect(gain);
+            osc.connect(gain);
             gain.connect(ctx.destination);
-
             osc.start(now + note.start);
             osc.stop(now + note.start + note.dur + 0.02);
           });
@@ -1216,10 +1787,25 @@
       } catch (e) {}
     }
 
+    function playPartyHorn(delaySeconds = 0) {
+      if (!soundEnabled) return;
+      setTimeout(() => {
+        try {
+          const clone = customCheerAudio.cloneNode();
+          clone.volume = 1.0;
+          clone.play().catch(() => {
+            playSynthFallbackHorn();
+          });
+        } catch (e) {
+          playSynthFallbackHorn();
+        }
+      }, Math.max(0, delaySeconds * 1000));
+    }
+
     function playCheckoffComboSound(drinkType = 'stelz') {
       if (!soundEnabled) return;
       playCanOpenSound(drinkType);
-      playPartyHorn(0.26);
+      playPartyHorn(0.22);
     }
 
     function testHornAndCan() {
@@ -1234,7 +1820,7 @@
       soundEnabled = !soundEnabled;
       const btn = document.getElementById('btnSoundToggle');
       if (soundEnabled) {
-        btn.textContent = '🔊 Toeter & Blikje: AAN';
+        btn.textContent = '🔊 Geluid: AAN';
         btn.classList.remove('opacity-60');
         playCheckoffComboSound('stelz');
       } else {
@@ -1328,7 +1914,7 @@
     }
 
     // =========================================================================
-    // MOTIVATIONAL TOAST BANNER (WITH NEW BADGE UNLOCK ALERTS!)
+    // MOTIVATIONAL TOAST BANNER
     // =========================================================================
     function showMotivationToast(canNumber, record, newlyUnlockedBadges = []) {
       const toast = document.getElementById('motivationToast');
@@ -1342,7 +1928,7 @@
 
       title.textContent = `${dType.emoji} RONDE #${canNumber} (${dType.name.toUpperCase()}) AFGEVINKT! ${deltaStatus}`;
       quote.textContent = MOTIVATIONAL_QUOTES[(canNumber - 1) % MOTIVATIONAL_QUOTES.length];
-      emoji.textContent = canNumber === 20 ? '👑' : dType.emoji;
+      emoji.textContent = canNumber >= 20 ? '👑' : dType.emoji;
 
       if (newlyUnlockedBadges.length > 0) {
         badgesRow.classList.remove('hidden');
@@ -1352,13 +1938,13 @@
         badgesRow.innerHTML = '';
       }
 
-      toast.classList.remove('opacity-0', 'translate-y-8');
+      toast.classList.remove('opacity-0', '-translate-y-4', 'sm:translate-y-8');
       toast.classList.add('opacity-100', 'translate-y-0');
 
       if (toastTimeout) clearTimeout(toastTimeout);
       toastTimeout = setTimeout(() => {
         toast.classList.remove('opacity-100', 'translate-y-0');
-        toast.classList.add('opacity-0', 'translate-y-8');
+        toast.classList.add('opacity-0', '-translate-y-4', 'sm:translate-y-8');
       }, 5200);
     }
 
@@ -1397,7 +1983,7 @@
     }
 
     // =========================================================================
-    // BUILD CARDS FOR ALL 20 DRINKS
+    // BUILD CARDS FOR ALL DRINKS
     // =========================================================================
     function buildCansGrid() {
       const grid = document.getElementById('cansGrid');
@@ -1499,6 +2085,7 @@
         grid.appendChild(card);
         updateDrinkTypeButtonsUI(i);
       }
+      updateExtraCanButtonsUI();
     }
 
     function updateDrinkTypeButtonsUI(canNumber) {
@@ -1562,7 +2149,7 @@
     }
 
     // =========================================================================
-    // CHECK OFF / UNCHECK A DRINK & CHECK FOR 69 / 67 / SNIPER BADGES!
+    // CHECK OFF / UNCHECK A DRINK
     // =========================================================================
     function toggleCanChecked(canNumber) {
       const nowMs = Date.now();
@@ -1632,7 +2219,6 @@
       const modal = document.getElementById('challengesModal');
       const select = document.getElementById('badgeTargetPlayerSelect');
 
-      // Ensure local player is in map
       const mySummary = computeMyPlayerSummary();
       allPlayersMap.set(myPlayer.id, mySummary);
 
@@ -1665,7 +2251,6 @@
       const targetPlayer = allPlayersMap.get(targetId) || computeMyPlayerSummary();
       const activeBadges = new Set(getEffectivePlayerBadges(targetPlayer));
 
-      // 1. Render Awardable Kantine Challenges
       const chGrid = document.getElementById('awardableChallengesGrid');
       chGrid.innerHTML = AWARDABLE_CHALLENGES.map(ch => {
         const isActive = activeBadges.has(ch.id);
@@ -1701,7 +2286,6 @@
         `;
       }).join('');
 
-      // 2. Render Automatic Time & Number Achievements
       const autoGrid = document.getElementById('autoAchievementsGrid');
       autoGrid.innerHTML = AUTO_ACHIEVEMENTS.map(ach => {
         const isUnlocked = activeBadges.has(ach.id);
@@ -1744,7 +2328,6 @@
         saveLocalState();
         syncMyStateToCloud(null, chObj ? `heeft de badge ${chObj.emoji} ${chObj.title} gepakt!` : null);
       } else {
-        // Awarding to another player in the room!
         const existing = awardedBadgesByPlayer.get(targetPlayerId) || [];
         const idx = existing.indexOf(badgeId);
         let actionRemoved = false;
@@ -1758,7 +2341,6 @@
         }
         awardedBadgesByPlayer.set(targetPlayerId, existing);
 
-        // Also update target player in allPlayersMap and broadcast badge grant
         const targetPlayer = allPlayersMap.get(targetPlayerId);
         if (targetPlayer) {
           targetPlayer.manualBadges = Array.from(new Set([...(targetPlayer.manualBadges || []), ...existing])).filter(b => !(actionRemoved && b === badgeId));
@@ -1826,22 +2408,33 @@
     }
 
     // =========================================================================
-    // PLAYER NAME & LEADERBOARD LOGIC
+    // PLAYER NAME, WEIGHT, TEAM, GENDER & LEADERBOARD LOGIC
     // =========================================================================
     function savePlayerName() {
+      requestNotificationPermission();
       const input = document.getElementById('playerNameInput');
+      const weightInput = document.getElementById('playerWeightInput');
+      const teamInput = document.getElementById('playerTeamInput');
+      const genderInput = document.getElementById('playerGenderInput');
+
       const cleaned = (input.value || '').trim().slice(0, 22);
-      if (!cleaned) {
-        input.focus();
-        return;
-      }
-      myPlayer.name = cleaned;
+      const weightVal = Math.max(40, Math.min(180, parseInt(weightInput ? weightInput.value : 80, 10) || 80));
+      const teamVal = teamInput ? teamInput.value : (myPlayer.team || 'DVOV 1');
+      const genderVal = genderInput ? genderInput.value : (myPlayer.gender || 'M');
+
+      if (weightInput) weightInput.value = weightVal;
+      myPlayer.weightKg = weightVal;
+      myPlayer.team = teamVal;
+      myPlayer.gender = genderVal;
+      if (cleaned) myPlayer.name = cleaned;
+
       try {
         localStorage.setItem(STORAGE_PLAYER_KEY, JSON.stringify(myPlayer));
       } catch (e) {}
 
       playCanOpenSound('stelz');
       fireConfetti();
+      tick();
       syncMyStateToCloud();
     }
 
@@ -1866,13 +2459,15 @@
           compactCans[i] = {
             t: t,
             d: Math.round(Number(rec.deltaMs || 0)),
-            c: rec.completedTimeStr || ''
+            c: rec.completedTimeStr || '',
+            at: Number(rec.completedAtMs || Date.now())
           };
         }
       }
 
       const roomAwardedToMe = awardedBadgesByPlayer.get(myPlayer.id) || [];
       const mergedManualBadges = Array.from(new Set([...myManualBadges, ...roomAwardedToMe]));
+      const myBac = calculateDynamicBAC(completedCans, myPlayer.weightKg || 80, Date.now(), myPlayer.gender || 'M');
 
       let lastActionText = customActionText || '';
       if (!lastActionText && lastCheckedCan && completedCans[lastCheckedCan]) {
@@ -1885,6 +2480,10 @@
       return {
         id: myPlayer.id,
         name: myPlayer.name || 'Anonieme Stëlzer',
+        team: myPlayer.team || 'DVOV 1',
+        gender: myPlayer.gender || 'M',
+        weightKg: myPlayer.weightKg || 80,
+        bacPromille: Number(myBac.toFixed(3)),
         totalCount,
         stelzCount,
         bierCount,
@@ -1912,7 +2511,7 @@
 
     function renderLeaderboard() {
       const mySummary = computeMyPlayerSummary();
-      if (myPlayer.name || mySummary.totalCount > 0 || (mySummary.manualBadges && mySummary.manualBadges.length > 0)) {
+      if ((myPlayer.name || mySummary.totalCount > 0 || (mySummary.manualBadges && mySummary.manualBadges.length > 0)) && !deletedPlayersSet.has(myPlayer.id)) {
         allPlayersMap.set(myPlayer.id, mySummary);
       }
 
@@ -1992,8 +2591,28 @@
             : `Tijd: ${formatSignedClock(deltaMs)} (${deltaMs < 0 ? 'achter' : 'voor'})`;
 
         const pct = Math.min(100, Math.round(((p.totalCount || 0) / TOTAL_CANS) * 100));
+
+        let pCans = {};
+        try { pCans = p.cansJson ? JSON.parse(p.cansJson) : {}; } catch (e) {}
+        const livePlayerBac = calculateDynamicBAC(pCans, p.weightKg || 80, Date.now(), p.gender || 'M');
+        const bacState = getBacStateObject(livePlayerBac);
+
+        const teamChipHtml = `
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-400/20 text-amber-200 border border-amber-400/40">
+            ${p.gender === 'V' ? '🚺' : '🚹'} ${escapeHtml(p.team || 'DVOV 1')}
+          </span>
+        `;
+
+        const bacChipHtml = `
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-gradient-to-r from-amber-500/30 to-pink-500/30 text-amber-100 border border-amber-300/60 shadow-sm" title="${bacState.title}: ${bacState.desc}">
+            <span class="text-xs">${bacState.emoji}</span>
+            <span class="font-mono-timer text-amber-300">${livePlayerBac.toFixed(2)}‰</span>
+            <span class="text-white">• Fase ${bacState.level}: ${bacState.short}</span>
+          </span>
+        `;
+
         const playerBadges = getEffectivePlayerBadges(p);
-        const badgesHtml = playerBadges.map(b => renderBadgePillHTML(b)).join('');
+        const badgesHtml = teamChipHtml + bacChipHtml + playerBadges.map(b => renderBadgePillHTML(b)).join('');
 
         return `
           <div
@@ -2028,7 +2647,6 @@
                 </div>
               </div>
 
-              <!-- Right Stats: Give Badge + Mix + Delta + Score -->
               <div class="flex flex-wrap items-center gap-2 ml-auto">
                 <button
                   onclick="event.stopPropagation(); openChallengesModal('${p.id}')"
@@ -2037,6 +2655,15 @@
                 >
                   🎖️ +Badge
                 </button>
+                ${isAdminUnlocked() ? `
+                <button
+                  onclick="event.stopPropagation(); adminRemovePlayer('${p.id}')"
+                  class="px-2 py-1 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-extrabold border border-rose-300/50 transition shadow"
+                  title="Beheerder: Verwijder speler van het scorebord"
+                >
+                  🗑️ Verwijder
+                </button>
+                ` : ''}
 
                 <div class="flex items-center gap-1.5 bg-black/35 px-2.5 py-1 rounded-xl border border-amber-500/20 text-xs font-extrabold">
                   <span title="Stëlz">🥫 ${p.stelzCount || 0}</span>
@@ -2082,7 +2709,7 @@
       const grid = document.getElementById('inspectModalGrid');
       const giveBtn = document.getElementById('inspectGiveBadgeBtn');
 
-      title.textContent = `${p.name || 'Speler'} (${p.totalCount || 0}/${TOTAL_CANS})`;
+      title.textContent = `${p.name || 'Speler'} • ${p.team || 'DVOV'} (${p.totalCount || 0}/${TOTAL_CANS})`;
       summary.innerHTML = `
         <div class="flex flex-wrap items-center justify-between gap-2">
           <span>Mix: <strong>🥫 ${p.stelzCount || 0}x Stëlz</strong> • <strong>🍺 ${p.bierCount || 0}x Bier</strong> • <strong>🍷 ${p.wijnCount || 0}x Wijn</strong></span>
@@ -2173,7 +2800,7 @@
 
     function shareViaWhatsApp() {
       const url = window.location.href.split('#')[0];
-      const text = `🦩🍻 Doe live mee met het DVOV Stëlz Party Scorebord (20 rondes, elke 12 min + 69/67 Badges)! Vul je naam in: ${url}`;
+      const text = `🦩🍻 Doe live mee met het DVOV Stëlz Party Scorebord (20 rondes, Promillage-meter, Shotgun-Por & Team-Stats)! Vul je naam in: ${url}`;
       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
 
@@ -2205,20 +2832,20 @@
         const recType = DRINK_TYPES[can1Record.drinkType || 'stelz'] || DRINK_TYPES.stelz;
         heroCanBadge.textContent = `✅ ${recType.unitSingular.toUpperCase()} #1 GEKLAPT!`;
         heroCanBadge.className = 'inline-block bg-emerald-600 text-white text-xs font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider mb-1';
-        heroBtnCan1.className = 'mt-2 w-full py-2 px-3 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-700 text-white shadow transition flex items-center justify-center gap-1.5';
+        heroBtnCan1.className = 'mt-2 w-full py-2.5 px-3 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-700 text-white shadow transition flex items-center justify-center gap-1.5';
         heroBtnCan1Label.textContent = `Vastgelegd (${can1Record.completedTimeStr})`;
         can1StatusText.textContent = `🔒 Vastgelegd met ${formatBehindText(can1Record.deltaMs)}`;
       } else if (diffMain <= 0) {
         const behindMs = diffMain;
         heroCanBadge.textContent = `🚨 #1 LOOPT IN DE MIN!`;
         heroCanBadge.className = 'inline-block bg-rose-600 text-white text-xs font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider mb-1 animate-pulse';
-        heroBtnCan1.className = 'mt-2 w-full py-2 px-3 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-rose-600 hover:bg-rose-700 text-white shadow transition flex items-center justify-center gap-1.5';
+        heroBtnCan1.className = 'mt-2 w-full py-2.5 px-3 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-rose-600 hover:bg-rose-700 text-white shadow transition flex items-center justify-center gap-1.5';
         heroBtnCan1Label.textContent = `Vink ${dType1.emoji} #1 Nu Af!`;
         can1StatusText.textContent = `⏰ ${formatSignedClock(behindMs)} (${formatBehindText(behindMs)})`;
       } else {
         heroCanBadge.textContent = `${dType1.emoji} RONDE #1 • DE AFTRAP`;
         heroCanBadge.className = 'inline-block bg-pink-500 text-white text-xs font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider mb-1';
-        heroBtnCan1.className = 'mt-2 w-full py-2 px-3 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-pink-500 hover:bg-pink-600 text-white shadow transition flex items-center justify-center gap-1.5';
+        heroBtnCan1.className = 'mt-2 w-full py-2.5 px-3 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-pink-500 hover:bg-pink-600 text-white shadow transition flex items-center justify-center gap-1.5';
         heroBtnCan1Label.textContent = `Vink ${dType1.emoji} #1 Af`;
         can1StatusText.textContent = 'Staat koud voor 19:30!';
       }
@@ -2259,6 +2886,7 @@
         const diff = targetTime - now;
 
         const card = document.getElementById(`canCard-${i}`);
+        if (!card) continue;
         const timerBox = document.getElementById(`canTimerBox-${i}`);
         const countdownEl = document.getElementById(`canCountdown-${i}`);
         const statusLabelEl = document.getElementById(`canStatusLabel-${i}`);
@@ -2312,7 +2940,6 @@
 
           motivationEl.classList.remove('hidden');
 
-          // Show per-can special badges if this specific drink triggered 69, 67 or Sniper!
           if (specialBadgesEl) {
             let canPills = [];
             if (checkContainsPattern(record, '69')) canPills.push(renderBadgePillHTML('nice_69'));
@@ -2400,13 +3027,50 @@
 
       const nextSummaryEl = document.getElementById('nextCanSummary');
       if (checkedTotal === TOTAL_CANS) {
-        nextSummaryEl.textContent = '🏆 Alle 20 rondes geklapt! Eindbaas!';
+        nextSummaryEl.textContent = `🏆 Alle ${TOTAL_CANS} rondes geklapt! Eindbaas!`;
       } else if (diffMain > 0) {
         nextSummaryEl.textContent = 'Eerstvolgende: #1 om 19:30';
       } else if (nextUpcomingIndex !== null) {
         nextSummaryEl.textContent = `Volgende ronde: #${nextUpcomingIndex} om ${nextUpcomingTimeStr}`;
       } else {
         nextSummaryEl.textContent = 'Alle streeftijden bereikt — vink je laatste rondes af!';
+      }
+
+      // Update live dynamische Promillage & 10-Toestanden meter
+      const myLiveBac = calculateDynamicBAC(completedCans, myPlayer.weightKg || 80, now, myPlayer.gender || 'M');
+      const myState = getBacStateObject(myLiveBac);
+      const wLabel = document.getElementById('bacWeightLabel');
+      if (wLabel) wLabel.textContent = myPlayer.weightKg || 80;
+
+      const bacValEl = document.getElementById('bacValueDisplay');
+      if (bacValEl) bacValEl.textContent = `${myLiveBac.toFixed(3)}‰`;
+
+      const bacEmojiEl = document.getElementById('bacStateEmoji');
+      if (bacEmojiEl) bacEmojiEl.textContent = myState.emoji;
+
+      const bacTitleEl = document.getElementById('bacStateTitle');
+      if (bacTitleEl) bacTitleEl.textContent = myState.title;
+
+      const bacDescEl = document.getElementById('bacStateDesc');
+      if (bacDescEl) bacDescEl.textContent = myState.desc;
+
+      const bacBarEl = document.getElementById('bacProgressBar');
+      if (bacBarEl) {
+        const bacPct = Math.min(100, (myLiveBac / 2.4) * 100);
+        bacBarEl.style.width = `${bacPct.toFixed(1)}%`;
+      }
+
+      const bacTrendEl = document.getElementById('bacTrendBadge');
+      const bacSoberEl = document.getElementById('bacSoberTimeDisplay');
+      if (myLiveBac <= 0.001) {
+        if (bacTrendEl) bacTrendEl.textContent = '💧 0.00‰ Nuchter';
+        if (bacSoberEl) bacSoberEl.textContent = '✨ Volledig nuchter';
+      } else {
+        if (bacTrendEl) bacTrendEl.textContent = `📉 Daalt nu live (-0.15‰/u)`;
+        const hoursLeft = myLiveBac / 0.15;
+        const hrs = Math.floor(hoursLeft);
+        const mins = Math.round((hoursLeft - hrs) * 60);
+        if (bacSoberEl) bacSoberEl.textContent = `⏳ Nuchter over ~${hrs}u ${mins}m`;
       }
 
       renderLeaderboard();
@@ -2421,6 +3085,7 @@
         const el = document.getElementById(`canTargetTime-${i}`);
         if (el) el.textContent = formatTimeOfDay(targetTimestamp);
       }
+      updateExtraCanButtonsUI();
     }
 
     function setRealPartyMode() {
@@ -2444,23 +3109,67 @@
         const btn = document.getElementById(id);
         if (!btn) return;
         if (id === activeId) {
-          btn.className = 'px-2.5 py-1 rounded-lg font-bold bg-amber-500 text-amber-950 hover:bg-amber-400 transition shadow-sm';
+          btn.className = 'px-2.5 py-1.5 rounded-lg font-bold bg-amber-500 text-amber-950 transition shadow-sm';
         } else {
-          btn.className = 'px-2.5 py-1 rounded-lg font-semibold bg-amber-900/80 text-amber-100 hover:bg-amber-800 border border-amber-600/50 transition';
+          btn.className = 'px-2.5 py-1.5 rounded-lg font-semibold bg-amber-900/80 text-amber-100 border border-amber-600/50 transition';
         }
       });
     }
 
-    if (myPlayer.name) {
-      document.getElementById('playerNameInput').value = myPlayer.name;
-    }
-    buildCansGrid();
-    tick();
-    setInterval(tick, 200);
+    // =========================================================================
+    // BEHEERDER ROL (PINCODE: 1932) + LIVE CLOUD SYNC
+    // =========================================================================
+    const ADMIN_SECRET_HASH = '1932';
+    let adminUnlocked = sessionStorage.getItem('dvov_admin_ok') === '1';
+    const deletedPlayersSet = new Set(JSON.parse(localStorage.getItem('dvov_deleted_players') || '[]'));
 
-    // =========================================================================
-    // MULTI-TRANSPORT LIVE CLOUD SYNC (GITHUB PAGES READY!)
-    // =========================================================================
+    function isAdminUnlocked() {
+      return adminUnlocked;
+    }
+
+    function toggleAdminAuth() {
+      const btn = document.getElementById('btnAdminToggle');
+      if (adminUnlocked) {
+        adminUnlocked = false;
+        sessionStorage.removeItem('dvov_admin_ok');
+        if (btn) btn.textContent = '🔒 Beheer';
+        renderLeaderboard();
+        return;
+      }
+      const code = prompt('Voer de geheime DVOV Beheerder-code in:');
+      if (code && code.trim() === ADMIN_SECRET_HASH) {
+        adminUnlocked = true;
+        sessionStorage.setItem('dvov_admin_ok', '1');
+        if (btn) btn.textContent = '👑 Beheerder: AAN';
+        renderLeaderboard();
+      } else if (code !== null) {
+        alert('❌ Onjuiste beheerder-code!');
+      }
+    }
+
+    async function adminRemovePlayer(targetPlayerId) {
+      if (!adminUnlocked) return;
+      const p = allPlayersMap.get(targetPlayerId);
+      const name = p ? p.name : targetPlayerId;
+      if (!confirm(`Weet je zeker dat je "${name}" van het live scorebord wilt verwijderen?`)) return;
+
+      deletedPlayersSet.add(targetPlayerId);
+      localStorage.setItem('dvov_deleted_players', JSON.stringify(Array.from(deletedPlayersSet)));
+      allPlayersMap.delete(targetPlayerId);
+      renderLeaderboard();
+
+      try {
+        await fetch(NTFY_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body: JSON.stringify({
+            type: 'player_sync',
+            player: { id: targetPlayerId, deleted: true, updatedAt: Date.now() + 99999999 }
+          })
+        });
+      } catch (e) {}
+    }
+
     const NTFY_TOPIC = 'dvov_stelz_kantine_2026_live_v3';
     const NTFY_BASE_URL = `https://ntfy.sh/${NTFY_TOPIC}`;
     let ntfyEventSource = null;
@@ -2479,7 +3188,15 @@
 
     function mergeIncomingPlayerRecord(rec) {
       if (!rec || !rec.id) return;
-      // Preserve any room-awarded badges
+      if (rec.deleted) {
+        deletedPlayersSet.add(rec.id);
+        localStorage.setItem('dvov_deleted_players', JSON.stringify(Array.from(deletedPlayersSet)));
+        allPlayersMap.delete(rec.id);
+        renderLeaderboard();
+        return;
+      }
+      if (deletedPlayersSet.has(rec.id)) return;
+
       if (Array.isArray(rec.manualBadges)) {
         awardedBadgesByPlayer.set(rec.id, rec.manualBadges);
         if (rec.id === myPlayer.id) {
@@ -2499,9 +3216,9 @@
       if ('BroadcastChannel' in window) {
         bcChannel = new BroadcastChannel('dvov_stelz_kantine_live');
         bcChannel.onmessage = (ev) => {
-          if (ev.data && ev.data.id) {
-            mergeIncomingPlayerRecord(ev.data);
-          }
+          if (!ev.data) return;
+          if (ev.data.type === 'shotgun_event') handleIncomingShotgunEvent(ev.data);
+          else if (ev.data.id) mergeIncomingPlayerRecord(ev.data);
         };
       }
     } catch (e) {}
@@ -2536,10 +3253,13 @@
                 if (payload && payload.type === 'player_sync' && payload.player) {
                   mergeIncomingPlayerRecord(payload.player);
                 }
+                if (payload && payload.type === 'shotgun_event' && (Date.now() - (payload.timestamp || 0) < 720000)) {
+                  handleIncomingShotgunEvent(payload);
+                }
               }
             } catch (innerErr) {}
           }
-          updateSyncBadge('Live Verbonden (Kantine Cloud)', true);
+          updateSyncBadge('Live Verbonden', true);
         }
       } catch (e) {}
     }
@@ -2551,7 +3271,7 @@
         ntfyEventSource = new EventSource(`${NTFY_BASE_URL}/sse?since=18h`);
 
         ntfyEventSource.onopen = () => {
-          updateSyncBadge('Live Verbonden (Kantine Cloud)', true);
+          updateSyncBadge('Live Verbonden', true);
         };
 
         ntfyEventSource.onmessage = (e) => {
@@ -2561,6 +3281,9 @@
               const payload = JSON.parse(evt.message);
               if (payload && payload.type === 'player_sync' && payload.player) {
                 mergeIncomingPlayerRecord(payload.player);
+              }
+              if (payload && payload.type === 'shotgun_event') {
+                handleIncomingShotgunEvent(payload);
               }
             }
           } catch (err) {}
@@ -2573,6 +3296,7 @@
     }
 
     window.syncMyStateToCloud = async function(lastCheckedCan = null, customActionText = null) {
+      deletedPlayersSet.delete(myPlayer.id);
       const summary = computeMyPlayerSummary(lastCheckedCan, customActionText);
 
       if (myPlayer.name || summary.totalCount > 0 || (summary.manualBadges && summary.manualBadges.length > 0)) {
@@ -2589,9 +3313,949 @@
       pushToNtfyRelay(summary);
     };
 
+    // =========================================================================
+    // 🔫 SHOTGUN POR-SYSTEEM + BROWSER NOTIFICATIES
+    // =========================================================================
+    const SHOTGUN_COOLDOWN_MS = 12 * 60 * 1000;
+    let shotgunCooldownUntil = Number(localStorage.getItem('dvov_shotgun_cd') || 0);
+    let myShotgunCount = Number(localStorage.getItem('dvov_shotgun_count') || 0);
+    let pendingIncomingShotgun = null;
+    const handledShotgunEventIds = new Set();
+
+    const SHOTGUN_QUESTIONS = [
+      "🔫 Shotgunnentje?! Sleutel tegen het blik en vouwen met die handel! Durf je?",
+      "🌪️ ALARM! Je wordt gepord voor een bliksem-shotgun aan de bar! Doe je mee of haak je af?",
+      "🍻 Tijd voor serieuze kantine-actie: trekken we nu samen een blikje vacuüm op de middenstip?",
+      "🔥 Uitdaging van de hoogste plank: 3, 2, 1... SHOTGUNNEN! Ben je een legende of een kleine speler?",
+      "🦩 De flamingo heeft dorst! Prikken we er nu eentje onderin open voor een duo-shotgun?"
+    ];
+
+    const SHOTGUN_ACCEPT_BTN_LABELS = [
+      "🌪️ JA! SLEUTEL ERIN & VOUWEN!",
+      "🔥 KOM MAAR OP, IK KLAP 'M!",
+      "🍻 TUURLIJK, GEEN TWIJFEL!",
+      "⚡ JA! BINNEN 3 SECONDEN LEEG!",
+      "👑 ALTIJD VOOR IN, LET'S GO!"
+    ];
+
+    const SHOTGUN_REJECT_BTN_LABELS = [
+      "🐣 Nee, ik ben een kleine speler...",
+      "🍼 Sorry, mijn maagje kan dit niet aan",
+      "🏳️ Ik pas, ik drink liever met een rietje",
+      "🐢 Nee man, veel te bang om te morsen",
+      "👶 Ik sla over, ik ben van suiker"
+    ];
+
+    const SHOTGUN_ACCEPT_REPLIES = [
+      "🌪️ BAM! {name} zegt VOLMONDIG JA: 'Pak je sleutel maar vast, we vouwen dat blikje nu meteen dubbel aan de bar!'",
+      "🔥 HOPPA! {name} stapt naar voren: 'Geen woorden maar daden, zet die blikken maar klaar voor de aftrap!'",
+      "🍻 LEGENDE! {name} accepteert direct: '3, 2, 1... Zuigen met die handel, ik sta al klaar!'",
+      "⚡ KANTINE-BAAS! {name} gaat de strijd aan: 'Wie 'm als laatste leeg heeft betaalt de bitterballen!'",
+      "👑 VOLTREFFER! {name} deinst nergens voor terug: 'Shotgun geaccepteerd, maak je borst maar nat!'"
+    ];
+
+    const SHOTGUN_REJECT_REPLIES = [
+      "🐣 Helaas! Kleine speler {name} durft het niet aan en nipt liever voorzichtig met z'n pink omhoog... Je timer is gereset, kies een echte strijder!",
+      "🍼 Afgewezen! {name} is bang voor een beetje koolzuur en kruipt achter de bar. Timer gereset: por direct iemand anders!",
+      "🏳️ Witte vlag! Kleine speler {name} vraagt net om een rietje bij de barman en slaat de shotgun over. Je mag meteen opnieuw schieten!",
+      "🐢 Mislukt! {name} vindt het tempo veel te hoog en haakt angstig af. Geen zorgen: je 12-minuten klok staat weer op GO!",
+      "👶 Helaas pindakaas! Kleine speler {name} spaart z'n buikje liever. Je shotgun-knop is direct weer vrijgegeven voor een nieuw doelwit!"
+    ];
+
+    let shotgunRoundRobinIdx = Number(localStorage.getItem('dvov_sg_rr') || 0);
+
+    let titleFlashInterval = null;
+    const originalPageTitle = document.title;
+
+    function startFlashingTitle(alertText) {
+      if (titleFlashInterval) clearInterval(titleFlashInterval);
+      let toggle = false;
+      titleFlashInterval = setInterval(() => {
+        document.title = toggle ? alertText : '🍺 OPEN JE SCHERM! 🍺';
+        toggle = !toggle;
+      }, 800);
+    }
+
+    function stopFlashingTitle() {
+      if (titleFlashInterval) {
+        clearInterval(titleFlashInterval);
+        titleFlashInterval = null;
+      }
+      document.title = originalPageTitle;
+    }
+
+    window.addEventListener('focus', stopFlashingTitle);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        stopFlashingTitle();
+        forceCloudPull(false);
+      }
+    });
+
+    function requestNotificationPermission() {
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().catch(() => {});
+      }
+    }
+
+    function sendBrowserNotification(title, bodyText) {
+      startFlashingTitle(title);
+
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate([300, 120, 300, 120, 500]); } catch (e) {}
+      }
+
+      if (!('Notification' in window)) return;
+
+      if (Notification.permission === 'granted') {
+        try {
+          const notif = new Notification(title, {
+            body: bodyText,
+            icon: 'https://em-content.zobj.net/source/apple/391/water-pistol_1f52b.png',
+            tag: 'dvov-shotgun-' + Date.now(),
+            renotify: true,
+            requireInteraction: true
+          });
+          notif.onclick = () => {
+            window.focus();
+            notif.close();
+          };
+        } catch (e) {}
+      }
+    }
+
+    function updateShotgunFloatingButtonUI() {
+      const now = Date.now();
+      const remainingMs = Math.max(0, shotgunCooldownUntil - now);
+      const circle = document.getElementById('shotgunCircleProgress');
+      const timerText = document.getElementById('shotgunBtnTimerText');
+      const hint = document.getElementById('shotgunFloatingHint');
+      const circumference = 219.9;
+
+      if (!circle || !timerText) return;
+
+      if (remainingMs <= 0) {
+        circle.style.strokeDashoffset = '0';
+        circle.setAttribute('stroke', '#10B981');
+        timerText.textContent = 'GO!';
+        if (hint) hint.textContent = '🔫 Shotgun Klaar!';
+      } else {
+        const fraction = remainingMs / SHOTGUN_COOLDOWN_MS;
+        const offset = circumference * (1 - fraction);
+        circle.style.strokeDashoffset = offset.toFixed(1);
+        circle.setAttribute('stroke', '#F43F5E');
+
+        const totalSec = Math.ceil(remainingMs / 1000);
+        const m = Math.floor(totalSec / 60);
+        const s = totalSec % 60;
+        const clockStr = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        timerText.textContent = clockStr;
+        if (hint) hint.textContent = `⏳ Wacht ${clockStr}`;
+      }
+    }
+    setInterval(updateShotgunFloatingButtonUI, 250);
+
+    function openShotgunTargetModal() {
+      const now = Date.now();
+      if (now < shotgunCooldownUntil) {
+        const remSec = Math.ceil((shotgunCooldownUntil - now) / 1000);
+        const m = Math.floor(remSec / 60);
+        const s = remSec % 60;
+        alert(`⏳ Je shotgun-loop moet nog even afkoelen! Nog ${m}m ${s}s wachten (of tot iemand afwijst).`);
+        return;
+      }
+
+      if (!myPlayer.name) {
+        const entered = prompt('Vul eerst even je eigen naam in voordat je iemand uitdaagt voor een Shotgun:');
+        if (!entered || !entered.trim()) return;
+        myPlayer.name = entered.trim().slice(0, 22);
+        const nameInput = document.getElementById('playerNameInput');
+        if (nameInput) nameInput.value = myPlayer.name;
+        savePlayerName();
+      }
+
+      const listEl = document.getElementById('shotgunTargetsList');
+      const otherPlayers = Array.from(allPlayersMap.values()).filter(p => p.id !== myPlayer.id);
+
+      if (otherPlayers.length === 0) {
+        listEl.innerHTML = `
+          <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-center text-xs font-bold text-[#6E5227]">
+            Er staan nu nog geen andere spelers op het scorebord. Laat je teamgenoten hun naam invullen of test hieronder op jezelf!
+          </div>
+          <button onclick="sendShotgunPoke('${myPlayer.id}')" class="mt-2 w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-amber-950 font-extrabold text-xs uppercase">
+            🧪 Test Shotgun Pop-up op Mijzelf
+          </button>
+        `;
+      } else {
+        listEl.innerHTML = otherPlayers.map(p => `
+          <button
+            onclick="sendShotgunPoke('${p.id}')"
+            class="w-full p-3 rounded-2xl bg-white hover:bg-rose-50 border-2 border-[#C49A47] hover:border-rose-400 flex items-center justify-between transition shadow-sm"
+          >
+            <div class="flex items-center gap-2.5">
+              <span class="text-xl">🎯</span>
+              <div class="text-left">
+                <div class="font-poster font-extrabold text-base text-[#4A3718]">${escapeHtml(p.name || 'Speler')}</div>
+                <div class="text-[11px] font-bold text-[#7A5B2B]">${escapeHtml(p.team || 'DVOV')} • ${p.totalCount || 0} drankjes geklapt</div>
+              </div>
+            </div>
+            <span class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 text-white font-extrabold text-xs uppercase shadow">
+              🔫 Por Nu!
+            </span>
+          </button>
+        `).join('');
+      }
+
+      const modal = document.getElementById('shotgunSelectModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeShotgunTargetModal() {
+      const modal = document.getElementById('shotgunSelectModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    async function sendShotgunPoke(targetPlayerId) {
+      closeShotgunTargetModal();
+      const target = allPlayersMap.get(targetPlayerId) || { id: targetPlayerId, name: 'Speler' };
+
+      shotgunCooldownUntil = Date.now() + SHOTGUN_COOLDOWN_MS;
+      localStorage.setItem('dvov_shotgun_cd', String(shotgunCooldownUntil));
+      updateShotgunFloatingButtonUI();
+
+      const variantIdx = shotgunRoundRobinIdx % 5;
+      shotgunRoundRobinIdx++;
+      localStorage.setItem('dvov_sg_rr', String(shotgunRoundRobinIdx));
+
+      const eventPayload = {
+        type: 'shotgun_event',
+        action: 'invite',
+        eventId: 'sg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+        fromId: myPlayer.id,
+        fromName: myPlayer.name || 'Een Kantine-Strijder',
+        toId: target.id,
+        toName: target.name || 'Speler',
+        variantIdx: variantIdx,
+        timestamp: Date.now()
+      };
+
+      playCanOpenSound('stelz');
+
+      if (bcChannel) {
+        try { bcChannel.postMessage(eventPayload); } catch (e) {}
+      }
+      if (target.id === myPlayer.id) {
+        handleIncomingShotgunEvent(eventPayload);
+      }
+
+      try {
+        await fetch(NTFY_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body: JSON.stringify(eventPayload)
+        });
+      } catch (e) {}
+    }
+
+    function handleIncomingShotgunEvent(payload) {
+      if (!payload || !payload.eventId) return;
+      if (handledShotgunEventIds.has(payload.eventId)) return;
+      handledShotgunEventIds.add(payload.eventId);
+
+      if (payload.action === 'invite' && payload.toId === myPlayer.id) {
+        pendingIncomingShotgun = payload;
+        const v = Number(payload.variantIdx || 0) % 5;
+
+        document.getElementById('incomingShotgunSender').textContent =
+          `🔫 ${payload.fromName} daagt je uit!`;
+        document.getElementById('incomingShotgunPrompt').textContent =
+          `"${SHOTGUN_QUESTIONS[v]}"`;
+        document.getElementById('btnAcceptShotgun').textContent =
+          SHOTGUN_ACCEPT_BTN_LABELS[v];
+        document.getElementById('btnRejectShotgun').textContent =
+          SHOTGUN_REJECT_BTN_LABELS[v];
+
+        sendBrowserNotification(
+          `🔫 ${payload.fromName} daagt je uit!`,
+          `${SHOTGUN_QUESTIONS[v]} (Tik om te accepteren of weigeren!)`
+        );
+        playCheckoffComboSound('stelz');
+        const modal = document.getElementById('shotgunIncomingModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+
+      if (payload.action === 'response' && payload.toId === myPlayer.id) {
+        const v = Number(payload.variantIdx || 0) % 5;
+        const responderName = payload.fromName || 'Speler';
+
+        const modal = document.getElementById('shotgunResultModal');
+        const emojiEl = document.getElementById('shotgunResultEmoji');
+        const badgeEl = document.getElementById('shotgunResultBadge');
+        const titleEl = document.getElementById('shotgunResultTitle');
+        const msgEl = document.getElementById('shotgunResultMessage');
+
+        if (payload.accepted) {
+          myShotgunCount++;
+          localStorage.setItem('dvov_shotgun_count', String(myShotgunCount));
+          if (!myManualBadges.includes('shotgun_init')) myManualBadges.push('shotgun_init');
+          if (myShotgunCount >= 3 && !myManualBadges.includes('shotgun_3x')) myManualBadges.push('shotgun_3x');
+          saveLocalState();
+
+          emojiEl.textContent = '🌪️🍻';
+          badgeEl.className = 'inline-block text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-500 text-white mb-2';
+          badgeEl.textContent = '🔥 SHOTGUN GEACCEPTEERD!';
+          titleEl.textContent = `${responderName} zegt JA!`;
+          msgEl.textContent = SHOTGUN_ACCEPT_REPLIES[v].replace('{name}', responderName);
+
+          playCheckoffComboSound('stelz');
+          fireConfetti();
+          syncMyStateToCloud(null, `en ${responderName} knallen samen een 🌪️ SHOTGUN aan de bar!`);
+          sendBrowserNotification(
+            `🌪️ ${responderName} zegt JA op je Shotgun!`,
+            SHOTGUN_ACCEPT_REPLIES[v].replace('{name}', responderName)
+          );
+        } else {
+          shotgunCooldownUntil = 0;
+          localStorage.setItem('dvov_shotgun_cd', '0');
+          updateShotgunFloatingButtonUI();
+
+          emojiEl.textContent = '🐣🏳️';
+          badgeEl.className = 'inline-block text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full bg-rose-600 text-white mb-2';
+          badgeEl.textContent = '🐣 KLEINE SPELER WIL NIET!';
+          titleEl.textContent = `${responderName} haakt angstig af!`;
+          msgEl.textContent = SHOTGUN_REJECT_REPLIES[v].replace('{name}', responderName);
+
+          playCanOpenSound('wijn');
+          sendBrowserNotification(
+            `🐣 Kleine speler ${responderName} weigert!`,
+            `Timer gereset! Je mag direct iemand anders porren.`
+          );
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    async function respondToShotgunChallenge(accepted) {
+      const modal = document.getElementById('shotgunIncomingModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+
+      if (!pendingIncomingShotgun) return;
+      const invite = pendingIncomingShotgun;
+      pendingIncomingShotgun = null;
+
+      const variantIdx = (Number(invite.variantIdx || 0) + 1) % 5;
+
+      if (accepted) {
+        myShotgunCount++;
+        localStorage.setItem('dvov_shotgun_count', String(myShotgunCount));
+        if (!myManualBadges.includes('shotgun_init')) myManualBadges.push('shotgun_init');
+        if (myShotgunCount >= 3 && !myManualBadges.includes('shotgun_3x')) myManualBadges.push('shotgun_3x');
+        saveLocalState();
+        playCheckoffComboSound('stelz');
+        fireConfetti();
+        syncMyStateToCloud(null, `heeft de 🌪️ Shotgun-uitdaging van ${invite.fromName} GEACCEPTEERD!`);
+      } else {
+        if (!myManualBadges.includes('kleine_speler')) {
+          myManualBadges.push('kleine_speler');
+        }
+        saveLocalState();
+        syncMyStateToCloud(null, `weigerde de Shotgun van ${invite.fromName} (🐣 Kleine Speler)!`);
+      }
+
+      const responsePayload = {
+        type: 'shotgun_event',
+        action: 'response',
+        eventId: 'sgr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+        fromId: myPlayer.id,
+        fromName: myPlayer.name || 'Speler',
+        toId: invite.fromId,
+        toName: invite.fromName,
+        accepted: accepted,
+        variantIdx: variantIdx,
+        timestamp: Date.now()
+      };
+
+      if (bcChannel) {
+        try { bcChannel.postMessage(responsePayload); } catch (e) {}
+      }
+      if (invite.fromId === myPlayer.id) {
+        handleIncomingShotgunEvent(responsePayload);
+      }
+
+      try {
+        await fetch(NTFY_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body: JSON.stringify(responsePayload)
+        });
+      } catch (e) {}
+    }
+
+    function closeShotgunResultModal() {
+      const modal = document.getElementById('shotgunResultModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // =========================================================================
+    // ⚡🍻 1v1 TAFEL AD-WEDSTRIJD LOGICA
+    // =========================================================================
+    let adtState = {
+      phase: 'idle',
+      startTimeMs: 0,
+      topPlayerId: '',
+      topPlayerName: 'Speler Boven',
+      bottomPlayerId: '',
+      bottomPlayerName: 'Speler Onder',
+      topFinishMs: null,
+      bottomFinishMs: null,
+      rafId: null,
+      countdownTimer: null
+    };
+
+    function openAdtBattleModal() {
+      const modal = document.getElementById('adtBattleModal');
+      const topSelect = document.getElementById('adtPlayerTopSelect');
+      const botSelect = document.getElementById('adtPlayerBottomSelect');
+
+      const mySummary = computeMyPlayerSummary();
+      allPlayersMap.set(myPlayer.id, mySummary);
+
+      const players = Array.from(allPlayersMap.values());
+      const optionsHtml = players.map(p =>
+        `<option value="${p.id}">${escapeHtml(p.name || 'Speler')}</option>`
+      ).join('') + `<option value="guest_top">🍻 Gast-Speler (Overkant)</option>`;
+
+      topSelect.innerHTML = optionsHtml;
+      botSelect.innerHTML = optionsHtml;
+
+      botSelect.value = myPlayer.id;
+      const other = players.find(p => p.id !== myPlayer.id);
+      topSelect.value = other ? other.id : 'guest_top';
+
+      document.getElementById('adtSetupView').classList.remove('hidden');
+      document.getElementById('adtArenaView').classList.add('hidden');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeAdtBattleModal() {
+      if (adtState.rafId) cancelAnimationFrame(adtState.rafId);
+      if (adtState.countdownTimer) clearInterval(adtState.countdownTimer);
+      adtState.phase = 'idle';
+      const modal = document.getElementById('adtBattleModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function startAdtArenaCountdown() {
+      const topId = document.getElementById('adtPlayerTopSelect').value;
+      const botId = document.getElementById('adtPlayerBottomSelect').value;
+      const topObj = allPlayersMap.get(topId);
+      const botObj = allPlayersMap.get(botId);
+
+      adtState.topPlayerId = topId;
+      adtState.topPlayerName = topObj ? (topObj.name || 'Speler 1') : 'Uitdager (Boven)';
+      adtState.bottomPlayerId = botId;
+      adtState.bottomPlayerName = botObj ? (botObj.name || 'Speler 2') : (myPlayer.name || 'Jij (Onder)');
+
+      document.getElementById('adtSetupView').classList.add('hidden');
+      document.getElementById('adtArenaView').classList.remove('hidden');
+      document.getElementById('adtArenaView').classList.add('flex');
+
+      resetAdtRematch();
+    }
+
+    function resetAdtRematch() {
+      if (adtState.rafId) cancelAnimationFrame(adtState.rafId);
+      if (adtState.countdownTimer) clearInterval(adtState.countdownTimer);
+
+      adtState.phase = 'countdown';
+      adtState.topFinishMs = null;
+      adtState.bottomFinishMs = null;
+
+      document.getElementById('adtTopPlayerName').textContent = adtState.topPlayerName;
+      document.getElementById('adtBottomPlayerName').textContent = adtState.bottomPlayerName;
+
+      const topZone = document.getElementById('adtTapZoneTop');
+      const botZone = document.getElementById('adtTapZoneBottom');
+      topZone.className = 'flex-1 w-full rotate-180 flex flex-col items-center justify-center p-4 transition-colors bg-gradient-to-b from-amber-700 to-amber-900 relative overflow-hidden';
+      botZone.className = 'flex-1 w-full flex flex-col items-center justify-center p-4 transition-colors bg-gradient-to-b from-amber-700 to-amber-900 relative overflow-hidden';
+
+      document.getElementById('adtTopStatusBadge').textContent = '⏳ HANDEN VAN HET SCHERM...';
+      document.getElementById('adtBottomStatusBadge').textContent = '⏳ HANDEN VAN HET SCHERM...';
+      document.getElementById('adtTopSubText').textContent = 'Wacht op het startsignaal!';
+      document.getElementById('adtBottomSubText').textContent = 'Wacht op het startsignaal!';
+
+      let count = 3;
+      document.getElementById('adtTopTimer').textContent = `${count}...`;
+      document.getElementById('adtBottomTimer').textContent = `${count}...`;
+      document.getElementById('adtCenterBanner').textContent = `⏳ AFTELLEN: ${count}...`;
+      playCanOpenSound('stelz');
+
+      adtState.countdownTimer = setInterval(() => {
+        count--;
+        if (count > 0) {
+          document.getElementById('adtTopTimer').textContent = `${count}...`;
+          document.getElementById('adtBottomTimer').textContent = `${count}...`;
+          document.getElementById('adtCenterBanner').textContent = `⏳ AFTELLEN: ${count}...`;
+          playCanOpenSound('stelz');
+        } else {
+          clearInterval(adtState.countdownTimer);
+          beginAdtStopwatch();
+        }
+      }, 1000);
+    }
+
+    function beginAdtStopwatch() {
+      adtState.phase = 'running';
+      adtState.startTimeMs = performance.now();
+
+      const topZone = document.getElementById('adtTapZoneTop');
+      const botZone = document.getElementById('adtTapZoneBottom');
+      topZone.className = 'flex-1 w-full rotate-180 flex flex-col items-center justify-center p-4 transition-colors bg-gradient-to-b from-rose-600 to-pink-800 active:scale-95 relative overflow-hidden';
+      botZone.className = 'flex-1 w-full flex flex-col items-center justify-center p-4 transition-colors bg-gradient-to-b from-sky-600 to-indigo-800 active:scale-95 relative overflow-hidden';
+
+      document.getElementById('adtTopStatusBadge').textContent = '🔥 DRINKEN & NEERZETTEN!';
+      document.getElementById('adtBottomStatusBadge').textContent = '🔥 DRINKEN & NEERZETTEN!';
+      document.getElementById('adtTopSubText').textContent = '✋ SLA HIER ZODRA JE GLAS STAAT!';
+      document.getElementById('adtBottomSubText').textContent = '✋ SLA HIER ZODRA JE GLAS STAAT!';
+      document.getElementById('adtCenterBanner').textContent = '🍻 GO! GO! ADTEN MAAR! 🍻';
+
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate(300); } catch (e) {}
+      }
+      playPartyHorn(0);
+
+      function updateLoop() {
+        if (adtState.phase !== 'running') return;
+        const elapsedMs = performance.now() - adtState.startTimeMs;
+
+        if (adtState.topFinishMs === null) {
+          document.getElementById('adtTopTimer').textContent = (elapsedMs / 1000).toFixed(2) + 's';
+        }
+        if (adtState.bottomFinishMs === null) {
+          document.getElementById('adtBottomTimer').textContent = (elapsedMs / 1000).toFixed(2) + 's';
+        }
+
+        if (adtState.topFinishMs === null || adtState.bottomFinishMs === null) {
+          adtState.rafId = requestAnimationFrame(updateLoop);
+        }
+      }
+      adtState.rafId = requestAnimationFrame(updateLoop);
+    }
+
+    function handleAdtPlayerSlam(side, ev) {
+      if (ev) ev.preventDefault();
+      if (adtState.phase !== 'running') return;
+
+      const elapsedMs = Math.max(10, performance.now() - adtState.startTimeMs);
+      const timeSecStr = (elapsedMs / 1000).toFixed(2) + 's';
+
+      if (side === 'top' && adtState.topFinishMs === null) {
+        adtState.topFinishMs = elapsedMs;
+        document.getElementById('adtTopTimer').textContent = timeSecStr;
+
+        const isFirst = adtState.bottomFinishMs === null;
+        const topZone = document.getElementById('adtTapZoneTop');
+        topZone.className = isFirst
+          ? 'flex-1 w-full rotate-180 flex flex-col items-center justify-center p-4 bg-gradient-to-b from-emerald-500 to-emerald-800 relative overflow-hidden'
+          : 'flex-1 w-full rotate-180 flex flex-col items-center justify-center p-4 bg-gradient-to-b from-stone-700 to-stone-900 relative overflow-hidden';
+
+        document.getElementById('adtTopStatusBadge').textContent = isFirst ? '🏆 GEKLAPT! (WINNAAR!)' : '🐌 BINNEN (2e PLEK)';
+        document.getElementById('adtTopSubText').textContent = isFirst
+          ? `⚡ Tijd vastgelegd op ${timeSecStr}! Wachten op overkant...`
+          : `Afgeslagen op ${timeSecStr}`;
+        playCanOpenSound('stelz');
+      }
+
+      if (side === 'bottom' && adtState.bottomFinishMs === null) {
+        adtState.bottomFinishMs = elapsedMs;
+        document.getElementById('adtBottomTimer').textContent = timeSecStr;
+
+        const isFirst = adtState.topFinishMs === null;
+        const botZone = document.getElementById('adtTapZoneBottom');
+        botZone.className = isFirst
+          ? 'flex-1 w-full flex flex-col items-center justify-center p-4 bg-gradient-to-b from-emerald-500 to-emerald-800 relative overflow-hidden'
+          : 'flex-1 w-full flex flex-col items-center justify-center p-4 bg-gradient-to-b from-stone-700 to-stone-900 relative overflow-hidden';
+
+        document.getElementById('adtBottomStatusBadge').textContent = isFirst ? '🏆 GEKLAPT! (WINNAAR!)' : '🐌 BINNEN (2e PLEK)';
+        document.getElementById('adtBottomSubText').textContent = isFirst
+          ? `⚡ Tijd vastgelegd op ${timeSecStr}! Wachten op overkant...`
+          : `Afgeslagen op ${timeSecStr}`;
+        playCanOpenSound('stelz');
+      }
+
+      if (adtState.topFinishMs !== null && adtState.bottomFinishMs !== null) {
+        adtState.phase = 'finished';
+        if (adtState.rafId) cancelAnimationFrame(adtState.rafId);
+
+        const topWins = adtState.topFinishMs <= adtState.bottomFinishMs;
+        const winnerId = topWins ? adtState.topPlayerId : adtState.bottomPlayerId;
+        const loserId  = topWins ? adtState.bottomPlayerId : adtState.topPlayerId;
+        const winnerName = topWins ? adtState.topPlayerName : adtState.bottomPlayerName;
+        const loserName  = topWins ? adtState.bottomPlayerName : adtState.topPlayerName;
+        const winMs = Math.min(adtState.topFinishMs, adtState.bottomFinishMs);
+        const loseMs = Math.max(adtState.topFinishMs, adtState.bottomFinishMs);
+        const diffSec = ((loseMs - winMs) / 1000).toFixed(2);
+        const winSec = (winMs / 1000).toFixed(2);
+        const loseSec = (loseMs / 1000).toFixed(2);
+
+        document.getElementById('adtCenterBanner').textContent =
+          `🏆 ${winnerName} WINT (${winSec}s vs ${loseSec}s • +${diffSec}s)!`;
+
+        playCheckoffComboSound('stelz');
+        fireConfetti();
+
+        const winnerBadges = ['adt_winner'];
+        const loserBadges = ['adt_schildpad'];
+
+        if (winMs <= 3500) winnerBadges.push('adt_trechter');
+        if (loseMs <= 3500) loserBadges.push('adt_trechter');
+
+        if (Math.abs(loseMs - winMs) <= 300) {
+          winnerBadges.push('adt_photofinish');
+          loserBadges.push('adt_photofinish');
+        }
+
+        grantAdtBadgesToPlayer(winnerId, winnerBadges, `won het 1v1 Ad-Duel van ${loserName} in ${winSec}s! ⚡`);
+        grantAdtBadgesToPlayer(loserId, loserBadges, `verloor het Ad-Duel van ${winnerName} (${loseSec}s vs ${winSec}s) 🐌`);
+      }
+    }
+
+    function grantAdtBadgesToPlayer(playerId, badgeIds, actionFeedText) {
+      if (!playerId || playerId === 'guest_top') return;
+      if (playerId === myPlayer.id) {
+        badgeIds.forEach(b => {
+          if (!myManualBadges.includes(b)) myManualBadges.push(b);
+        });
+        saveLocalState();
+        syncMyStateToCloud(null, actionFeedText);
+      } else {
+        const existing = awardedBadgesByPlayer.get(playerId) || [];
+        badgeIds.forEach(b => {
+          if (!existing.includes(b)) existing.push(b);
+        });
+        awardedBadgesByPlayer.set(playerId, existing);
+        const p = allPlayersMap.get(playerId);
+        if (p) {
+          p.manualBadges = Array.from(new Set([...(p.manualBadges || []), ...existing]));
+          p.lastActionText = actionFeedText;
+          p.updatedAt = Date.now();
+          allPlayersMap.set(playerId, p);
+          pushToNtfyRelay(p);
+          if (bcChannel) {
+            try { bcChannel.postMessage(p); } catch (e) {}
+          }
+        }
+        renderLeaderboard();
+      }
+    }
+
+    // =========================================================================
+    // 📊 KANTINE STATISTIEKEN, TEAM BATTLE & NUTTELOZE ONGEIN ENGINE
+    // =========================================================================
+    function openStatsModal() {
+      const modal = document.getElementById('kantineStatsModal');
+      renderStatsModalContent();
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('kantineStatsModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function renderStatsModalContent() {
+      const container = document.getElementById('statsModalContent');
+      if (!container) return;
+
+      const mySummary = computeMyPlayerSummary();
+      if (!deletedPlayersSet.has(myPlayer.id)) {
+        allPlayersMap.set(myPlayer.id, mySummary);
+      }
+      const now = Date.now();
+
+      const players = Array.from(allPlayersMap.values()).map(p => {
+        let pCans = {};
+        try { pCans = p.cansJson ? JSON.parse(p.cansJson) : {}; } catch (e) {}
+        const liveBac = calculateDynamicBAC(pCans, p.weightKg || 80, now, p.gender || 'M');
+        const stateObj = getBacStateObject(liveBac);
+        return {
+          ...p,
+          team: p.team || 'DVOV 1',
+          gender: p.gender || 'M',
+          liveBac,
+          stateObj
+        };
+      });
+
+      const totalPlayers = players.length || 1;
+      let totDrinks = 0, totStelz = 0, totBier = 0, totWijn = 0, totBacSum = 0;
+
+      players.forEach(p => {
+        totDrinks += Number(p.totalCount || 0);
+        totStelz  += Number(p.stelzCount || 0);
+        totBier   += Number(p.bierCount || 0);
+        totWijn   += Number(p.wijnCount || 0);
+        totBacSum += p.liveBac;
+      });
+
+      const avgDrinksAll = (totDrinks / totalPlayers).toFixed(1);
+      const avgBacAll = (totBacSum / totalPlayers).toFixed(2);
+
+      const byBac = [...players].sort((a, b) => b.liveBac - a.liveBac);
+      const drunkest = byBac[0];
+
+      const byDrinks = [...players].sort((a, b) => (b.totalCount || 0) - (a.totalCount || 0));
+      const topDrinker = byDrinks[0];
+
+      const activeDrinkers = players.filter(p => (p.totalCount || 0) > 0);
+      const byFastest = [...activeDrinkers].sort((a, b) => (b.totalDeltaMs || 0) - (a.totalDeltaMs || 0));
+      const fastestPlayer = byFastest[0];
+      const slowestPlayer = byFastest[byFastest.length - 1];
+
+      function calcGroupStats(list) {
+        const n = list.length;
+        if (n === 0) return { count: 0, tot: 0, avgDrinks: '0.0', avgBac: '0.00', maxBac: '0.00', topName: '-', stelz: 0, bier: 0, wijn: 0 };
+        let d = 0, b = 0, s = 0, bi = 0, w = 0;
+        let topP = list[0];
+        list.forEach(p => {
+          d += (p.totalCount || 0);
+          b += p.liveBac;
+          s += (p.stelzCount || 0);
+          bi += (p.bierCount || 0);
+          w += (p.wijnCount || 0);
+          if (p.liveBac > topP.liveBac) topP = p;
+        });
+        return {
+          count: n,
+          tot: d,
+          avgDrinks: (d / n).toFixed(1),
+          avgBac: (b / n).toFixed(2),
+          maxBac: topP.liveBac.toFixed(2),
+          topName: topP.name || 'Speler',
+          stelz: s, bier: bi, wijn: w
+        };
+      }
+
+      const menStats = calcGroupStats(players.filter(p => p.gender !== 'V'));
+      const womenStats = calcGroupStats(players.filter(p => p.gender === 'V'));
+
+      const teamsMap = new Map();
+      players.forEach(p => {
+        const tName = p.team || 'DVOV 1';
+        if (!teamsMap.has(tName)) teamsMap.set(tName, []);
+        teamsMap.get(tName).push(p);
+      });
+
+      const teamRows = Array.from(teamsMap.entries()).map(([teamName, members]) => {
+        const st = calcGroupStats(members);
+        return { teamName, ...st };
+      }).sort((a, b) => Number(b.avgDrinks) - Number(a.avgDrinks) || Number(b.avgBac) - Number(a.avgBac));
+
+      const totalLiters = (totStelz * 0.33 + totBier * 0.25 + totWijn * 0.15).toFixed(1);
+      const towerMeters = ((totStelz * 11.5) / 100).toFixed(2);
+      const crossbarRatio = ((totStelz * 11.5) / 244).toFixed(1);
+      const statiegeldEuro = (totStelz * 0.15).toFixed(2);
+      const bitterballenCount = Math.floor((totStelz * 0.15) / 0.75);
+      const totalKcal = Math.round(totStelz * 99 + totBier * 110 + totWijn * 125);
+      const veldRondjes = (totalKcal / 32).toFixed(0);
+      const pureAlcoholGrams = Math.round(totStelz * 11.7 + totBier * 10.0 + totWijn * 14.2);
+      const singlePersonCleanseHours = Math.round(totDrinks * 1.4);
+      const peeBreaks = Math.max(0, Math.floor(Number(totalLiters) / 0.42));
+
+      container.innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="rounded-2xl p-3.5 bg-gradient-to-br from-rose-600 to-pink-700 text-white shadow-lg border-2 border-rose-300">
+            <div class="text-[10px] font-black uppercase tracking-widest text-rose-200">🥴 Meest Dronken (Promillage)</div>
+            <div class="font-poster text-xl font-extrabold mt-1 truncate">${drunkest ? escapeHtml(drunkest.name) : '-'}</div>
+            <div class="font-mono-timer text-2xl font-black text-amber-300 my-0.5">${drunkest ? drunkest.liveBac.toFixed(2) : '0.00'}‰</div>
+            <div class="text-[11px] font-bold text-rose-100 truncate">${drunkest ? `${drunkest.stateObj.emoji} ${drunkest.stateObj.short} (${escapeHtml(drunkest.team)})` : ''}</div>
+          </div>
+
+          <div class="rounded-2xl p-3.5 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg border-2 border-amber-200">
+            <div class="text-[10px] font-black uppercase tracking-widest text-amber-100">👑 Grootverbruiker van de Bar</div>
+            <div class="font-poster text-xl font-extrabold mt-1 truncate">${topDrinker ? escapeHtml(topDrinker.name) : '-'}</div>
+            <div class="font-mono-timer text-2xl font-black text-white my-0.5">${topDrinker ? (topDrinker.totalCount || 0) : 0} stuks</div>
+            <div class="text-[11px] font-bold text-amber-100 truncate">${topDrinker ? `🥫${topDrinker.stelzCount||0} 🍺${topDrinker.bierCount||0} 🍷${topDrinker.wijnCount||0} • ${escapeHtml(topDrinker.team)}` : ''}</div>
+          </div>
+
+          <div class="rounded-2xl p-3.5 bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-lg border-2 border-emerald-300">
+            <div class="text-[10px] font-black uppercase tracking-widest text-emerald-200">🎯 Strakste Klok-Discipline</div>
+            <div class="font-poster text-xl font-extrabold mt-1 truncate">${fastestPlayer ? escapeHtml(fastestPlayer.name) : 'Nog niemand'}</div>
+            <div class="font-mono-timer text-xl font-black text-amber-300 my-0.5">${fastestPlayer ? formatSignedClock(fastestPlayer.totalDeltaMs || 0) : '00:00:00'}</div>
+            <div class="text-[11px] font-bold text-emerald-100 truncate">${fastestPlayer ? `Meeste voorsprong (${escapeHtml(fastestPlayer.team)})` : 'Vink je 1e drankje af!'}</div>
+          </div>
+
+          <div class="rounded-2xl p-3.5 bg-gradient-to-br from-stone-700 to-stone-900 text-white shadow-lg border-2 border-stone-400">
+            <div class="text-[10px] font-black uppercase tracking-widest text-amber-300">🐢 De Kantine-Slak (Achterstand)</div>
+            <div class="font-poster text-xl font-extrabold mt-1 truncate">${slowestPlayer ? escapeHtml(slowestPlayer.name) : 'Nog niemand'}</div>
+            <div class="font-mono-timer text-xl font-black text-rose-400 my-0.5">${slowestPlayer ? formatSignedClock(slowestPlayer.totalDeltaMs || 0) : '00:00:00'}</div>
+            <div class="text-[11px] font-bold text-stone-300 truncate">${slowestPlayer ? `Zwaarste achterstand (${escapeHtml(slowestPlayer.team)})` : 'Nog geen achterstand'}</div>
+          </div>
+        </div>
+
+        <div class="bg-amber-100/70 border-2 border-[#C49A47] rounded-2xl p-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <h5 class="font-poster text-lg font-extrabold text-[#4A3718]">⚡ Geslacht-Statistieken: 🚹 Mannen vs. 🚺 Vrouwen</h5>
+            <span class="text-xs font-extrabold text-[#7A5B2B]">Kantine Gemiddelde: ${avgDrinksAll} drankjes • ${avgBacAll}‰</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="bg-white rounded-2xl p-3.5 border-2 border-sky-300 shadow-sm">
+              <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-2">
+                <span class="font-poster font-extrabold text-base text-sky-900">🚹 Mannen (${menStats.count} spelers)</span>
+                <span class="bg-sky-100 text-sky-800 font-mono-timer font-extrabold text-xs px-2.5 py-0.5 rounded-full">Totaal: ${menStats.tot} drankjes</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                <div class="bg-sky-50 p-2 rounded-xl">
+                  <div class="text-[10px] font-bold text-slate-500 uppercase">Gem. Drankjes</div>
+                  <div class="font-mono-timer text-lg font-black text-sky-900">${menStats.avgDrinks} p.p.</div>
+                </div>
+                <div class="bg-sky-50 p-2 rounded-xl">
+                  <div class="text-[10px] font-bold text-slate-500 uppercase">Gem. Promillage</div>
+                  <div class="font-mono-timer text-lg font-black text-pink-600">${menStats.avgBac}‰</div>
+                </div>
+                <div class="bg-sky-50 p-2 rounded-xl">
+                  <div class="text-[10px] font-bold text-slate-500 uppercase">Koploper (‰)</div>
+                  <div class="font-extrabold text-xs text-sky-950 truncate mt-0.5">${escapeHtml(menStats.topName)} (${menStats.maxBac}‰)</div>
+                </div>
+              </div>
+              <div class="mt-2 text-[11px] font-bold text-slate-600 flex justify-between px-1">
+                <span>Mix: 🥫 ${menStats.stelz}x Stëlz • 🍺 ${menStats.bier}x Bier • 🍷 ${menStats.wijn}x Wijn</span>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-3.5 border-2 border-pink-300 shadow-sm">
+              <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-2">
+                <span class="font-poster font-extrabold text-base text-pink-900">🚺 Vrouwen (${womenStats.count} spelers)</span>
+                <span class="bg-pink-100 text-pink-800 font-mono-timer font-extrabold text-xs px-2.5 py-0.5 rounded-full">Totaal: ${womenStats.tot} drankjes</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                <div class="bg-pink-50 p-2 rounded-xl">
+                  <div class="text-[10px] font-bold text-slate-500 uppercase">Gem. Drankjes</div>
+                  <div class="font-mono-timer text-lg font-black text-pink-900">${womenStats.avgDrinks} p.p.</div>
+                </div>
+                <div class="bg-pink-50 p-2 rounded-xl">
+                  <div class="text-[10px] font-bold text-slate-500 uppercase">Gem. Promillage</div>
+                  <div class="font-mono-timer text-lg font-black text-pink-600">${womenStats.avgBac}‰</div>
+                </div>
+                <div class="bg-pink-50 p-2 rounded-xl">
+                  <div class="text-[10px] font-bold text-slate-500 uppercase">Koploper (‰)</div>
+                  <div class="font-extrabold text-xs text-pink-950 truncate mt-0.5">${escapeHtml(womenStats.topName)} (${womenStats.maxBac}‰)</div>
+                </div>
+              </div>
+              <div class="mt-2 text-[11px] font-bold text-slate-600 flex justify-between px-1">
+                <span>Mix: 🥫 ${womenStats.stelz}x Stëlz • 🍺 ${womenStats.bier}x Bier • 🍷 ${womenStats.wijn}x Wijn</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border-2 border-[#C49A47] rounded-2xl p-4 shadow-sm">
+          <h5 class="font-poster text-lg font-extrabold text-[#4A3718] mb-1">🏆 DVOV Elftal-Ranglijst (Gesorteerd op Gemiddelde per Speler)</h5>
+          <p class="text-xs text-[#7A5B2B] font-semibold mb-3">Welk team draagt de kantine-omzet vanavond op zijn schouders?</p>
+          <div class="space-y-2">
+            ${teamRows.map((t, i) => `
+              <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl border ${i === 0 ? 'bg-amber-50 border-amber-400 shadow-sm' : 'bg-slate-50 border-slate-200'}">
+                <div class="flex items-center gap-2.5">
+                  <span class="font-poster font-extrabold text-xs px-2 py-1 rounded-lg ${i === 0 ? 'bg-amber-400 text-amber-950' : 'bg-stone-200 text-stone-700'}">
+                    #${i + 1}
+                  </span>
+                  <div>
+                    <div class="font-poster font-extrabold text-sm sm:text-base text-[#4A3718]">${escapeHtml(t.teamName)} <span class="text-xs font-bold text-slate-500">(${t.count} pers.)</span></div>
+                    <div class="text-[11px] font-bold text-[#7A5B2B]">Dronkenste speler: <strong>${escapeHtml(t.topName)}</strong> (${t.maxBac}‰)</div>
+                  </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 text-xs font-extrabold">
+                  <span class="bg-white px-2.5 py-1 rounded-lg border border-amber-200">🥫${t.stelz} 🍺${t.bier} 🍷${t.wijn}</span>
+                  <span class="bg-pink-100 text-pink-800 px-2.5 py-1 rounded-lg font-mono-timer">Gem: ${t.avgBac}‰</span>
+                  <span class="bg-emerald-600 text-white px-2.5 py-1 rounded-lg font-mono-timer">Gem: ${t.avgDrinks} p.p. (∑ ${t.tot})</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-[#4A3718] to-[#2D200C] text-[#FDFBF3] rounded-2xl p-4 border-2 border-[#C49A47]">
+          <h5 class="font-poster text-lg font-extrabold text-[#F2CB6B] mb-1">🤪 Volstrekt Nutteloze Kantine-Wetenschap</h5>
+          <p class="text-xs text-amber-200/80 font-semibold mb-3">Live berekend over alle ${totDrinks} geklapte drankjes in de DVOV kantine:</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
+            <div class="bg-black/30 p-3 rounded-xl border border-amber-400/25">
+              <div class="text-amber-300 font-black uppercase text-[10px]">🛢️ Totaal Vloeistof Volume</div>
+              <div class="font-mono-timer text-xl font-black text-white my-0.5">${totalLiters} Liter</div>
+              <div class="text-amber-200/75 text-[11px]">Genoeg om ${Math.max(1, (Number(totalLiters)/10).toFixed(1))} emmers water voor de verzorger te vullen!</div>
+            </div>
+
+            <div class="bg-black/30 p-3 rounded-xl border border-amber-400/25">
+              <div class="text-pink-300 font-black uppercase text-[10px]">🗼 De DVOV Blikjestoren</div>
+              <div class="font-mono-timer text-xl font-black text-white my-0.5">${towerMeters} Meter hoog</div>
+              <div class="text-amber-200/75 text-[11px]">Alle ${totStelz} lege Stëlz-blikjes op elkaar = <strong>${crossbarRatio}x de hoogte van de doelpaal</strong> (2,44m)!</div>
+            </div>
+
+            <div class="bg-black/30 p-3 rounded-xl border border-amber-400/25">
+              <div class="text-emerald-300 font-black uppercase text-[10px]">💰 Statiegeld-Bitterballen Index</div>
+              <div class="font-mono-timer text-xl font-black text-white my-0.5">€ ${statiegeldEuro}</div>
+              <div class="text-amber-200/75 text-[11px]">Van het statiegeld op de blikjes kunnen we nu al <strong>${bitterballenCount} verse bitterballen</strong> frituren!</div>
+            </div>
+
+            <div class="bg-black/30 p-3 rounded-xl border border-amber-400/25">
+              <div class="text-orange-300 font-black uppercase text-[10px]">🔥 Kantine-Calorieën & Straftraining</div>
+              <div class="font-mono-timer text-xl font-black text-white my-0.5">${totalKcal} kcal</div>
+              <div class="text-amber-200/75 text-[11px]">De selectie moet zondag <strong>${veldRondjes} rondjes om het hoofdveld</strong> rennen om dit eraf te lopen!</div>
+            </div>
+
+            <div class="bg-black/30 p-3 rounded-xl border border-amber-400/25">
+              <div class="text-cyan-300 font-black uppercase text-[10px]">🚽 De Kantine Blaas-Index</div>
+              <div class="font-mono-timer text-xl font-black text-white my-0.5">~${peeBreaks} Plaspauzes</div>
+              <div class="text-amber-200/75 text-[11px]">Het aantal keer dat de wc-deur in de DVOV kantine vanavond al op en neer is gegaan.</div>
+            </div>
+
+            <div class="bg-black/30 p-3 rounded-xl border border-amber-400/25">
+              <div class="text-purple-300 font-black uppercase text-[10px]">🧪 Zuivere Alcohol & Lever-Tijd</div>
+              <div class="font-mono-timer text-xl font-black text-white my-0.5">${pureAlcoholGrams} gram puur</div>
+              <div class="text-amber-200/75 text-[11px]">Als één speler alles in z'n eentje had opgedronken, was diegene pas over <strong>${singlePersonCleanseHours} uur</strong> weer nuchter!</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // INITIALIZE APP & START CLOUD STREAM
+    // =========================================================================
+    if (myPlayer.name) {
+      document.getElementById('playerNameInput').value = myPlayer.name;
+    }
+    if (document.getElementById('playerWeightInput')) {
+      document.getElementById('playerWeightInput').value = myPlayer.weightKg || 80;
+    }
+    if (document.getElementById('playerTeamInput') && myPlayer.team) {
+      document.getElementById('playerTeamInput').value = myPlayer.team;
+    }
+    if (document.getElementById('playerGenderInput') && myPlayer.gender) {
+      document.getElementById('playerGenderInput').value = myPlayer.gender;
+    }
+    if (adminUnlocked && document.getElementById('btnAdminToggle')) {
+      document.getElementById('btnAdminToggle').textContent = '👑 Beheerder: AAN';
+    }
+
+    buildCansGrid();
+    tick();
+    setInterval(tick, 200);
+
     connectNtfyRealtimeStream();
     forceCloudPull(false);
-    setInterval(() => forceCloudPull(false), 20000);
+    setInterval(() => forceCloudPull(false), 120000);
 
     if (myPlayer.name || Object.keys(completedCans).length > 0 || myManualBadges.length > 0) {
       setTimeout(() => window.syncMyStateToCloud(), 700);
